@@ -32,6 +32,7 @@ Not all features are available across all engines. The table below summarizes pe
 | `tools.web-search` | via MCP | via MCP | ✅ (opt-in) | via MCP |
 | `engine.agent` (custom agent file) | ✅ | ❌ | ❌ | ❌ |
 | `engine.api-target` (custom endpoint) | ✅ | ✅ | ✅ | ✅ |
+| `engine.bare` (suppress context loading) | ✅ | ✅ | ❌ | ❌ |
 | Tools allowlist | ✅ | ✅ | ✅ | ✅ |
 
 **Notes:**
@@ -39,6 +40,7 @@ Not all features are available across all engines. The table below summarizes pe
 - `max-continuations` enables autopilot mode with multiple consecutive runs (Copilot only).
 - `web-search` for Codex is disabled by default; add `tools: web-search:` to enable it. Other engines use a third-party MCP server — see [Using Web Search](/gh-aw/guides/web-search/).
 - `engine.agent` references a `.github/agents/` file for custom Copilot agent behavior. See [Copilot Custom Configuration](#copilot-custom-configuration).
+- `engine.bare` suppresses automatic context and custom instruction loading. Supported by Copilot and Claude only. See [Bare Mode](#bare-mode-enginebare).
 
 ## Extended Coding Agent Configuration
 
@@ -102,6 +104,38 @@ engine:
 ```
 
 See [Copilot Agent Files](/gh-aw/reference/copilot-custom-agents/) for details.
+
+### Bare Mode (`engine.bare`)
+
+Set `engine.bare: true` to disable automatic loading of context files and custom instructions by the engine. This gives you complete control over what context the engine receives, which is useful when:
+
+- A workflow's instructions are entirely self-contained and you want to prevent `.github/AGENTS.md` or user-level instructions from influencing behavior.
+- You are testing prompt behavior in isolation.
+- Global custom instructions conflict with the workflow's specific task.
+
+The engine-specific behavior when `bare: true` is set:
+
+| Engine | Effect |
+|--------|--------|
+| Copilot | Adds `--no-custom-instructions` — suppresses `.github/AGENTS.md` and user-level custom instructions |
+| Claude | Adds `--bare` — suppresses `CLAUDE.md` memory files |
+| Codex | Not supported — setting is ignored with a warning |
+| Gemini | Not supported — setting is ignored with a warning |
+
+```yaml wrap
+engine:
+  id: copilot
+  bare: true   # suppress .github/AGENTS.md and user-level custom instructions
+```
+
+```yaml wrap
+engine:
+  id: claude
+  bare: true   # suppress CLAUDE.md memory files
+```
+
+> [!NOTE]
+> `engine.bare` only affects context loaded by the engine CLI itself. Workflow-level instructions in the `.md` body are always passed to the engine as the prompt and are not affected by this setting.
 
 ### Engine Environment Variables
 

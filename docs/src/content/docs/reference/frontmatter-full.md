@@ -1873,6 +1873,14 @@ engine:
   args: []
     # Array of strings
 
+  # When true, disables automatic loading of context files and custom
+  # instructions by the AI engine. Copilot adds --no-custom-instructions
+  # (suppresses .github/AGENTS.md and user-level custom instructions); Claude
+  # adds --bare (suppresses CLAUDE.md memory files). Codex and Gemini do not
+  # support this setting — it is ignored with a warning. Defaults to false.
+  # (optional)
+  bare: false
+
   # Custom model token weights for effective token computation. Overrides or
   # extends the built-in model multipliers from model_multipliers.json. Useful
   # for custom models or adjusted cost ratios.
