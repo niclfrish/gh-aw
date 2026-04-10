@@ -1,28 +1,28 @@
-# Shared Alerts — 2026-04-10T04:45Z
-
-## P1 (Critical) - RECOVERING
-- **Copilot Engine Crash** (v1.0.21 regression): Started Apr 8 01:02 UTC, 35h+ duration. CLI Version Checker identified fix: upgrade to v1.0.22 (PR #25577 in progress Apr 10). Recovery expected within 24h. Monitor: #25215, #25396, #25374, #25257, #25372.
+# Shared Alerts — 2026-04-10T12:05Z
 
 ## P2 (High)
-- **Documentation Unbloat cost** (new, Apr 10): Claude workflow running 11x/week at $4.97/run ≈ $55/week. No safe outputs detected. Investigate ROI and add cost guards.
-- **Design Decision Gate failures** (#25548): 2/3 runs failing with errors. Gates architecture decisions — failures block reviews.
+- **Copilot CLI Upgrade Blocked**: v1.0.22 broke MCPs + /models. v1.0.20 re-pinned. Need v1.0.23+ verified before upgrade. Checklist in #25623.
+- **Documentation Unbloat cost** (ongoing): Claude workflow ~$55/week, 0 safe outputs.
+- **Design Decision Gate failures** (#25548): 2/3 runs failing. Architecture decisions blocked.
 
 ## P3 (Watch)
-- **Contribution Check report_incomplete**: Workflow completing with only `report_incomplete`. May have permission/network issues accessing PR data.
+- **Contribution Check report_incomplete**: Every run. Permission/network investigation needed.
 
 ## Recent Fixes
-- CLI proxy policy fix (#25419, f0b0d232, Apr 9): Adds default CLI_PROXY_POLICY. Deployed.
+- Copilot v1.0.21 crash RESOLVED by pinning to v1.0.20 (Apr 8–10 saga)
+- v1.0.22 regression (05:26–11:50 UTC Apr 10): 5 workflow failures, now self-healing
 - #25022 AI Moderator missing_data: CLOSED not_planned Apr 9
 - #24718 Duplicate Code Detector: CLOSED not_planned Apr 6
 - #24829 GitHub Remote MCP Auth: CLOSED not_planned Apr 7
-- Copilot CLI v1.0.22 fix: In progress (PR #25577, Apr 10)
 
-## Active Failure Issues (20+)
-Key open: #25215, #25396, #25374, #25290, #25261, #25260, #25257, #25276, #25372, #25447, #25440, #25415, #25398, #25395, #25384, #25305, #25315, #25312, #25259, #25236, #25287
+## Active Failure Issues (15)
+Key open: #25215, #25374, #25371, #25443, #25276, #25372, #25259, #25478, #25480, #25415, #25395, #25432, #25456, #25469, #25470
+Dashboard: #25470 (updated Apr 10)
 
 ## Ecosystem State
 - 187 compiled workflows. Engine split: ~124 copilot, ~41 claude, ~18 codex, ~4 others
-- Copilot crash distorted all 7d metrics — quality scores temporarily depressed
-- Claude/Codex engines showed 100% resilience during crash window
+- v1.0.20 pinned as stable Copilot version
+- Claude/Codex engines showing 100% resilience
+- Expect Copilot workflow recovery over next 24h
 
-Last updated: 2026-04-10T04:45Z by agent-performance-analyzer
+Last updated: 2026-04-10T12:05Z by workflow-health-manager

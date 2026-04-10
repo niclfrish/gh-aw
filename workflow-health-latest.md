@@ -1,61 +1,41 @@
-# Workflow Health - 2026-04-09T12:09Z
+# Workflow Health - 2026-04-10T12:05Z
 
-Score: 70/100 (→ same as 71 yesterday, systemic issue ongoing). 187 workflows. Run: §24189259135
+Score: 75/100 (↑5 from 70 yesterday). 187 workflows. Run: §24241980102
 
-## KEY FINDING: Copilot Engine Silent Startup Crash (P1 ONGOING)
+## KEY FINDING: Copilot v1.0.22 Regression (RESOLVED)
 
-Copilot CLI binary crashes on startup (exit code 1, 0B output) on ALL Copilot-engine workflows.
-- Started: Apr 8 01:02 UTC
-- Duration: 35+ hours, STILL ACTIVE Apr 9 12:08 UTC
-- Binary accessible but exits silently after ~1-2s
-- nodeVersion=v20.20.2
-- NOT related to CLI proxy fix (f0b0d232 merged Apr 9 05:00)
-- New tracking issue created: #aw_copsys1
+Copilot CLI v1.0.22 had MCP blocking + /models silent failure bugs. 
+- PR #25577 (05:26 UTC): bumped to v1.0.22 — BROKE workflows
+- PR #25623 (11:50 UTC): re-pinned to v1.0.20 (stable)
+- Current: v1.0.20 pinned, STABLE
 
-## P1 Issues (Active)
+5 workflows failed in regression window (10:35-11:27 UTC) — self-healing
 
-- **Copilot Engine Crash** (new issue #aw_copsys1, P1): All Copilot workflows failing. 20+ individual failure issues open. Silent startup crash, no output.
+## P1 Issues (RESOLVED)
+- Copilot Engine Crash: RESOLVED. v1.0.20 is pinned stable.
 
-## Open Failure Issues (20+)
+## P2 Issues (Active)
+- Copilot CLI Upgrade Blocked: v1.0.22 has MCP+models bugs. Need v1.0.23+ fix.
+- Design Decision Gate failures (#25548): 2/3 runs failing
+- Documentation Unbloat cost: ~$55/week (Claude), no safe outputs
+- Contribution Check report_incomplete: Every run
 
-Most active:
-- #25215 Auto-Triage Issues (19 comments, most active)
-- #25396 Test Quality Sentinel (6 comments, best docs of pattern)
-- #25374 Smoke Copilot (2 runs failed)
-- #25290 Delight (updated 12:09 today)
-- #25261 Dev
-- #25260 Architecture Diagram Generator
-- #25257 CI Cleaner
-- #25276 Daily Fact
-- #25372 Smoke Codex
-- #25447 Refactoring Cadence
-- #25440 Functional Pragmatist
-- #25415 Smoke Multi PR
-- ... and 8+ more
-
-## Resolved Since Apr 8
-
-- #25022 AI Moderator missing_data: CLOSED not_planned Apr 9 05:21
+## Open Failure Issues (15)
+Key: #25215 (Auto-Triage, 25 comments), #25374 (Smoke Copilot), #25371 (Agent Container Smoke Test)
+Most from Apr 8-9 crash window, should auto-close as workflows recover with v1.0.20
 
 ## Score Breakdown
-
-- Compilation: 187/187 lock files: +35
-- Systemic Copilot crash ongoing (35h+): -15
-- 20+ open failure issues: -8
-- CLI proxy fix merged (pending validation): +0
-- Net: 70/100
+- Compilation: 187/187: +35
+- v1.0.20 stable: +20
+- 5 temporary failures (self-healing): -5
+- 15 open failure issues: -8
+- Copilot upgrade blocked: -7
+- Net: 75/100
 
 ## Score Trend
+68 → 71 → 73 → 71 → 70 → 75 (Apr 5–10)
 
-68 → 71 → 73 → 71 → 70 (Apr 5–9)
+## Dashboard Issue
+#25470 (updated this run)
 
-## Recent Fixes
-
-- CLI proxy policy fix (#25419, f0b0d232): Always emit CLI_PROXY_POLICY env var in compiled lock files. Does NOT fix the Copilot crash.
-
-## Next Run Priorities
-
-1. Check if Copilot engine crash is resolved (most critical)
-2. Monitor open failure issues for resolution
-3. Verify CLI proxy fix takes effect when workflows recompiled
-4. Track stale lock files (23 reported but may be false positive from fresh checkout)
+Last updated: 2026-04-10T12:05Z
