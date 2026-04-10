@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-10T00:57:54Z",
-  "run_id": "24220921278",
+  "run_date": "2026-04-10T06:51:57Z",
+  "run_id": "24230482290",
   "fork_prs": 0,
-  "agent_prs_found": 2,
-  "agent_prs_excluded": 2,
-  "notes": "2 open Copilot-authored PRs found, both same-repo branches (not forks). Excluded per fork-only triage policy. PR #25403 (draft, previously tracked) is now closed.",
+  "agent_prs_found": 3,
+  "agent_prs_excluded": 3,
+  "notes": "3 open Copilot-authored PRs found, all same-repo branches (not forks). Excluded per fork-only triage policy.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,33 +18,39 @@
   },
   "prs_examined": [
     {
-      "number": 25561,
-      "title": "[WIP] Normalize report formatting for non-compliant workflows",
+      "number": 25590,
+      "title": "fix: restore mcp/fetch container for Codex web-fetch tool",
       "draft": true,
-      "created_at": "2026-04-10T00:56:09Z",
+      "created_at": "2026-04-10T00:00:00Z",
       "labels": [],
       "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "new_this_run": true
+      "excluded_reason": "same-repo branch, not a fork"
     },
     {
-      "number": 25553,
-      "title": "feat: update actions/github-script to v9.0.0 with builtin getOctokit",
-      "draft": false,
-      "created_at": "2026-04-09T23:56:51Z",
-      "labels": [
-        "ai-inspected"
-      ],
+      "number": 25589,
+      "title": "fix: set PROMPT_TEXT inside AWF container for agent file imports",
+      "draft": true,
+      "created_at": "2026-04-10T00:00:00Z",
+      "labels": [],
       "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "new_this_run": true
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 25581,
+      "title": "fix: handle race condition when PR merged before agent job checks out branch",
+      "draft": false,
+      "created_at": "2026-04-10T00:00:00Z",
+      "labels": [],
+      "reviews": "approved by bot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
     }
   ],
   "previous_run": {
-    "run_id": "24206973576",
-    "run_date": "2026-04-09T18:37:13Z",
+    "run_id": "24220921278",
+    "run_date": "2026-04-10T00:57:54Z",
     "fork_prs": 0,
-    "agent_prs_found": 3,
-    "agent_prs_excluded": 3
+    "agent_prs_found": 2,
+    "agent_prs_excluded": 2
   }
 }
