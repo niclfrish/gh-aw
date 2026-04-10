@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-09T18:37:13Z",
-  "run_id": "24206973576",
+  "run_date": "2026-04-10T00:57:54Z",
+  "run_id": "24220921278",
   "fork_prs": 0,
-  "agent_prs_found": 3,
-  "agent_prs_excluded": 3,
-  "notes": "3 open Copilot-authored PRs found, all same-repo branches (not forks). Excluded per fork-only triage policy. 2 new PRs since last run (#25510, #25507). Previously tracked PRs #25462, #25460, #25459, #25458, #25434, #25433, #25430, #25399, #25072 appear to have been closed/merged.",
+  "agent_prs_found": 2,
+  "agent_prs_excluded": 2,
+  "notes": "2 open Copilot-authored PRs found, both same-repo branches (not forks). Excluded per fork-only triage policy. PR #25403 (draft, previously tracked) is now closed.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,44 +18,33 @@
   },
   "prs_examined": [
     {
-      "number": 25510,
-      "title": "Add ValidateHeredocContent checks to 5 user-controlled heredoc sites",
-      "draft": false,
-      "created_at": "2026-04-09T18:37:00Z",
+      "number": 25561,
+      "title": "[WIP] Normalize report formatting for non-compliant workflows",
+      "draft": true,
+      "created_at": "2026-04-10T00:56:09Z",
       "labels": [],
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork",
       "new_this_run": true
     },
     {
-      "number": 25507,
-      "title": "Wire up dead MCP config schema validation",
+      "number": 25553,
+      "title": "feat: update actions/github-script to v9.0.0 with builtin getOctokit",
       "draft": false,
-      "created_at": "2026-04-09T18:37:00Z",
+      "created_at": "2026-04-09T23:56:51Z",
       "labels": [
-        "smoke-claude",
-        "smoke-copilot"
+        "ai-inspected"
       ],
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork",
       "new_this_run": true
-    },
-    {
-      "number": 25403,
-      "title": "fix: replace hardcoded github.token with configurable push token in Configure Git credentials steps",
-      "draft": true,
-      "created_at": "2026-04-08T22:18:04Z",
-      "labels": [],
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "new_this_run": false
     }
   ],
   "previous_run": {
-    "run_id": "24190546125",
-    "run_date": "2026-04-09T12:39:33Z",
+    "run_id": "24206973576",
+    "run_date": "2026-04-09T18:37:13Z",
     "fork_prs": 0,
-    "agent_prs_found": 10,
-    "agent_prs_excluded": 10
+    "agent_prs_found": 3,
+    "agent_prs_excluded": 3
   }
 }
