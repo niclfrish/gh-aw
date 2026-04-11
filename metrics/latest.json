@@ -1,26 +1,11 @@
 {
   "timestamp": "2026-01-18T14:35:44Z",
-  "period": "daily",
-  "collection_duration_seconds": 70,
   "collection_status": "partial",
-  "limitations": [
-    "GitHub token (GH_TOKEN/GITHUB_TOKEN) not available in runtime environment",
-    "gh-aw binary not built or accessible (requires Go and make)",
-    "Unable to query GitHub Actions API for workflow run metrics",
-    "Unable to use gh aw logs tool for detailed workflow execution data",
-    "Only filesystem-based workflow inventory available"
-  ],
-  "workflows": {},
   "ecosystem": {
     "total_workflows_md": 129,
     "total_workflows_lock": 129,
     "total_non_agentic_workflows": 15,
     "note": "Runtime metrics (runs, success rates, safe outputs, tokens, costs) require GitHub API access and gh-aw binary"
   },
-  "recommendations": [
-    "Ensure GH_TOKEN or GITHUB_TOKEN is set in workflow environment",
-    "Pre-build gh-aw binary or ensure Go toolchain is available",
-    "Provide GitHub MCP server configuration for API access",
-    "Consider running metrics collector in environment with full tooling"
-  ]
+  "note": "Jan 2026 partial - no GitHub API access during collection"
 }

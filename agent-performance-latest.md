@@ -1,13 +1,18 @@
-# Agent Performance - 2026-04-10
-Run: §24226598383 | Q:65↓3 E:66↓1
+# Agent Performance - 2026-04-11
+Run: §24274655501 | Q:70↑5 E:60↓6
 
-Top: AI Moderator (Q:88 E:92 - Codex, stable), Smoke Claude (Q:90 E:87), CLI Version Checker (Q:86 E:88 ↑2), Issue Monster (Q:78 E:80)
-Watch: Documentation Unbloat ($4.97/run × 11 runs = ~$55/week, 0 safe outputs), Design Decision Gate (2/3 failures, issue #25548), Contribution Check (report_incomplete every run)
+Top: CLI Version Checker (Q:90 E:88 ↑2), AI Moderator (Q:88 E:92 - Codex), Smoke Claude (Q:88 E:90), Issue Monster (Q:82 E:85 - 5 runs/100%), Agentic Maintenance (Q:80 E:78 - 6 deep-report issues)
 
-Systemic: Copilot engine crash (Apr 8-9, v1.0.21 regression) caused 100+ zero-output runs. Fix: v1.0.22 (CLI Version Checker tracked in PR #25577). Recovery expected Apr 10+.
+Watch: Documentation Unbloat (0 safe outputs, ~$55/wk), Design Decision Gate (root cause: --print flag empty prompt in #25670, P2), Contribution Check (report_incomplete every run), GitHub Remote MCP Auth Test (100% fail today), Workflow Normalizer (3 duplicate issues in 24h - deduplication gap)
 
-Engine dist (recent runs): copilot:19 runs/15wf, claude:7/5, codex:7/3, gemini:1/1
-Cost risk: Documentation Unbloat ~$55/wk. Agent Persona Explorer 4.5M tokens but stable at 14 turns.
+Smoke Tests: Claude/Codex/Multi-PR ✅ | Copilot ⚠️ recovering (21/30 fail, v1.0.24 PR #25752 in progress) | Gemini ❌ | Cross-Repo Create/Update ❌
 
-Stats: 187 compiled wfs. 150 runs 7d. 17 safe items. $6.75 total. Crash window heavily distorted metrics.
-Actions: Weekly discussion created. No new issues (existing tracking: #25548, #25215+).
+New: v1.0.24 bump issued today (#25751/PR #25752) - will unblock Copilot smoke tests
+
+Issues this week: 30 total | deps:5 (Dependabot), deep-report:6 (Agentic Maintenance), refactoring:4 (Skill Extractor), workflow-style:3 (Normalizer-DUPE), ca:3 (CLI Version), plan:3 (Plan Command)
+PRs merged: ~30 (mostly by Copilot bot) | Notable lgtm: #25721, #25693, #25628, #25618
+
+Engine split: copilot:~124wf, claude:~41wf, codex:~18wf, others:~4wf
+187 compiled workflows. Health: 75/100 (recovering). 20/25 scheduled workflows healthy today.
+
+Actions: Weekly discussion created. No new improvement issues (existing tracking: #25548 DDG, alerts in shared-alerts.md).
