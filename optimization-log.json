@@ -46,5 +46,15 @@
     "recommendations_count": 4,
     "estimated_savings_per_run": 200000,
     "notes": "All 9 non-trivial runs flagged partially_reducible (50-96% data-gathering turns). Pre-fetching PR diff + file list in bash pre-steps is primary lever. Also remove repos toolset and 3 unused bash tools."
+  },
+  {
+    "date": "2026-04-12",
+    "workflow_name": "Q",
+    "workflow_file": "q",
+    "total_tokens_analyzed": 34945652,
+    "runs_audited": 11,
+    "recommendations_count": 4,
+    "estimated_savings_per_run": 2000000,
+    "notes": "45% failure rate across 11 runs. Runaway 103-turn failed run consumed 9.1M tokens (75% of daily total). Primary lever: reduce timeout-minutes 15\u219210 + remove Serena import (unused Go LSP for .md optimization). No max-turns available for Copilot engine."
   }
 ]
