@@ -51,6 +51,7 @@ The agent requests issue creation; a separate job with `issues: write` creates i
 - [**Assign to Agent**](#assign-to-agent-assign-to-agent) (`assign-to-agent`) - Assign Copilot coding agent to issues or PRs (max: 1)
 - [**Assign to User**](#assign-to-user-assign-to-user) (`assign-to-user`) - Assign users to issues (max: 1)
 - [**Unassign from User**](#unassign-from-user-unassign-from-user) (`unassign-from-user`) - Remove user assignments from issues or PRs (max: 1)
+- [**Set Issue Type**](#set-issue-type-set-issue-type) (`set-issue-type`) - Set or clear GitHub issue types (max: 5)
 
 ### Projects, Releases & Assets
 
@@ -59,6 +60,7 @@ The agent requests issue creation; a separate job with `issues: write` creates i
 - [**Create Project Status Update**](#project-status-updates-create-project-status-update) (`create-project-status-update`) - Create project status updates
 - [**Update Release**](#release-updates-update-release) (`update-release`) - Update GitHub release descriptions (max: 1)
 - [**Upload Assets**](#asset-uploads-upload-asset) (`upload-asset`) - Upload files to orphaned git branch (max: 10, same-repo only)
+- [**Upload Artifact**](#artifact-uploads-upload-artifact) (`upload-artifact`) - Upload run-scoped GitHub Actions artifacts (max: 1)
 
 ### Security & Agent Tasks
 
@@ -841,6 +843,9 @@ git checkout --orphan my-custom-branch && git rm -rf . && git commit --allow-emp
 
 **Outputs**: `published_count`, `branch_name`. **Limits**: Same-repo only, max 50MB/file, 100 assets/run.
 
+> [!TIP]
+> For temporary run-scoped artifacts (not persisted in Git), use [`upload-artifact`](#artifact-uploads-upload-artifact) instead.
+
 ### No-Op Logging (`noop:`)
 
 :::danger[Required when no action is taken]
@@ -1204,6 +1209,55 @@ safe-outputs:
     allowed-repos: ["org/repo1", "org/repo2"]  # additional allowed repositories
     github-token: ${{ secrets.SOME_CUSTOM_TOKEN }} # optional custom token for permissions
 ```
+
+### Set Issue Type (`set-issue-type:`)
+
+Sets or clears the [GitHub issue type](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/managing-issue-types-in-your-organization) on existing issues. Use an `allowed` list to restrict which types the agent may assign; omit it to allow any type. Pass an empty string to clear the current type.
+
+```yaml wrap
+safe-outputs:
+  set-issue-type:
+    allowed: [Bug, Feature, Task]  # restrict to specific type names (optional)
+    max: 5                         # max operations (default: 5)
+    target: "triggering"           # "triggering" (default), "*", or issue number
+    target-repo: "owner/repo"      # cross-repository
+    allowed-repos: ["org/repo1"]   # additional allowed repositories
+    github-token: ${{ secrets.SOME_CUSTOM_TOKEN }} # optional custom token
+```
+
+Agent output format: `{"set_issue_type": {"type": "Bug"}}`. Use `"type": ""` to clear the current type.
+
+### Artifact Uploads (`upload-artifact:`)
+
+Uploads files as run-scoped [GitHub Actions artifacts](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow). Unlike `upload-asset`, artifacts are temporary (default 90 days) and scoped to a single workflow run. The agent calls `upload_artifact` to stage files; a separate generated job uploads them using `actions/upload-artifact`.
+
+```yaml wrap
+safe-outputs:
+  upload-artifact:
+    max-uploads: 3                   # max upload_artifact calls (default: 1)
+    retention-days: 30               # artifact retention in days (agent cannot override)
+    skip-archive: true               # skip zip archiving (default: false)
+    max-size-bytes: 52428800         # max bytes per upload (default: 100 MB)
+    allowed-paths:                   # glob patterns restricting uploadable paths
+      - "reports/**"
+      - "*.json"
+    filters:
+      include: ["*.png", "*.pdf"]    # include only these patterns
+      exclude: ["**/secret*"]        # exclude matching paths
+    defaults:
+      if-no-files: ignore            # behavior when no files match: "error" or "ignore"
+```
+
+Enable with defaults:
+
+```yaml wrap
+safe-outputs:
+  upload-artifact:
+```
+
+**Security**: The agent may only upload files from the workspace or `/tmp`. Path validation, size limits, and extension controls apply. `allowed-paths` restricts which paths the agent may reference in tool calls.
+
+**Outputs**: Artifact name and download URL are available via workflow outputs.
 
 ## Cross-Repository Operations
 

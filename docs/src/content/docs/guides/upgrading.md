@@ -70,6 +70,7 @@ The upgrade automatically applies codemods to fix deprecated fields in all workf
 | Codemod | What It Fixes | Example |
 |---------|---------------|---------|
 | **sandbox-false-to-agent-false** | Converts `sandbox: false` to `sandbox.agent: false` | `sandbox: false` → `sandbox: { agent: false }` |
+| **app-to-github-app** | Renames `app:` to `github-app:` | `app:` → `github-app:` |
 | **network-firewall-migration** | Removes deprecated `network.firewall` field | Deletes `firewall: mandatory` |
 | **mcp-scripts-mode-removal** | Removes deprecated `mcp-scripts.mode` field | Deletes `mode: auto` |
 | **safe-inputs-to-mcp-scripts** | Renames `safe-inputs:` to `mcp-scripts:` | `safe-inputs:` → `mcp-scripts:` |
@@ -118,7 +119,7 @@ gh aw upgrade --dir custom/workflows
 
 ## Step 4: Review the Changes
 
-Run `git diff .github/workflows/` to verify the changes. Typical migrations include `sandbox: false` → `sandbox.agent: false`, `daily at` → `daily around`, and removal of deprecated `network.firewall` and `mcp-scripts.mode` fields.
+Run `git diff .github/workflows/` to verify the changes. Typical migrations include `sandbox: false` → `sandbox.agent: false`, `app:` → `github-app:`, `daily at` → `daily around`, and removal of deprecated `network.firewall` and `mcp-scripts.mode` fields.
 
 ## Step 5: Verify Compilation
 

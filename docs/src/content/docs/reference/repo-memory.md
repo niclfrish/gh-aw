@@ -66,6 +66,12 @@ Mounts at `/tmp/gh-aw/repo-memory-{id}/` during workflow execution. Required `id
 
 Branches auto-create as orphans (default) or clone with `--depth 1`. Changes auto-commit after validation (`file-glob`, `max-file-size`, `max-file-count`), pull with `-X ours` (your changes win), and push when changes detected and threat detection passes.
 
+### Mid-Run Pushes (`push_repo_memory` tool)
+
+When repo memory is configured, the agent gains access to a `push_repo_memory` MCP tool. Calling this tool during the workflow run commits and pushes the current memory state early — before the workflow completes — enabling size validation and partial progress persistence. This is useful for long-running workflows that want to checkpoint memory at logical milestones rather than only at the end.
+
+The tool is available automatically; no additional frontmatter configuration is required.
+
 ## Comparison with Cache Memory
 
 | Feature | Cache Memory | Repo Memory |

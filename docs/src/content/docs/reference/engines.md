@@ -53,7 +53,30 @@ engine:
   args: ["--add-dir", "/workspace"]     # custom CLI arguments
   agent: agent-id                       # custom agent file identifier
   api-target: api.acme.ghe.com          # custom API endpoint hostname (GHEC/GHES)
+  bare: false                           # disable automatic context/instruction loading (default: false)
 ```
+
+### Bare Mode (`engine.bare`)
+
+Set `engine.bare: true` to disable the engine's automatic loading of custom instructions and context files. This gives you full control over the agent's system prompt — only the content you provide in the workflow body is used.
+
+| Engine | Effect of `bare: true` |
+|--------|------------------------|
+| `copilot` | Passes `--no-custom-instructions` to suppress agent file loading |
+| `claude` | Passes `--bare` to suppress system prompt injection |
+| `codex` | Not supported (warning emitted; no effect) |
+| `gemini` | Not supported (warning emitted; no effect) |
+
+```yaml wrap
+engine:
+  id: copilot
+  bare: true
+```
+
+Use `bare: true` when you want to provide the entire agent prompt yourself and avoid any default instructions from the engine CLI.
+
+> [!NOTE]
+> When `bare: true` is set for an engine that does not support it (`codex`, `gemini`), the compiler emits a warning and the field is ignored. No error is raised.
 
 ### Pinning a Specific Engine Version
 
