@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-13T07:02:41Z",
-  "run_id": "24330139507",
+  "run_date": "2026-04-13T12:40:03Z",
+  "run_id": "24343771676",
   "fork_prs": 0,
-  "agent_prs_found": 6,
+  "agent_prs_found": 7,
   "agent_prs_excluded": 6,
-  "notes": "6 open agent-authored PRs found (#25989, #25984, #25982, #25948, #25928, #25830), all same-repo branches (not forks). Also 1 human PR (#25975). Excluded per fork-only triage policy.",
+  "notes": "6 known open agent-authored same-repo PRs from previous run (#25989, #25984, #25982, #25948, #25928, #25830). 1 new PR found via search (#26009 - glossary docs update by github-actions[bot]). API rate limit hit during full PR list retrieval (reset ~12:53 UTC). All known PRs are same-repo branches (not forks). No fork PRs to triage per policy.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,6 +17,17 @@
     "by_action": {}
   },
   "prs_examined": [
+    {
+      "number": 26009,
+      "title": "[docs] Update glossary - weekly full scan",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork",
+      "author": "github-actions[bot]",
+      "labels": ["documentation", "glossary"],
+      "created_at": "2026-04-13T10:52:39Z"
+    },
     {
       "number": 25989,
       "title": "[code-simplifier] refactor: extract hasValidPrefix boolean in send_otlp_span.cjs",
@@ -85,10 +96,10 @@
     }
   ],
   "previous_run": {
-    "run_id": "24320894984",
-    "run_date": "2026-04-13T01:02:57Z",
+    "run_id": "24330139507",
+    "run_date": "2026-04-13T07:02:41Z",
     "fork_prs": 0,
-    "agent_prs_found": 4,
-    "agent_prs_excluded": 4
+    "agent_prs_found": 6,
+    "agent_prs_excluded": 6
   }
 }
