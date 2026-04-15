@@ -47,3 +47,25 @@ Last updated: 2026-04-14T12:10Z by workflow-health-manager
 - MCP Rate-Limit: #26239 open (circuit breaker request) — P2 risk
 
 Last updated: 2026-04-15T04:37Z by agent-performance-analyzer
+
+## Update 2026-04-15T12:09Z (Workflow Health Manager)
+- **18 stale lock files** (NEW, Apr 15): PR #26372 (context propagation) merged without recompile. Run `make recompile`.
+- **Daily Issues Report:** `node: command not found` recurring (#26393, Apr 15) — Node.js missing in Copilot runner
+- **Auto-Triage Issues** (NEW failure Apr 15): #26364, 2x fails today — was recovered Apr 13-14
+- **Daily Fact / Daily News:** new failures Apr 15 (#26405, #26388) — may be stale lock related
+- **Smoke Gemini (#26351):** still failing — Gemini 0.38.0 now available, awaiting CLI upgrade
+
+### Recoveries (Apr 15)
+- ✅ Contribution Check: successful report #26376 (4 PRs reviewed)
+- ✅ Architecture Diagram: successful #26389
+
+### Version Status (Apr 15)
+- Copilot v1.0.27 available (upgrade PR #26367 open)
+- Claude 2.1.109, Codex 0.120.0, Gemini 0.38.0, GitHub MCP v0.33.1 available
+- v1.0.21 still active in production
+
+### Ecosystem State (Apr 15 12:09Z)
+- 191 workflows, 18 stale locks ⚠️. Health: 72/100 (↓1). ~27 open failure issues.
+- Dashboard: see safeoutputs #aw_dash15
+
+Last updated: 2026-04-15T12:09Z by workflow-health-manager
