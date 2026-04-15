@@ -102,7 +102,7 @@ func TestResolveLatestRef_TagIntegration(t *testing.T) {
 
 	// Use a well-known public repo with releases
 	// actions/checkout has many tagged releases (v3.x, v4.x, etc.)
-	latestRef, err := resolveLatestRef("actions/checkout", "v4.0.0", false, true)
+	latestRef, err := resolveLatestRef(context.Background(), "actions/checkout", "v4.0.0", false, true)
 	require.NoError(t, err, "Should resolve latest release for actions/checkout v4.x")
 
 	// The resolved ref should be a newer v4.x tag
@@ -115,7 +115,7 @@ func TestResolveLatestRef_TagMajorUpdateIntegration(t *testing.T) {
 	skipWithoutGitHubAuth(t)
 
 	// With allowMajor=true, it should resolve to the latest release across all major versions
-	latestRef, err := resolveLatestRef("actions/checkout", "v3.0.0", true, true)
+	latestRef, err := resolveLatestRef(context.Background(), "actions/checkout", "v3.0.0", true, true)
 	require.NoError(t, err, "Should resolve latest release with major updates allowed")
 
 	assert.True(t, isSemanticVersionTag(latestRef), "Resolved ref should be a semantic version tag, got: %s", latestRef)
@@ -128,7 +128,7 @@ func TestResolveLatestRef_BranchIntegration(t *testing.T) {
 	skipWithoutGitHubAuth(t)
 
 	// Use a well-known branch on a public repo
-	latestRef, err := resolveLatestRef("actions/checkout", "main", false, true)
+	latestRef, err := resolveLatestRef(context.Background(), "actions/checkout", "main", false, true)
 	require.NoError(t, err, "Should resolve latest commit for branch 'main'")
 
 	// The result should be a 40-char commit SHA
