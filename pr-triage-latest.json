@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-15T01:02:35Z",
-  "run_id": "24430844222",
+  "run_date": "2026-04-15T06:52:18Z",
+  "run_id": "24440656370",
   "fork_prs": 0,
-  "agent_prs_found": 10,
-  "agent_prs_excluded": 10,
-  "notes": "10 open PRs found (all same-repo branches, not forks). Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 9,
+  "agent_prs_excluded": 9,
+  "notes": "9 open agent-created PRs found (all same-repo branches, not forks). Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,22 +17,93 @@
     "by_action": {}
   },
   "prs_examined": [
-    {"number": 26342, "title": "[WIP] Normalize report formatting for non-compliant workflows", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 26341, "title": "[aw] Updates available", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 26340, "title": "fix: use .mcp.json instead of .vscode/mcp.json for Copilot CLI compatibility", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 26339, "title": "[WIP] Fix AGENTS.md blocking legitimate modifications", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 26338, "title": "Add structured metadata channel to safe-output types", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 26336, "title": "fix: guard activation .github checkout against cross-repo GITHUB_TOKEN", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 26323, "title": "fix: tools.github: false does not override tools.github.* from shared config", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 26322, "title": "feat: DIFC proxy uses step-scoped env instead of mutating GITHUB_ENV", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 25928, "title": "feat: mount MCP servers as local CLIs after gateway starts", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"},
-    {"number": 25830, "title": "feat: add OpenCode engine integration (re-apply PR #18403)", "head_repo": "github/gh-aw", "base_repo": "github/gh-aw", "same_repo": true, "excluded_reason": "same-repo branch, not a fork"}
+    {
+      "number": 26384,
+      "title": "[code-simplifier] refactor: eliminate runGHWithSpinner duplication",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "github-actions[bot]",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 26383,
+      "title": "feat: add structured payload channel to safe-output types",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 26382,
+      "title": "[WIP] Add auto-generation of agentics-maintenance.yml",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 26381,
+      "title": "fix(audit): exclude `-` placeholder from blocked domains",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 26380,
+      "title": "Preserve .github and .agents from base branch after PR checkout",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 26377,
+      "title": "fix: pass GITHUB_REPOSITORY as --repo in MCP logs and audit tools",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 26338,
+      "title": "Add structured payload channel to safe-output types",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 25928,
+      "title": "feat: mount MCP servers as local CLIs after gateway starts",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 25830,
+      "title": "feat: add OpenCode engine integration (re-apply PR #18403)",
+      "head_repo": "github/gh-aw",
+      "base_repo": "github/gh-aw",
+      "user": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    }
   ],
   "previous_run": {
-    "run_id": "24416481925",
-    "run_date": "2026-04-14T18:39:02Z",
+    "run_id": "24430844222",
+    "run_date": "2026-04-15T01:02:35Z",
     "fork_prs": 0,
-    "agent_prs_found": 5,
-    "agent_prs_excluded": 5
+    "agent_prs_found": 10,
+    "agent_prs_excluded": 10
   }
 }
