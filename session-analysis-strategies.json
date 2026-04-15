@@ -23,7 +23,15 @@
       "date_tested": "2026-04-07",
       "effectiveness": "Medium",
       "recommendation": "Keep and refine"
+    },
+    {
+      "name": "CI Iteration Depth Analysis",
+      "date_tested": "2026-04-15",
+      "effectiveness": "Medium",
+      "recommendation": "Keep and refine",
+      "description": "Correlate number of CI check rounds per branch with Copilot session duration and success. More rounds = more Copilot commits = deeper engagement.",
+      "finding": "5 CI rounds in 51.4min session led to success; 4 CI rounds without Copilot agent = stalled branch"
     }
   ],
-  "last_updated": "2026-04-09"
+  "last_updated": "2026-04-15"
 }

@@ -41,7 +41,23 @@
         "Session duration > 5min strongly correlates with success",
         "2 stalled branches awaiting human review (0 Copilot engagement)"
       ]
+    },
+    {
+      "date": "2026-04-15",
+      "sessions_analyzed": 50,
+      "completion_rate_pct": 2.0,
+      "copilot_coding_agents": 1,
+      "copilot_success_rate_pct": 100.0,
+      "avg_copilot_duration_min": 51.4,
+      "experimental_strategy": "CI Iteration Depth Analysis",
+      "key_insights": [
+        "fix-performance-regression: Copilot SUCCESS after 51.4min; 5 CI iteration rounds",
+        "support-auto-generate-agentics-yml: No Copilot agent; 4 CI rounds stalled",
+        "Longest recorded Copilot session (51.4min) correlates with complex task name",
+        "Multiple CI iteration rounds (5) required before PR approval",
+        "Experimental: More CI iterations = more Copilot code pushes = higher confidence in result"
+      ]
     }
   ],
-  "last_updated": "2026-04-09"
+  "last_updated": "2026-04-15"
 }
