@@ -369,7 +369,7 @@ func TestGetRepoDefaultBranch_Integration(t *testing.T) {
 func TestGetLatestBranchCommitSHA_Integration(t *testing.T) {
 	skipWithoutGitHubAuth(t)
 
-	sha, err := getLatestBranchCommitSHA("actions/checkout", "main")
+	sha, err := getLatestBranchCommitSHA(context.Background(), "actions/checkout", "main")
 	require.NoError(t, err, "Should fetch latest commit SHA for actions/checkout main branch")
 	assert.True(t, IsCommitSHA(sha), "Result should be a 40-char commit SHA, got: %s", sha)
 }
