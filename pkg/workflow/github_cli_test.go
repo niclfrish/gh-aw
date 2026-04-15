@@ -341,6 +341,61 @@ func TestSetupGHCommand(t *testing.T) {
 	}
 }
 
+// TestRunGHWithSpinnerCmd verifies that runGHWithSpinnerCmd runs a command and returns
+// the expected output for both combined=false and combined=true modes. It also verifies
+// that error enrichment is applied for stdout-only mode (combined=false).
+func TestRunGHWithSpinnerCmd(t *testing.T) {
+	t.Run("stdout mode returns stdout", func(t *testing.T) {
+		cmd := exec.Command("sh", "-c", "echo hello")
+		out, err := runGHWithSpinnerCmd(cmd, "test", false)
+		require.NoError(t, err, "command should succeed")
+		assert.Contains(t, string(out), "hello", "should capture stdout")
+	})
+
+	t.Run("combined mode returns stdout and stderr", func(t *testing.T) {
+		cmd := exec.Command("sh", "-c", "echo out; echo err >&2")
+		out, err := runGHWithSpinnerCmd(cmd, "test", true)
+		require.NoError(t, err, "command should succeed")
+		assert.Contains(t, string(out), "out", "should capture stdout in combined mode")
+		assert.Contains(t, string(out), "err", "should capture stderr in combined mode")
+	})
+
+	t.Run("stdout mode enriches error with stderr", func(t *testing.T) {
+		cmd := exec.Command("sh", "-c", "echo 'oh no' >&2; exit 1")
+		_, err := runGHWithSpinnerCmd(cmd, "test", false)
+		require.Error(t, err, "command should fail")
+		assert.Contains(t, err.Error(), "oh no", "error should be enriched with stderr")
+	})
+
+	t.Run("combined mode does not double-enrich error", func(t *testing.T) {
+		// combined=true captures stderr in output; enrichGHError is intentionally not called,
+		// so the error returned is the plain *exec.ExitError without stderr appended to it.
+		cmd := exec.Command("sh", "-c", "echo msg >&2; exit 1")
+		out, err := runGHWithSpinnerCmd(cmd, "test", true)
+		require.Error(t, err, "command should fail")
+		assert.Contains(t, string(out), "msg", "stderr should appear in combined output")
+		// The error itself must NOT contain the stderr text (no enrichment for combined mode).
+		assert.NotContains(t, err.Error(), "msg", "combined mode should not enrich the error with stderr")
+	})
+}
+
+// TestRunGHWithSpinnerContextParity verifies that ExecGH and ExecGHContext produce commands
+// with identical arguments so that runGHWithSpinner and runGHWithSpinnerContext are truly
+// interchangeable for the same inputs.
+func TestCommandConstructionParity(t *testing.T) {
+	t.Run("stdout-only mode parity", func(t *testing.T) {
+		// Both wrappers should produce commands with the same program and arguments so that
+		// runGHWithSpinnerCmd delivers identical behaviour regardless of how the cmd was built.
+		args := []string{"api", "/user"}
+		ctx := context.Background()
+		cmdNoCtx := ExecGH(args...)
+		cmdCtx := ExecGHContext(ctx, args...)
+
+		// Both should have the same program and arguments.
+		assert.Equal(t, cmdNoCtx.Args, cmdCtx.Args, "context and non-context commands should have identical args")
+	})
+}
+
 // TestRunGHWithSpinner tests the core runGHWithSpinner function
 // Note: This test validates the function exists and handles arguments correctly
 // Actual spinner behavior is tested via RunGH and RunGHCombined

@@ -96,11 +96,12 @@ func enrichGHError(err error) error {
 	return err
 }
 
-// runGHWithSpinnerContext executes a gh CLI command with context support, a spinner,
-// and returns the output. This is the core implementation for RunGHContext.
-func runGHWithSpinnerContext(ctx context.Context, spinnerMessage string, combined bool, args ...string) ([]byte, error) {
-	cmd := ExecGHContext(ctx, args...)
-
+// runGHWithSpinnerCmd executes an already-constructed *exec.Cmd with an optional spinner
+// and returns the output. This is the single shared execution path for all RunGH* variants,
+// covering TTY/non-TTY branches, stdout-only and combined stdout+stderr modes, and error
+// enrichment. Keeping the logic here guarantees that context and non-context callers behave
+// identically.
+func runGHWithSpinnerCmd(cmd *exec.Cmd, spinnerMessage string, combined bool) ([]byte, error) {
 	// Show spinner in interactive terminals
 	if tty.IsStderrTerminal() {
 		spinner := console.NewSpinner(spinnerMessage)
@@ -124,32 +125,16 @@ func runGHWithSpinnerContext(ctx context.Context, spinnerMessage string, combine
 	return output, enrichGHError(err)
 }
 
+// runGHWithSpinnerContext executes a gh CLI command with context support, a spinner,
+// and returns the output. This is a thin wrapper around runGHWithSpinnerCmd for RunGHContext.
+func runGHWithSpinnerContext(ctx context.Context, spinnerMessage string, combined bool, args ...string) ([]byte, error) {
+	return runGHWithSpinnerCmd(ExecGHContext(ctx, args...), spinnerMessage, combined)
+}
+
 // runGHWithSpinner executes a gh CLI command with a spinner and returns the output.
-// This is the core implementation shared by RunGH and RunGHCombined.
+// This is a thin wrapper around runGHWithSpinnerCmd shared by RunGH and RunGHCombined.
 func runGHWithSpinner(spinnerMessage string, combined bool, args ...string) ([]byte, error) {
-	cmd := ExecGH(args...)
-
-	// Show spinner in interactive terminals
-	if tty.IsStderrTerminal() {
-		spinner := console.NewSpinner(spinnerMessage)
-		spinner.Start()
-		var output []byte
-		var err error
-		if combined {
-			output, err = cmd.CombinedOutput()
-		} else {
-			output, err = cmd.Output()
-			err = enrichGHError(err)
-		}
-		spinner.Stop()
-		return output, err
-	}
-
-	if combined {
-		return cmd.CombinedOutput()
-	}
-	output, err := cmd.Output()
-	return output, enrichGHError(err)
+	return runGHWithSpinnerCmd(ExecGH(args...), spinnerMessage, combined)
 }
 
 // RunGH executes a gh CLI command with a spinner and returns the stdout output.
@@ -207,18 +192,7 @@ func RunGHCombinedContext(ctx context.Context, spinnerMessage string, args ...st
 func RunGHWithHost(spinnerMessage string, host string, args ...string) ([]byte, error) {
 	cmd := ExecGH(args...)
 	SetGHHostEnv(cmd, host)
-
-	if tty.IsStderrTerminal() {
-		spinner := console.NewSpinner(spinnerMessage)
-		spinner.Start()
-		output, err := cmd.Output()
-		err = enrichGHError(err)
-		spinner.Stop()
-		return output, err
-	}
-
-	output, err := cmd.Output()
-	return output, enrichGHError(err)
+	return runGHWithSpinnerCmd(cmd, spinnerMessage, false)
 }
 
 // SetGHHostEnv sets the GH_HOST environment variable on the command for non-github.com hosts.
