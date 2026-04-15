@@ -185,6 +185,17 @@ func RunGHCombined(spinnerMessage string, args ...string) ([]byte, error) {
 	return runGHWithSpinner(spinnerMessage, true, args...)
 }
 
+// RunGHCombinedContext executes a gh CLI command with context support (for cancellation/timeout),
+// a spinner, and returns combined stdout+stderr output. The spinner is shown in interactive
+// terminals to provide feedback during network operations.
+//
+// Usage:
+//
+//	output, err := RunGHCombinedContext(ctx, "Fetching releases...", "api", "/repos/owner/repo/releases")
+func RunGHCombinedContext(ctx context.Context, spinnerMessage string, args ...string) ([]byte, error) {
+	return runGHWithSpinnerContext(ctx, spinnerMessage, true, args...)
+}
+
 // RunGHWithHost executes a gh CLI command with a spinner, targeting a specific GitHub host.
 // For non-github.com hosts (GHES, Proxima/data residency), the GH_HOST environment variable
 // is set on the command. This is necessary because most gh subcommands (repo, pr, run, etc.)
