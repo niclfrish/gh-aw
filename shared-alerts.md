@@ -38,3 +38,12 @@
 - Campaign Manager (last known: Mar 16 17:41Z): Status unknown — no recent update
 
 Last updated: 2026-04-14T12:10Z by workflow-health-manager
+
+## Update 2026-04-15T04:37Z (Agent Performance)
+- CLI Version Checker: 5 tools upgraded (Claude 2.1.109, Copilot 1.0.27, Codex 0.120.0, Gemini 0.38.0, GitHub MCP v0.33.1) → #26367 open
+- GitHub Remote MCP Auth Test: 100% failure continues — consider deprecation (see #24829 closed not_planned)
+- Auto-Triage Issues: Newly failed — needs investigation
+- Documentation Unbloat: 1/1 success today (improved from 50% historical)
+- MCP Rate-Limit: #26239 open (circuit breaker request) — P2 risk
+
+Last updated: 2026-04-15T04:37Z by agent-performance-analyzer
