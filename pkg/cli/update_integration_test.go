@@ -144,7 +144,7 @@ func TestResolveLatestRef_CommitSHAIntegration(t *testing.T) {
 	// This is an older commit — the resolution should return the latest commit on the default branch
 	oldSHA := "f43a0e5ff2bd294095638e18286ca9a3d1956744" // Known old commit
 
-	latestRef, err := resolveLatestRef("actions/checkout", oldSHA, false, true)
+	latestRef, err := resolveLatestRef(context.Background(), "actions/checkout", oldSHA, false, true)
 	require.NoError(t, err, "Should resolve latest commit from default branch")
 
 	// The result should be a 40-char commit SHA (the latest on main)
