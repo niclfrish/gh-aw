@@ -62,7 +62,7 @@ func renameRateLimitFields(lines []string) ([]string, bool) {
 			continue
 		}
 
-		if !strings.HasPrefix(trimmed, "#") && inRateLimit && hasExitedBlock(line, rateLimitIndent) {
+		if inRateLimit && !strings.HasPrefix(trimmed, "#") && hasExitedBlock(line, rateLimitIndent) {
 			inRateLimit = false
 		}
 
