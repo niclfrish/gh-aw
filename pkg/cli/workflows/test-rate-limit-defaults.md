@@ -6,8 +6,8 @@ on:
   issue_comment:
     types: [created]
 rate-limit:
-  max: 5
-  window: 60
+  max-runs: 5
+  max-runs-window: 60
 ---
 
 Test workflow to demonstrate default ignored roles behavior.

@@ -52,6 +52,7 @@ func GetAllCodemods() []Codemod {
 		getPluginsToDependenciesCodemod(),             // Migrate plugins to dependencies (plugins removed in favour of APM)
 		getGitHubReposToAllowedReposCodemod(),         // Rename deprecated tools.github.repos to tools.github.allowed-repos
 		getDIFCProxyToIntegrityProxyCodemod(),         // Migrate deprecated features.difc-proxy to tools.github.integrity-proxy
+		getRateLimitFieldsCodemod(),                   // Rename deprecated rate-limit.max/window to max-runs/max-runs-window
 	}
 	fixCodemodsLog.Printf("Loaded codemod registry: %d codemods available", len(codemods))
 	return codemods

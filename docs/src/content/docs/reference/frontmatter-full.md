@@ -5575,15 +5575,15 @@ rate-limit:
   # This field supports multiple formats (oneOf):
 
   # Option 1: integer
-  max: 1
+  max-runs: 1
 
   # Option 2: GitHub Actions expression that resolves to an integer at runtime
-  max: "example-value"
+  max-runs: "example-value"
 
   # Time window in minutes for rate limiting. Defaults to 60 (1 hour). Maximum: 180
   # (3 hours).
   # (optional)
-  window: 1
+  max-runs-window: 1
 
   # Optional list of event types to apply rate limiting to. If not specified, rate
   # limiting applies to all programmatically triggered events (e.g.,

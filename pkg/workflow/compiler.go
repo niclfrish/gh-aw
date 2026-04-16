@@ -285,12 +285,6 @@ func (c *Compiler) validateWorkflowData(workflowData *WorkflowData, markdownPath
 		c.IncrementWarningCount()
 	}
 
-	// Emit experimental warning for rate-limit feature
-	if workflowData.RateLimit != nil {
-		fmt.Fprintln(os.Stderr, console.FormatWarningMessage("Using experimental feature: rate-limit"))
-		c.IncrementWarningCount()
-	}
-
 	// Emit experimental warning for dispatch_repository feature
 	if workflowData.SafeOutputs != nil && workflowData.SafeOutputs.DispatchRepository != nil {
 		fmt.Fprintln(os.Stderr, console.FormatWarningMessage("Using experimental feature: dispatch_repository"))

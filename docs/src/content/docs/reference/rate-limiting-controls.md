@@ -115,8 +115,8 @@ The `rate-limit` frontmatter field prevents users from triggering workflows too 
 
 ```yaml wrap
 rate-limit:
-  max: 5        # Required: Maximum runs per window (1-10)
-  window: 60    # Optional: Time window in minutes (default: 60, max: 180)
+  max-runs: 5        # Required: Maximum runs per window (1-10)
+  max-runs-window: 60    # Optional: Time window in minutes (default: 60, max: 180)
   events: [workflow_dispatch, issue_comment]  # Optional: Specific events (auto-inferred if omitted)
   ignored-roles: [admin, maintain]  # Optional: Roles exempt from rate limiting (default: [admin, maintain, write])
 ```
@@ -137,8 +137,8 @@ on:
   issues:
     types: [opened]
 rate-limit:
-  max: 5
-  window: 60
+  max-runs: 5
+  max-runs-window: 60
 stop-after: +2h  # Workflow time limit
 safe-outputs:
   assign-to-agent:

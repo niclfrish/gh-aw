@@ -241,7 +241,7 @@ The `rate-limit` frontmatter key caps how many times a workflow can run in a sli
 ```aw wrap
 rate-limit:
   max-runs: 5
-  window: 1h
+  max-runs-window: 60
 ```
 
 See [Rate Limiting Controls](/gh-aw/reference/rate-limiting-controls/) for full options.

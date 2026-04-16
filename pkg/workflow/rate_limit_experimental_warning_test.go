@@ -13,22 +13,22 @@ import (
 	"github.com/github/gh-aw/pkg/testutil"
 )
 
-// TestRateLimitExperimentalWarning tests that the rate-limit feature
-// emits an experimental warning when enabled.
-func TestRateLimitExperimentalWarning(t *testing.T) {
+// TestRateLimitNoExperimentalWarning tests that the rate-limit feature
+// does not emit an experimental warning.
+func TestRateLimitNoExperimentalWarning(t *testing.T) {
 	tests := []struct {
 		name          string
 		content       string
 		expectWarning bool
 	}{
 		{
-			name: "rate-limit enabled produces experimental warning",
+			name: "rate-limit enabled does not produce experimental warning",
 			content: `---
 on: workflow_dispatch
 engine: copilot
 rate-limit:
-  max: 5
-  window: 60
+  max-runs: 5
+  max-runs-window: 60
 permissions:
   contents: read
   issues: read
@@ -37,7 +37,7 @@ permissions:
 
 # Test Workflow
 `,
-			expectWarning: true,
+			expectWarning: false,
 		},
 		{
 			name: "no rate-limit does not produce experimental warning",
@@ -55,13 +55,13 @@ permissions:
 			expectWarning: false,
 		},
 		{
-			name: "rate-limit with custom ignored roles produces experimental warning",
+			name: "rate-limit with custom ignored roles does not produce experimental warning",
 			content: `---
 on: workflow_dispatch
 engine: copilot
 rate-limit:
-  max: 3
-  window: 30
+  max-runs: 3
+  max-runs-window: 30
   ignored-roles:
     - admin
     - maintain
@@ -73,10 +73,10 @@ permissions:
 
 # Test Workflow
 `,
-			expectWarning: true,
+			expectWarning: false,
 		},
 		{
-			name: "rate-limit with events produces experimental warning",
+			name: "rate-limit with events does not produce experimental warning",
 			content: `---
 on:
   workflow_dispatch:
@@ -84,8 +84,8 @@ on:
     types: [created]
 engine: copilot
 rate-limit:
-  max: 5
-  window: 60
+  max-runs: 5
+  max-runs-window: 60
   events: [workflow_dispatch, issue_comment]
 permissions:
   contents: read
@@ -95,7 +95,7 @@ permissions:
 
 # Test Workflow
 `,
-			expectWarning: true,
+			expectWarning: false,
 		},
 	}
 
@@ -141,11 +141,10 @@ permissions:
 				}
 			}
 
-			// Verify warning count includes rate-limit warning
-			if tt.expectWarning {
-				warningCount := compiler.GetWarningCount()
-				if warningCount == 0 {
-					t.Error("Expected warning count > 0 but got 0")
+			// Verify warning count does not include rate-limit warning
+			if !tt.expectWarning {
+				if compiler.GetWarningCount() > 0 && strings.Contains(stderrOutput, expectedMessage) {
+					t.Errorf("Did not expect rate-limit warning count, got stderr:\n%s", stderrOutput)
 				}
 			}
 		})

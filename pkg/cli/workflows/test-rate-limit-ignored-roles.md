@@ -6,8 +6,8 @@ on:
   issue_comment:
     types: [created]
 rate-limit:
-  max: 3
-  window: 30
+  max-runs: 3
+  max-runs-window: 30
   ignored-roles:
     - admin
     - maintain

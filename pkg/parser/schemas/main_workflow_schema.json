@@ -8503,10 +8503,40 @@
     "rate-limit": {
       "type": "object",
       "description": "Rate limiting configuration to restrict how frequently users can trigger the workflow. Helps prevent abuse and resource exhaustion from programmatically triggered events.",
-      "required": ["max"],
+      "anyOf": [
+        {
+          "required": ["max-runs"]
+        },
+        {
+          "required": ["max"]
+        }
+      ],
       "properties": {
-        "max": {
+        "max-runs": {
           "description": "Maximum number of workflow runs allowed per user within the time window. Required field. Supports integer or GitHub Actions expression (e.g. '${{ inputs.max }}').",
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            {
+              "type": "string",
+              "pattern": "^\\$\\{\\{.*\\}\\}$",
+              "description": "GitHub Actions expression that resolves to an integer at runtime"
+            }
+          ]
+        },
+        "max-runs-window": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 180,
+          "default": 60,
+          "description": "Time window in minutes for rate limiting. Defaults to 60 (1 hour). Maximum: 180 (3 hours)."
+        },
+        "max": {
+          "description": "Deprecated: use 'max-runs' instead.",
+          "deprecated": true,
           "oneOf": [
             {
               "type": "integer",
@@ -8525,7 +8555,8 @@
           "minimum": 1,
           "maximum": 180,
           "default": 60,
-          "description": "Time window in minutes for rate limiting. Defaults to 60 (1 hour). Maximum: 180 (3 hours)."
+          "description": "Deprecated: use 'max-runs-window' instead.",
+          "deprecated": true
         },
         "events": {
           "type": "array",
@@ -8549,17 +8580,17 @@
       "additionalProperties": false,
       "examples": [
         {
-          "max": 5,
-          "window": 60
+          "max-runs": 5,
+          "max-runs-window": 60
         },
         {
-          "max": 10,
-          "window": 30,
+          "max-runs": 10,
+          "max-runs-window": 30,
           "events": ["workflow_dispatch", "issue_comment"]
         },
         {
-          "max": 5,
-          "window": 60,
+          "max-runs": 5,
+          "max-runs-window": 60,
           "ignored-roles": ["admin", "maintain"]
         }
       ]

@@ -168,8 +168,8 @@ Use `rate-limit` to cap how many times a user can trigger the workflow in a give
 
 ```aw wrap
 rate-limit:
-  max: 3
-  window: 60  # 3 runs per hour per user
+  max-runs: 3
+  max-runs-window: 60  # 3 runs per hour per user
 ```
 
 See [Rate Limiting Controls](/gh-aw/reference/rate-limiting-controls/) and [Concurrency](/gh-aw/reference/concurrency/) for details.
@@ -202,7 +202,7 @@ The `agentic-workflows` tool exposes the same operations as the CLI (`logs`, `au
 |--------|-----------------|
 | High token count per run | Switch to a smaller model (`gpt-4.1-mini`, `claude-haiku-4-5`) |
 | Frequent runs with no safe-output produced | Add or tighten `skip-if-match` |
-| Long queue times due to concurrency | Lower `rate-limit.max` or add a `concurrency` group |
+| Long queue times due to concurrency | Lower `rate-limit.max-runs` or add a `concurrency` group |
 | Workflow running too often | Change trigger to `schedule` or add `workflow_dispatch` |
 
 > [!NOTE]

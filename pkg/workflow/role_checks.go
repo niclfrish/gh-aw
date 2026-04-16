@@ -172,8 +172,12 @@ func (c *Compiler) extractRateLimitConfig(frontmatter map[string]any) *RateLimit
 		case map[string]any:
 			config := &RateLimitConfig{}
 
-			// Extract max (default: 5)
-			if maxValue, ok := v["max"]; ok {
+			// Extract max-runs (fallback: max)
+			maxValue, ok := v["max-runs"]
+			if !ok {
+				maxValue, ok = v["max"]
+			}
+			if ok {
 				switch max := maxValue.(type) {
 				case int:
 					config.Max = max
@@ -186,8 +190,12 @@ func (c *Compiler) extractRateLimitConfig(frontmatter map[string]any) *RateLimit
 				}
 			}
 
-			// Extract window (default: 60 minutes)
-			if windowValue, ok := v["window"]; ok {
+			// Extract max-runs-window (fallback: window)
+			windowValue, ok := v["max-runs-window"]
+			if !ok {
+				windowValue, ok = v["window"]
+			}
+			if ok {
 				switch window := windowValue.(type) {
 				case int:
 					config.Window = window
@@ -242,7 +250,7 @@ func (c *Compiler) extractRateLimitConfig(frontmatter map[string]any) *RateLimit
 				roleLog.Print("No ignored-roles specified, using defaults: admin, maintain, write")
 			}
 
-			roleLog.Printf("Extracted rate-limit config: max=%d, window=%d, events=%v, ignored-roles=%v", config.Max, config.Window, config.Events, config.IgnoredRoles)
+			roleLog.Printf("Extracted rate-limit config: max-runs=%d, max-runs-window=%d, events=%v, ignored-roles=%v", config.Max, config.Window, config.Events, config.IgnoredRoles)
 			return config
 		}
 	}

@@ -108,10 +108,10 @@ type PermissionsConfig struct {
 // RateLimitConfig represents rate limiting configuration for workflow triggers
 // Limits how many times a user can trigger a workflow within a time window
 type RateLimitConfig struct {
-	Max          int      `json:"max,omitempty"`           // Maximum number of runs allowed per time window (default: 5)
-	Window       int      `json:"window,omitempty"`        // Time window in minutes (default: 60)
-	Events       []string `json:"events,omitempty"`        // Event types to apply rate limiting to (e.g., ["workflow_dispatch", "issue_comment"])
-	IgnoredRoles []string `json:"ignored-roles,omitempty"` // Roles that are exempt from rate limiting (e.g., ["admin", "maintainer"])
+	Max          int      `json:"max-runs,omitempty"`        // Maximum number of runs allowed per time window (default: 5)
+	Window       int      `json:"max-runs-window,omitempty"` // Time window in minutes (default: 60)
+	Events       []string `json:"events,omitempty"`          // Event types to apply rate limiting to (e.g., ["workflow_dispatch", "issue_comment"])
+	IgnoredRoles []string `json:"ignored-roles,omitempty"`   // Roles that are exempt from rate limiting (e.g., ["admin", "maintainer"])
 }
 
 // OTLPConfig holds configuration for OTLP (OpenTelemetry Protocol) trace export.
