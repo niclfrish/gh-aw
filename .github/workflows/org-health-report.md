@@ -42,6 +42,7 @@ imports:
   - shared/python-dataviz.md
   - shared/jqschema.md
   - shared/reporting.md
+  - shared/noop-reminder.md
 ---
 
 # Organization Health Report
@@ -496,8 +497,3 @@ A successful health report:
 
 Begin the organization health report analysis now. Follow the phases in order, add appropriate delays, and generate a comprehensive report for maintainers.
 
-**Important**: If no action is needed after completing your analysis, you **MUST** call the `noop` safe-output tool with a brief explanation. Failing to call any safe-output tool is the most common cause of safe-output workflow failures.
-
-```json
-{"noop": {"message": "No action needed: [brief explanation of what was analyzed and why]"}}
-```

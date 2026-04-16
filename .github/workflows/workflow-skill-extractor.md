@@ -41,6 +41,7 @@ safe-outputs:
 
 imports:
   - shared/reporting.md
+  - shared/noop-reminder.md
 features:
   mcp-cli: true
 ---
@@ -443,8 +444,3 @@ This analysis used the following approach:
 
 Good luck! Your analysis will help improve the maintainability and consistency of all agentic workflows in this repository.
 
-**Important**: If no action is needed after completing your analysis, you **MUST** call the `noop` safe-output tool with a brief explanation. Failing to call any safe-output tool is the most common cause of safe-output workflow failures.
-
-```json
-{"noop": {"message": "No action needed: [brief explanation of what was analyzed and why]"}}
-```

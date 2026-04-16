@@ -20,6 +20,7 @@ imports:
     with:
       title-prefix: "[observability] "
       expires: 1d
+  - shared/noop-reminder.md
 ---
 {{#runtime-import? .github/shared-instructions.md}}
 
@@ -385,9 +386,3 @@ A successful run will:
 - ✅ Include actionable recommendations
 
 Begin your analysis now. Download the logs, analyze observability coverage, and create the discussion report.
-
-**Important**: If no action is needed after completing your analysis, you **MUST** call the `noop` safe-output tool with a brief explanation. Failing to call any safe-output tool is the most common cause of safe-output workflow failures.
-
-```json
-{"noop": {"message": "No action needed: [brief explanation of what was analyzed and why]"}}
-```
