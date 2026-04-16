@@ -32,23 +32,23 @@ func (v Version) IsValid() bool {
 type ModelName string
 
 // DefaultClaudeCodeVersion is the default version of the Claude Code CLI.
-const DefaultClaudeCodeVersion Version = "2.1.98"
+const DefaultClaudeCodeVersion Version = "2.1.110"
 
 // DefaultCopilotVersion is the default version of the GitHub Copilot CLI.
 //
 // When unpinning or upgrading this version, verify:
 //   - MCPs are not blocked from loading (tools.mcp configuration still works end-to-end)
 //   - /models does not silently fail on PATs (check that model listing works with PAT auth)
-const DefaultCopilotVersion Version = "1.0.21"
+const DefaultCopilotVersion Version = "1.0.28"
 
 // DefaultCodexVersion is the default version of the OpenAI Codex CLI
-const DefaultCodexVersion Version = "0.118.0"
+const DefaultCodexVersion Version = "0.121.0"
 
 // DefaultGeminiVersion is the default version of the Google Gemini CLI
-const DefaultGeminiVersion Version = "0.37.2"
+const DefaultGeminiVersion Version = "0.38.1"
 
 // DefaultGitHubMCPServerVersion is the default version of the GitHub MCP server Docker image
-const DefaultGitHubMCPServerVersion Version = "v0.32.0"
+const DefaultGitHubMCPServerVersion Version = "v0.33.1"
 
 // DefaultFirewallVersion is the default version of the gh-aw-firewall (AWF) binary
 const DefaultFirewallVersion Version = "v0.25.21"
@@ -68,7 +68,7 @@ const AWFCliProxyMinVersion Version = "v0.25.17"
 const CopilotNoAskUserMinVersion Version = "1.0.19"
 
 // DefaultMCPGatewayVersion is the default version of the MCP Gateway (gh-aw-mcpg) Docker image
-const DefaultMCPGatewayVersion Version = "v0.2.19"
+const DefaultMCPGatewayVersion Version = "v0.2.20"
 
 // MCPGIntegrityReactionsMinVersion is the minimum MCPG version that supports
 // endorsement-reactions and disapproval-reactions in the allow-only policy.
