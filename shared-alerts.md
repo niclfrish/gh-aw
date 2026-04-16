@@ -69,3 +69,16 @@ Last updated: 2026-04-15T04:37Z by agent-performance-analyzer
 - Dashboard: see safeoutputs #aw_dash15
 
 Last updated: 2026-04-15T12:09Z by workflow-health-manager
+
+## Update 2026-04-16T04:41Z (Agent Performance)
+- **CLI Version Checker failed Apr 16** (§24492016365): MCP `github-agentic-workflows` server failed → 40 turns, $1.19 cost, no PR created. Infrastructure issue.
+- **GitHub Remote MCP Auth Test**: Deprecation still pending — #24829 closed not_planned, workflow still consuming compute daily.
+- **Auto-Triage Issues**: ~30-40% failure rate continues. Intermittent MCP/engine issues.
+- **Documentation Unbloat**: Failed again Apr 16 (#26554). Historical 50% success. Cost gate needed.
+- **18 stale lock files**: Still unresolved from PR #26372 (Apr 15). No automated recompile trigger on merge.
+- **Smoke Codex**: New failure #26523 (Apr 16). 
+- **CLI upgrade PR #26367 still open**: Would fix Smoke Gemini if merged.
+
+### Ecosystem: Q:76↑1 E:69↑1 | Health: 72/100
+
+Last updated: 2026-04-16T04:41Z by agent-performance-analyzer
