@@ -1,6 +1,6 @@
 {
-  "run_date": "2026-04-16T01:04:06Z",
-  "run_id": "24486375088",
+  "run_date": "2026-04-16T06:53:55Z",
+  "run_id": "24496459561",
   "fork_prs": 0,
   "agent_prs_found": 5,
   "agent_prs_excluded": 5,
@@ -17,17 +17,18 @@
     "by_action": {}
   },
   "prs_examined": [
-    {"number": 26535, "title": "[WIP] Fix compiled lock file to request appropriate permissions", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T01:01:40Z"},
-    {"number": 26534, "title": "[WIP] Update sergo workflow to create issues from findings", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T01:01:03Z"},
-    {"number": 26533, "title": "[WIP] Improve upload_artifact path description to prevent shell variable confusion", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T01:00:43Z"},
-    {"number": 26532, "title": "[WIP] Fix GitHub API Consumption Report Agent failure", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T00:59:58Z"},
+    {"number": 26574, "title": "[WIP] Extract file-resolution utilities from dispatch_workflow_validation", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T05:53:51Z", "labels": []},
+    {"number": 26570, "title": "Prevent false CLI Version Checker failures when safe outputs were already sent", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T05:37:47Z", "labels": []},
+    {"number": 26566, "title": "Fix BYOK Copilot model fallback to avoid empty `COPILOT_MODEL` in compilation", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T04:52:33Z", "labels": ["lgtm"]},
+    {"number": 26559, "title": "Align Gemini AWF proxy auth with gh-aw-firewall (remove unsupported GOOGLE_GENAI_API_KEY)", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16T04:39:06Z", "labels": []},
     {"number": 25830, "title": "feat: add OpenCode engine integration (re-apply PR #18403)", "user": "Copilot", "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-11T16:04:49Z", "labels": ["lgtm", "awf"]}
   ],
   "previous_run": {
-    "run_id": "24454841966",
-    "run_date": "2026-04-15T12:38:02Z",
+    "run_id": "24486375088",
+    "run_date": "2026-04-16T01:04:06Z",
     "fork_prs": 0,
-    "agent_prs_found": 19,
-    "agent_prs_excluded": 19
+    "agent_prs_found": 5,
+    "agent_prs_excluded": 5,
+    "previous_prs": [26535, 26534, 26533, 26532, 25830]
   }
 }
