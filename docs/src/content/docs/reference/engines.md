@@ -1,6 +1,6 @@
 ---
 title: AI Engines (aka Coding Agents)
-description: Complete guide to AI engines (coding agents) usable with GitHub Agentic Workflows, including Copilot, Claude, Codex, and Gemini with their specific configuration options.
+description: Complete guide to AI engines (coding agents) usable with GitHub Agentic Workflows, including built-in engines and custom catalog entries such as OpenCode.
 sidebar:
   order: 600
 ---
@@ -19,6 +19,19 @@ Set `engine:` in your workflow frontmatter and configure the corresponding secre
 | [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) | `gemini` | [GEMINI_API_KEY](/gh-aw/reference/auth/#gemini_api_key) |
 
 Copilot CLI is the default — `engine:` can be omitted when using Copilot. See the linked authentication docs for secret setup instructions.
+
+### OpenCode as a Custom Engine Entry
+
+OpenCode is configured as a custom engine entry, not a built-in engine ID. Define it in an imported engine definition file, then reference it by name in workflow frontmatter.
+
+```aw wrap
+imports:
+  - ./.github/workflows/shared/opencode.md  # defines engine.id: opencode
+
+engine: opencode
+```
+
+Secret names and provider-specific settings for OpenCode come from that imported engine definition.
 
 ## Engine Feature Comparison
 
