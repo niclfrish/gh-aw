@@ -109,7 +109,7 @@ A feature flag that enables GitHub reactions (👍, ❤️, 👎, 😕) to promo
 
 ### Status Comment
 
-A comment posted on the triggering issue or pull request that shows workflow run status (started and completed). Configured via `status-comment: true` in `safe-outputs`. Defaults to `true` for `slash_command` and `label_command` triggers; must be explicitly enabled for other trigger types. Set `status-comment: false` to disable. Not automatically bundled with `ai-reaction` — each must be configured independently.
+A comment posted on the triggering issue, pull request, or discussion that shows workflow run status (started and completed). Configured via `status-comment: true` in `safe-outputs`. Defaults to `true` for `slash_command` and `label_command` triggers; must be explicitly enabled for other trigger types. Set `status-comment: false` to disable. Accepts an object form to control status comments per trigger group: `{ issues: false }`, `{ pull-requests: false }`, or `{ discussions: false }`. Not automatically bundled with `ai-reaction` — each must be configured independently.
 
 ### Permissions
 
@@ -365,7 +365,7 @@ A secure, encrypted variable stored in repository or organization settings holdi
 
 ### GitHub App (`github-app:`)
 
-A GitHub App installation used for authentication and token minting in workflows. The `github-app:` field (which replaces the deprecated `app:` key) accepts `app-id` and `private-key` to mint short-lived installation access tokens with fine-grained, automatically-revoked permissions. Can be configured in `safe-outputs:` to override the default `GITHUB_TOKEN` for all safe output operations, or in `checkout:` for accessing private repositories. See [Authentication Reference](/gh-aw/reference/auth/#using-a-github-app-for-authentication).
+A GitHub App installation used for authentication and token minting in workflows. The `github-app:` field (which replaces the deprecated `app:` key) accepts `client-id` and `private-key` to mint short-lived installation access tokens with fine-grained, automatically-revoked permissions. The legacy `app-id` field is still accepted as a backward-compatible alias and can be migrated automatically using `gh aw fix`. Can be configured in `safe-outputs:` to override the default `GITHUB_TOKEN` for all safe output operations, or in `checkout:` for accessing private repositories. See [Authentication Reference](/gh-aw/reference/auth/#using-a-github-app-for-authentication).
 
 ### YAML
 
