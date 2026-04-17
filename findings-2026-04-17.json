@@ -1,0 +1,26 @@
+{
+  "date": "2026-04-17",
+  "files_analyzed": {
+    "documentation": ["docs/src/content/docs/reference/tokens.md", "docs/src/content/docs/reference/faq.md"],
+    "cli": [],
+    "messages": [".github/workflows/delight.md", ".github/workflows/craft.md"],
+    "validation": ["pkg/workflow/call_workflow_validation.go"]
+  },
+  "overall_quality": "mostly-professional",
+  "quality_highlights": [
+    "tokens.md: exemplary reference document — Quick Reference table, ASCII precedence diagrams, consistent property tables, caution/note admonitions, dedicated 'no-fallback' section. Sets the bar for reference docs.",
+    "call_workflow_validation.go: not-found error is comprehensive (shows all 3 checked paths + 3-step fix list). Duplicates, self-reference, and empty-list errors are all clear and actionable."
+  ],
+  "single_file_improvements": [
+    {
+      "file": "docs/src/content/docs/reference/faq.md",
+      "priority": "high",
+      "issue": "Line 173: typo 'Security Architectur' (missing 'e') in anchor text of security FAQ answer. Change to 'Security Architecture'."
+    },
+    {
+      "file": "pkg/workflow/call_workflow_validation.go",
+      "priority": "medium",
+      "issue": "Lines 112, 144, 162: workflow_call trigger error lacks 'To fix' example. Add frontmatter snippet showing how to declare workflow_call in on: section, matching style of other errors in the file."
+    }
+  ]
+}
