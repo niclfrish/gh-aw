@@ -31,7 +31,15 @@
       "recommendation": "Keep and refine",
       "description": "Correlate number of CI check rounds per branch with Copilot session duration and success. More rounds = more Copilot commits = deeper engagement.",
       "finding": "5 CI rounds in 51.4min session led to success; 4 CI rounds without Copilot agent = stalled branch"
+    },
+    {
+      "name": "Gate Storm Detection",
+      "date_tested": "2026-04-17",
+      "effectiveness": "High",
+      "recommendation": "Keep and automate",
+      "description": "Detect anomalous gate re-trigger events by identifying time windows with >4 concurrent gate runs for a single branch. A 'gate storm' occurs when twice the expected gate count fires in the same minute.",
+      "finding": "update-safe-patch had 8 concurrent gates at 11:22 (double trigger) across 5 gate rounds total. This reveals a systemic reliability gap in the gate trigger mechanism, distinct from the gate content issues."
     }
   ],
-  "last_updated": "2026-04-15"
+  "last_updated": "2026-04-17"
 }

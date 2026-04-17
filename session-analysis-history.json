@@ -69,12 +69,30 @@
       "key_insights": [
         "fix-lock-file-integrity-check: Copilot SUCCESS after 47.03min; 21 total workflow runs",
         "fix-sanitize-markdown-link-titles: Copilot SUCCESS after 30.85min; 20 total workflow runs",
-        "fix-bearer-token-bypass: No Copilot agent ran; 9 CI/review-only runs — stalled branch",
+        "fix-bearer-token-bypass: No Copilot agent ran; 9 CI/review-only runs \u2014 stalled branch",
         "5th consecutive day of 100% Copilot success rate (streak: Apr 8, 9, 15, 16 so far)",
-        "Two simultaneous Copilot sessions both succeeded — highest throughput day so far",
+        "Two simultaneous Copilot sessions both succeeded \u2014 highest throughput day so far",
         "Duration trending down from 51.4min peak (Apr 15) to 38.94min avg today"
+      ]
+    },
+    {
+      "date": "2026-04-17",
+      "sessions_analyzed": 50,
+      "completion_rate_pct": 10.0,
+      "copilot_coding_agents": 2,
+      "copilot_success_rate_pct": 100.0,
+      "avg_copilot_duration_min": 51.5,
+      "experimental_strategy": "Gate Storm Detection",
+      "key_insights": [
+        "fix-concurrency-safety-issue: Copilot SUCCESS at 10:37; 3 gate rounds all blocked (56 min span)",
+        "update-safe-patch-dependencies: Copilot SUCCESS at 10:37; 5 gate rounds including a gate STORM at 11:22 (8 concurrent gates)",
+        "fix-gh-aw-update-version: No Copilot agent; 3 review successes, gates blocked",
+        "6th consecutive day of 100% Copilot agent success rate (streak: Apr 8, 9, 15, 16, 17)",
+        "Overall completion rate rose to 10% (highest since analysis began)",
+        "Gate Storm anomaly: update-safe-patch triggered 8 gate runs in same minute instead of 4 (double trigger)",
+        "Experimental: Gate Storm Detection reveals systemic gate re-trigger reliability issue"
       ]
     }
   ],
-  "last_updated": "2026-04-16"
+  "last_updated": "2026-04-17"
 }
