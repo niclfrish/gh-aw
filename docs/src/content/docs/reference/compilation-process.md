@@ -91,7 +91,7 @@ The agent job orchestrates AI execution through these phases:
 2. Cache restoration for persistent memory
 3. MCP server container initialization
 4. Prompt generation from markdown content
-5. Engine execution (Copilot, Claude, or Codex)
+5. Engine execution (Copilot, Claude, Codex, Gemini, or a custom engine such as OpenCode)
 6. Output upload as GitHub Actions artifact
 7. Cache persistence for next run
 

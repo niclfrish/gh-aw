@@ -114,7 +114,7 @@ dependencies:
     - acme-org/acme-plugins
 ```
 
-The `dependencies:` approach works with all supported engines (Copilot, Claude, Codex, Gemini), whereas the old `plugins:` field was limited to the Copilot engine only.
+The `dependencies:` approach works with all built-in engines (Copilot, Claude, Codex, Gemini) and custom engines (for example, OpenCode), whereas the old `plugins:` field was limited to the Copilot engine only.
 
 See [APM Dependencies](/gh-aw/reference/dependencies/) for full configuration options.
 
@@ -331,7 +331,7 @@ Use `ubuntu-latest` (the default) or another Linux-based runner instead. For tas
 
 ### I'm not using a supported AI Engine (coding agent). What should I do?
 
-If you want to use a coding agent that isn't currently supported (Copilot, Claude, or Codex), you can contribute support to the [gh-aw repository](https://github.com/github/gh-aw), or open an issue describing your use case. See [AI Engines](/gh-aw/reference/engines/).
+If you want to use a coding agent that isn't currently supported as a built-in engine (Copilot, Claude, Codex, or Gemini), you can use a custom engine setup (for example OpenCode), contribute support to the [gh-aw repository](https://github.com/github/gh-aw), or open an issue describing your use case. See [AI Engines](/gh-aw/reference/engines/).
 
 ### Can I test workflows without affecting my repository?
 
@@ -521,4 +521,3 @@ engine: claude
 ```
 
 See [AI Engines](/gh-aw/reference/engines/) for all configuration options.
-

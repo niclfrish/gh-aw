@@ -60,7 +60,7 @@ As a meta-orchestrator for workflow health, you oversee the operational health o
   - GitHub Actions workflows (`.yml`)
 - Build workflow inventory with metadata:
   - Workflow name and description
-  - Engine type (copilot, claude, codex, custom)
+  - Engine type (copilot, claude, codex, gemini, custom such as opencode)
   - Trigger configuration (schedule, events)
   - Safe outputs enabled
   - Tools and permissions

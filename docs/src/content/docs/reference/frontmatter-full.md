@@ -1489,7 +1489,8 @@ engine: "example-value"
 # selection, turn limiting, environment variables, and custom steps
 engine:
   # AI engine identifier: built-in ('claude', 'codex', 'copilot', 'gemini') or a
-  # named catalog entry
+  # named catalog entry (custom engines like 'opencode' are configured via
+  # catalog/inline definitions)
   id: "example-value"
 
   # Optional version of the AI engine action (e.g., 'beta', 'stable', 20). Has
@@ -1638,7 +1639,7 @@ engine:
 engine:
   # Runtime adapter reference for the inline engine definition
   runtime:
-    # Runtime adapter identifier (e.g. 'codex', 'claude', 'copilot', 'gemini')
+    # Runtime adapter identifier (e.g. 'codex', 'claude', 'copilot', 'gemini', 'opencode')
     id: "example-value"
 
     # Optional version of the runtime adapter (e.g. '0.105.0', 'beta')
@@ -1721,7 +1722,7 @@ engine:
 # Option 4: Engine definition: full declarative metadata for a named engine entry
 # (used in builtin engine shared workflow files such as @builtin:engines/*.md)
 engine:
-  # Unique engine identifier (e.g. 'copilot', 'claude', 'codex', 'gemini')
+  # Unique engine identifier (e.g. 'copilot', 'claude', 'codex', 'gemini', 'opencode')
   id: "example-value"
 
   # Human-readable display name for the engine

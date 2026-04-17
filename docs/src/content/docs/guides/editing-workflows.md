@@ -79,7 +79,7 @@ Any changes to the frontmatter configuration between `---` markers:
 - **Runtimes** (`runtimes:`): Node, Python, Go version overrides
 - **Imports** (`imports:`): Shared configuration files
 - **Custom jobs** (`jobs:`): Additional workflow jobs
-- **Engine** (`engine:`): AI engine selection (copilot, claude, codex)
+- **Engine** (`engine:`): AI engine selection (copilot, claude, codex, gemini, or `custom` such as `opencode`)
 - **Timeout** (`timeout-minutes:`): Maximum execution time
 - **Roles** (`roles:`): Permission requirements for actors
 

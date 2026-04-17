@@ -68,7 +68,7 @@ Read each returned file path for its content, then also scan any remaining docum
 
 **Focus areas for extraction:**
 - Configuration: safe-outputs, permissions, tools, cache-memory, toolset, frontmatter
-- Engines: copilot, claude, codex, custom
+- Engines: copilot, claude, codex, gemini, custom (for example, opencode)
 - Bot mentions: @copilot (for GitHub issue assignment)
 - Commands: compile, audit, logs, mcp, recompile
 - GitHub concepts: workflow_dispatch, pull_request, issues, discussions

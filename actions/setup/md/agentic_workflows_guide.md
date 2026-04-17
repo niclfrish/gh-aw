@@ -19,7 +19,7 @@ Call all operations as MCP tools with JSON parameters.
 - `count`: number of runs (default: 100)
 - `start_date`: filter runs after this date (YYYY-MM-DD or relative like `-1d`, `-7d`, `-30d`)
 - `end_date`: filter runs before this date
-- `engine`: filter by AI engine (`copilot`, `claude`, `codex`)
+- `engine`: filter by AI engine (`copilot`, `claude`, `codex`, `gemini`, or custom engines such as `opencode`)
 - `branch`: filter by branch name
 - `firewall` / `no_firewall`: filter by firewall status
 - `filtered_integrity`: filter to only runs with DIFC integrity-filtered events in gateway logs

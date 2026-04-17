@@ -12,7 +12,7 @@ const { ERR_API, ERR_CONFIG, ERR_VALIDATION } = require("./error_codes.cjs");
  *
  * @param {Object} options - Configuration options
  * @param {function(string): string|{markdown: string, mcpFailures?: string[], maxTurnsHit?: boolean, logEntries?: Array}} options.parseLog - Parser function that takes log content and returns markdown or result object
- * @param {string} options.parserName - Name of the parser (e.g., "Codex", "Claude", "Copilot")
+ * @param {string} options.parserName - Name of the parser (e.g., "Codex", "Claude", "Copilot", "Gemini", "OpenCode")
  * @param {boolean} [options.supportsDirectories=false] - Whether the parser supports reading from directories
  * @returns {Promise<void>}
  */

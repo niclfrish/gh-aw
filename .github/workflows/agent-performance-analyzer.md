@@ -138,7 +138,7 @@ As a meta-orchestrator for agent performance, you assess how well AI agents are 
 - Assess balance across different types of work
 
 **Agent diversity:**
-- Track distribution of agent types (copilot, claude, codex)
+- Track distribution of agent types (copilot, claude, codex, gemini, custom such as opencode)
 - Analyze engine-specific performance patterns
 - Identify opportunities to leverage different agent strengths
 - Recommend agent type for different tasks

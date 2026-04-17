@@ -842,7 +842,7 @@ function buildEngineFailureContext() {
   const agentOutputFile = process.env.GH_AW_AGENT_OUTPUT;
   const stdioLogPath = agentOutputFile ? path.join(path.dirname(agentOutputFile), "agent-stdio.log") : "/tmp/gh-aw/agent-stdio.log";
 
-  // Include engine ID in failure messages when available (e.g. "copilot", "claude", "codex")
+  // Include engine ID in failure messages when available (e.g. "copilot", "claude", "codex", "opencode")
   const engineId = process.env.GH_AW_ENGINE_ID || "";
   const engineLabel = engineId ? ` \`${engineId}\`` : " AI";
 

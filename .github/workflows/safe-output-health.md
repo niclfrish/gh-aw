@@ -49,7 +49,7 @@ The gh-aw binary has been built and configured as an MCP server. You can now use
    - Workflow name: (leave empty to get all workflows)
    - Count: Set appropriately for 24 hours of activity
    - Start date: "-1d" (last 24 hours)
-   - Engine: (optional filter by claude, codex, or copilot)
+   - Engine: (optional filter by claude, codex, copilot, gemini, or custom such as opencode)
    - Branch: (optional filter by branch name)
    
    The logs will be downloaded to `/tmp/gh-aw/aw-mcp/logs` automatically.

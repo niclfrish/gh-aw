@@ -7,7 +7,7 @@ const { ERR_PARSE } = require("./error_codes.cjs");
 
 /**
  * Shared utility functions for log parsers
- * Used by parse_claude_log.cjs, parse_copilot_log.cjs, and parse_codex_log.cjs
+ * Used by parse_claude_log.cjs, parse_copilot_log.cjs, parse_codex_log.cjs, parse_gemini_log.cjs, and parse_custom_log.cjs (including custom engines such as opencode)
  */
 
 /**
@@ -260,7 +260,7 @@ function isLikelyCustomAgent(toolName) {
 
 /**
  * Generates markdown summary from conversation log entries
- * This is the core shared logic between Claude and Copilot log parsers
+ * This is the core shared logic used across engine log parsers (Claude, Copilot, Codex, Gemini, and custom engines like OpenCode)
  *
  * When a summaryTracker is provided, the function tracks the accumulated size
  * and stops rendering additional content when approaching the step summary limit.
@@ -706,7 +706,7 @@ function formatInitializationSummary(initEntry, options = {}) {
   }
 
   // Return format compatible with both engines
-  // Claude expects { markdown, mcpFailures }, Copilot expects just markdown
+  // Claude expects { markdown, mcpFailures }, while Copilot/Codex/Gemini/custom parsers typically consume markdown
   if (mcpFailures.length > 0) {
     return { markdown, mcpFailures };
   }
@@ -936,7 +936,7 @@ function parseLogEntries(logContent) {
 
 /**
  * Generic helper to format a tool call as an HTML details section.
- * This is a reusable helper for all code engines (Claude, Copilot, Codex).
+ * This is a reusable helper for all code engines (Claude, Copilot, Codex, Gemini, and custom engines like OpenCode).
  *
  * Tool output/response content is automatically truncated to MAX_TOOL_OUTPUT_LENGTH (256 chars)
  * to keep step summaries readable and prevent size limit issues.
@@ -1629,7 +1629,7 @@ function formatSafeOutputsPreview(safeOutputsContent, options = {}) {
  * This eliminates duplication of try/catch blocks and error message formatting across parsers.
  *
  * @param {Function} parseFunction - The parser function to wrap
- * @param {string} parserName - Name of the parser (e.g., "Claude", "Copilot", "Codex")
+ * @param {string} parserName - Name of the parser (e.g., "Claude", "Copilot", "Codex", "Gemini", "OpenCode")
  * @param {string} logContent - The raw log content to parse
  * @returns {{markdown: string, mcpFailures?: string[], maxTurnsHit?: boolean, logEntries?: Array}} Result object with markdown and optional metadata
  */
@@ -1652,7 +1652,7 @@ function wrapLogParser(parseFunction, parserName, logContent) {
  * Encapsulates the common scaffolding pattern used across all engine parsers.
  *
  * @param {Object} options - Parser configuration options
- * @param {string} options.parserName - Name of the engine (e.g., "Claude", "Copilot", "Codex")
+ * @param {string} options.parserName - Name of the engine (e.g., "Claude", "Copilot", "Codex", "Gemini", "OpenCode")
  * @param {function(string): string|{markdown: string, mcpFailures?: string[], maxTurnsHit?: boolean, logEntries?: Array}} options.parseFunction - Engine-specific parser function
  * @param {boolean} [options.supportsDirectories=false] - Whether the parser supports reading from directories
  * @returns {function(): Promise<void>} Main function that runs the log parser

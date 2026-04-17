@@ -102,7 +102,7 @@ Analyze the collected data to generate insights:
 - **Tool Configurations**: Common tool allowlists
 - **Timeout Patterns**: Average and distribution of timeout-minutes values
 - **Concurrency Groups**: Common concurrency patterns
-- **Engine Distribution**: If detectable, count usage of different engines (claude, copilot, codex, custom)
+- **Engine Distribution**: If detectable, count usage of different engines (claude, copilot, codex, gemini, custom including opencode)
 
 ### Phase 3: Cache Memory Management
 

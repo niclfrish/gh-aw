@@ -22,7 +22,7 @@ Each job also incurs approximately 1.5 minutes of runner setup overhead on top o
 
 ### Inference Costs
 
-The agent job invokes an AI engine (Copilot, Claude, Codex, or a custom engine) to process the prompt and call tools. Inference is billed by the provider:
+The agent job invokes an AI engine (Copilot, Claude, Codex, Gemini, or a custom engine such as OpenCode) to process the prompt and call tools. Inference is billed by the provider:
 
 - **GitHub Copilot CLI** (`copilot` engine): Usage is billed as premium requests against the GitHub account that owns the [`COPILOT_GITHUB_TOKEN`](/gh-aw/reference/auth/#copilot_github_token). A typical workflow run uses 1–2 premium requests. See [GitHub Copilot billing](https://docs.github.com/en/copilot/about-github-copilot/subscription-plans-for-github-copilot).
 - **Claude** (`claude` engine): Billed per token to the Anthropic account associated with [`ANTHROPIC_API_KEY`](/gh-aw/reference/auth/#anthropic_api_key).

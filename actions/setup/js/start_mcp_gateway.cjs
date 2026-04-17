@@ -23,7 +23,7 @@ require("./shim.cjs");
  * - GITHUB_OUTPUT: Path to GitHub Actions output file
  *
  * Optional:
- * - GH_AW_ENGINE: Engine type (copilot, codex, claude, gemini)
+ * - GH_AW_ENGINE: Engine type (copilot, codex, claude, gemini, or custom such as opencode)
  * - GH_AW_MCP_CLI_SERVERS: JSON array of server names to exclude from agent config
  */
 

@@ -187,7 +187,7 @@ Standard job names across workflows:
 | Job Name | Description | Context |
 |----------|-------------|---------|
 | activation | Determines if workflow should run | Uses skip-if-match and other filters |
-| agent | Main AI agent execution job | Runs the copilot/claude/codex engine |
+| agent | Main AI agent execution job | Runs the copilot/claude/codex/gemini/custom (e.g., opencode) engine |
 | detection | Post-agent analysis job | Analyzes agent output for patterns |
 | conclusion | Final status reporting job | Runs after all other jobs complete |
 | create_pull_request | Creates PR from agent changes | Safe-output job for PR creation |
