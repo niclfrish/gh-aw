@@ -98,5 +98,13 @@
     "runs_audited": 7,
     "recommendations_count": 5,
     "estimated_savings_per_run": 350000
+  },
+  {
+    "date": "2026-04-18",
+    "workflow_name": "Issue Monster",
+    "total_tokens_analyzed": 1009859,
+    "runs_audited": 10,
+    "recommendations_count": 5,
+    "estimated_savings_per_run": 153000
   }
 ]
