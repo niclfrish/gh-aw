@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-18T00:56:54Z",
-  "run_id": "24593088430",
+  "run_date": "2026-04-18T06:40:20Z",
+  "run_id": "24599026260",
   "fork_prs": 0,
-  "agent_prs_found": 7,
-  "agent_prs_excluded": 7,
-  "notes": "7 open agent-created PRs found (all same-repo branches, not forks). Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 4,
+  "agent_prs_excluded": 4,
+  "notes": "4 open PRs found (2 Copilot, 2 github-actions[bot]). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,19 +17,16 @@
     "by_action": {}
   },
   "prs_examined": [
-    {"number": 26966, "title": "[WIP] Update AWF to v0.25.24 and mcpg to v0.2.24", "draft": true, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-18", "labels": []},
-    {"number": 26961, "title": "[WIP] Extract repeated noop-reminder block into shared workflow component", "draft": true, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-17", "labels": []},
-    {"number": 26960, "title": "[WIP] Fix step name inconsistencies in engine config and cache-memory steps", "draft": true, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-17", "labels": []},
-    {"number": 26953, "title": "Refactor comment scripts for native SideRepoOps context (workflowRepo vs eventRepo)", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-17", "labels": []},
-    {"number": 26952, "title": "Honor and validate configured `create_pull_request.base_branch` in safe-output patch generation", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-17", "labels": []},
-    {"number": 26918, "title": "Harden Copilot AWF node bootstrap when `GH_AW_NODE_BIN` is invalid in container", "draft": true, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-17", "labels": []},
-    {"number": 26658, "title": "Eliminate persistent \"Redact secrets in logs\" warnings by running MCP gateway as runner user", "draft": true, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-16", "labels": ["lgtm"]}
+    {"number": 26988, "title": "chore: update drain3 default log pattern weights", "author": "github-actions[bot]", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-18"},
+    {"number": 26986, "title": "[jsweep] Clean action_setup_otlp.cjs — add comprehensive test coverage", "author": "github-actions[bot]", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-18"},
+    {"number": 26974, "title": "Fix mounted MCP CLI restricted-bash allowlists across agentic engines", "author": "Copilot", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-18"},
+    {"number": 26918, "title": "Harden Copilot AWF node bootstrap when GH_AW_NODE_BIN is invalid in container", "author": "Copilot", "draft": true, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-17"}
   ],
   "previous_run": {
-    "run_id": "24580637588",
-    "run_date": "2026-04-17T18:30:45Z",
+    "run_id": "24593088430",
+    "run_date": "2026-04-18T00:56:54Z",
     "fork_prs": 0,
-    "agent_prs_found": 10,
-    "agent_prs_excluded": 10
+    "agent_prs_found": 7,
+    "agent_prs_excluded": 7
   }
 }
