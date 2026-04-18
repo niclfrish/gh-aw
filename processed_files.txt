@@ -1,3 +1,3 @@
 ./pkg/agentdrain/miner_test.go|2026-04-06
-./pkg/agentdrain/anomaly_test.go|2026-04-07
+./pkg/agentdrain/anomaly_test.go|2026-04-18
 ./pkg/workflow/reactions_test.go|2026-04-15
