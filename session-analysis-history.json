@@ -69,9 +69,9 @@
       "key_insights": [
         "fix-lock-file-integrity-check: Copilot SUCCESS after 47.03min; 21 total workflow runs",
         "fix-sanitize-markdown-link-titles: Copilot SUCCESS after 30.85min; 20 total workflow runs",
-        "fix-bearer-token-bypass: No Copilot agent ran; 9 CI/review-only runs — stalled branch",
+        "fix-bearer-token-bypass: No Copilot agent ran; 9 CI/review-only runs \u2014 stalled branch",
         "5th consecutive day of 100% Copilot success rate (streak: Apr 8, 9, 15, 16 so far)",
-        "Two simultaneous Copilot sessions both succeeded — highest throughput day so far",
+        "Two simultaneous Copilot sessions both succeeded \u2014 highest throughput day so far",
         "Duration trending down from 51.4min peak (Apr 15) to 38.94min avg today"
       ]
     },
@@ -107,10 +107,28 @@
         "debug-smoke-ci-failure: 7 action_required gates, Copilot agent pending",
         "aw-failures-fix-safeoutputs-permission: Addressing comment on PR #26974 SUCCESS (10.28min)",
         "create-smoke-ci-workflow: Addressing comment on PR #27024 CANCELLED (9.32min)",
-        "100% Copilot streak (Apr 8-17, 6 days) at risk — both agents still pending when analysis ran",
+        "100% Copilot streak (Apr 8-17, 6 days) at risk \u2014 both agents still pending when analysis ran",
         "Highest action_required gate density observed: 28/50 sessions (56%)"
+      ]
+    },
+    {
+      "date": "2026-04-19",
+      "sessions_analyzed": 100,
+      "completion_rate_pct": 11.0,
+      "copilot_coding_agents": 2,
+      "copilot_success_rate_pct": 100.0,
+      "avg_copilot_duration_min": 13.45,
+      "experimental_strategy": null,
+      "key_insights": [
+        "Multi-gate cascade pattern: 3 Copilot branches each triggered 4-7 review gates simultaneously (Scout/Archie/Q/cloclo), all action_required in 0min",
+        "bump-awf-firewall: Addressing comment on PR #27102 -> SUCCESS (14.3min)",
+        "analyze-copilot-sessions: Addressing comment on PR #27121 -> SUCCESS (12.6min)",
+        "2/2 Copilot coding agents succeeded - 100% success resumes after Apr 18 pending",
+        "Highest session volume day: 100 sessions across 7 branches (3 active in late batch)",
+        "Overall completion rate at 11% - new high (prev high was 10% on Apr 17-18)",
+        "PR merge rate stable at 79-81% across all 4 weeks of data; median merge time 0.8h"
       ]
     }
   ],
-  "last_updated": "2026-04-18"
+  "last_updated": "2026-04-19"
 }
