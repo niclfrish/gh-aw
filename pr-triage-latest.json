@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-19T12:26:50Z",
-  "run_id": "24629036665",
+  "run_date": "2026-04-19T18:25:01Z",
+  "run_id": "24635987425",
   "fork_prs": 0,
-  "agent_prs_found": 17,
-  "agent_prs_excluded": 17,
-  "notes": "17 open PRs found (8 Copilot + 9 github-actions[bot]). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 3,
+  "agent_prs_excluded": 3,
+  "notes": "3 open agent PRs found (2 Copilot + 1 github-actions[bot]). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,136 +18,24 @@
   },
   "prs_examined": [
     {
-      "number": 27171,
-      "title": "[docs] Update developer docs to v6.5",
+      "number": 27210,
+      "title": "[q] fix: exclude cancelled create_discussion results from error export (#27185)",
       "author": "github-actions[bot]",
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork",
       "created_at": "2026-04-19"
     },
     {
-      "number": 27169,
-      "title": "[docs] Update engines.md with Copilot BYOK provider env vars",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27167,
-      "title": "[spec-enforcer] Enforce specifications for gitutil, typeutil",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27166,
-      "title": "[spec-extractor] Update package specifications for cli and c",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27163,
-      "title": "[architecture] Update architecture diagram - 2026-04-19",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27161,
-      "title": "[workflow-style] Normalize report formatting",
+      "number": 27207,
+      "title": "[WIP] Fix CLI bridge to pass integer and boolean parameters correctly",
       "author": "Copilot",
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork",
       "created_at": "2026-04-19"
     },
     {
-      "number": 27160,
-      "title": "Issue Monster: enforce issue_number for assign_to_agent",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27159,
-      "title": "Reduce BenchmarkYAMLGeneration overhead by caching",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27154,
-      "title": "[code-simplifier] test: remove duplicate benchmark and dead code",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27148,
-      "title": "chore: update drain3 default log pattern weights",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27144,
-      "title": "[jsweep] Clean action_conclusion_otlp.test.cjs",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27142,
-      "title": "[docs] docs: reduce bloat in engines.md (21% reduction)",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27138,
-      "title": "Add jobs..pre-steps support",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27137,
-      "title": "Add ambient context metric to audit and logs commands",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27135,
-      "title": "Harden workflow shell permissions",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27134,
-      "title": "Fix Codex auth regression in AWF sandbox",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27126,
-      "title": "fix: use sanitized workflow IDs for trending cache keys",
+      "number": 27193,
+      "title": "Add gated `merge-pull-request` safe-output with policy-driven merge enforcement",
       "author": "Copilot",
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork",
@@ -155,10 +43,10 @@
     }
   ],
   "previous_run": {
-    "run_id": "24623125582",
-    "run_date": "2026-04-19T06:48:16Z",
+    "run_id": "24629036665",
+    "run_date": "2026-04-19T12:26:50Z",
     "fork_prs": 0,
-    "agent_prs_found": 9,
-    "agent_prs_excluded": 9
+    "agent_prs_found": 17,
+    "agent_prs_excluded": 17
   }
 }
