@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-18T06:40:20Z",
-  "run_id": "24599026260",
+  "run_date": "2026-04-19T01:04:44Z",
+  "run_id": "24617776442",
   "fork_prs": 0,
-  "agent_prs_found": 4,
-  "agent_prs_excluded": 4,
-  "notes": "4 open PRs found (2 Copilot, 2 github-actions[bot]). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 3,
+  "agent_prs_excluded": 3,
+  "notes": "3 open PRs found, all authored by Copilot. All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,16 +17,51 @@
     "by_action": {}
   },
   "prs_examined": [
-    {"number": 26988, "title": "chore: update drain3 default log pattern weights", "author": "github-actions[bot]", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-18"},
-    {"number": 26986, "title": "[jsweep] Clean action_setup_otlp.cjs — add comprehensive test coverage", "author": "github-actions[bot]", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-18"},
-    {"number": 26974, "title": "Fix mounted MCP CLI restricted-bash allowlists across agentic engines", "author": "Copilot", "draft": false, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-18"},
-    {"number": 26918, "title": "Harden Copilot AWF node bootstrap when GH_AW_NODE_BIN is invalid in container", "author": "Copilot", "draft": true, "same_repo": true, "excluded_reason": "same-repo branch, not a fork", "created_at": "2026-04-17"}
+    {
+      "number": 27114,
+      "title": "Reduce Copilot Token Usage Optimizer overhead via lean toolset, cli-proxy path",
+      "author": "Copilot",
+      "draft": false,
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork",
+      "created_at": "2026-04-18",
+      "additions": 164,
+      "deletions": 256,
+      "files": 2,
+      "mergeable_state": "unstable"
+    },
+    {
+      "number": 27108,
+      "title": "Refactor duplicated SHA/workflow-spec helpers into shared parser and gitutil API",
+      "author": "Copilot",
+      "draft": false,
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork",
+      "created_at": "2026-04-18",
+      "additions": 131,
+      "deletions": 53,
+      "files": 13,
+      "mergeable_state": "unstable"
+    },
+    {
+      "number": 27102,
+      "title": "Bump default AWF to v0.25.25 and MCP Gateway to v0.2.25",
+      "author": "Copilot",
+      "draft": false,
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork",
+      "created_at": "2026-04-18",
+      "additions": 2530,
+      "deletions": 2530,
+      "files": 199,
+      "mergeable_state": "blocked"
+    }
   ],
   "previous_run": {
-    "run_id": "24593088430",
-    "run_date": "2026-04-18T00:56:54Z",
+    "run_id": "24599026260",
+    "run_date": "2026-04-18T06:40:20Z",
     "fork_prs": 0,
-    "agent_prs_found": 7,
-    "agent_prs_excluded": 7
+    "agent_prs_found": 4,
+    "agent_prs_excluded": 4
   }
 }
