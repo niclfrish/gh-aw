@@ -2,11 +2,13 @@
 
 ## Analysis History
 
-### 2026-04-18 (Run 24613840109)
-- 195 total MD workflows, 86 using engine: copilot
-- Key persistent gaps: version pinning (0%), api-target (0%), token-weights (0%), block-domains (0%)
-- Improvements: cache-memory adoption growing (21%→30%), max-continuations up (2→3 workflows)
-- 11 custom agent files available; ~8 still unused
+### 2026-04-19 (Run 24639070790)
+- 196 total MD workflows, 87 using engine: copilot (explicitly)
+- **Major improvement**: cache-memory adoption: 55→80 (+45%)
+- **Improvement**: custom agent file use: 3→7 (+133%)
+- **Improvement**: bare mode: 2→7 (+250%)
+- **Persistent gaps**: version pinning (0%), api-target (0%), engine.args/env (0%), mcp-gateway (0%), blocked-domains (0%), observability (0%)
+- 5/11 custom agent files still unused: grumpy-reviewer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer
 
 ### 2026-04-17 (Run 24586698669)
 - 85 copilot workflows tracked
