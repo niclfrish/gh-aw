@@ -1,32 +1,36 @@
-# Shared Alerts — 2026-04-19T12:00Z
+# Shared Alerts — 2026-04-20T12:14Z
 
 ## P0 (Critical)
-- **Codex engine 401 auth** (#27127, OPEN): OPENAI_API_KEY missing/expired. Duplicate Code Detector confirmed same error today (#27177). Affects AI Moderator, Daily Observability Report, Duplicate Code Detector. Needs admin credential rotation.
+- **Codex engine 401 auth** (#27127, OPEN, day 3): OPENAI_API_KEY missing/expired. Affects all Codex workflows: AI Moderator, Daily Observability Report, Duplicate Code Detector, Schema Feature Coverage. Needs admin credential rotation. New failures today: #27328, #27286.
 
 ## P1 (High)
-- **Copilot CLI upgrade critical** (#27143 OPEN): v1.0.21 active; v1.0.32 available (+11 versions). Claude Code 2.1.114 also pending. AWF must bump versions.
-- **17 stale lock files** (#27140 OPEN): After AWF v0.25.25 bump. Recompile needed for: auto-triage-issues, bot-detection, code-simplifier, copilot-pr-nlp-analysis, daily-repo-chronicle, daily-safe-output-integrator, daily-security-red-team, daily-workflow-updater, gpclean, plan, prompt-clustering-analysis, refiner, scout, smoke-copilot-arm, static-analysis-report, tidy, update-astro
-- **Daily Community Attribution** (#27173 TODAY): Copilot engine crash - "Permission denied" executing Python script
-- **Daily Issues Report Generator** (#27165 TODAY): Copilot crash - `node: command not found`
-- **Artifacts Summary** (#27155 Apr 19): Copilot stuck in Read loop
-- **Smoke Claude** (#27030 OPEN): Failing since Apr 14
+- **node: command not found on aw-gpu-runner-T4** (#aw_node404 NEW): Recurring across Daily News and Daily Issues Report 2+ days. Node.js PATH not available in bash execution context on GPU runners. Created Apr 20.
+- **GitHub App rate limit exhaustion** (#27251 OPEN): Co-scheduled workflows at 23:44 UTC exhausting installation rate limit. May recur tonight. Stagger schedules recommended.
+- **Daily Fact MCP Gateway startup failure** (#27317 NEW): "Start MCP Gateway" step failed Apr 20. Uses mempalace MCP CLI server. May be transient.
+- **Smoke Claude** (#27030 OPEN): Failing since Apr 14 — ongoing
 - **Smoke Copilot** (#27028 OPEN): Ongoing issues group
 
 ## P2 (Watch)
-- **dev-hawk github-env** (#26933): High severity zizmor finding - GITHUB_ENV write from GITHUB_SERVER_URL
+- **Safe Outputs SEC-004** (#27235 OPEN): 4 handler files need sanitization
+- **Performance regressions** (#27280/#27279/#27278 OPEN): CompileComplexWorkflow +29%, CompileSimpleWorkflow +39%, Validation +96%
+- **dev-hawk github-env** (#26933): High severity zizmor finding
 - **PR Triage Agent** (#26778 OPEN): 67% success rate
-- **Auto-Triage Issues** (#26364 OPEN): 67% success, intermittent
-- **MCP Rate Limit** (#26239 OPEN): Circuit breaker needed
+- **MCP gateway long-running drops** (#23153 OPEN): Session not found after 30-45min
+
+## Resolved (Recent)
+- CLI updates (#27143) CLOSED Apr 20 ✅
+- Stale lock files (#27140) resolved ✅
 
 ## Ecosystem State
-- 196 workflows total (stable)
+- 197 workflows total (+1 from last check)
+- 0 stale lock files (↓ from 17)
 - Schedule success rate: ~85%
-- P0 failures: 1 (Codex 401 auth - ongoing from Apr 18)
-- Overall quality trend: ↑ (Q:75 vs 73 Apr 17)
+- P0 failures: 1 (Codex 401 auth — day 3)
+- Overall quality trend: → stable (Q:73)
 
 ## Orchestrator Summaries
+- Workflow Health (Apr 20 12:14Z): Score 73/100. 197 workflows. 0 stale locks. Codex P0 (day 3). New P1: node not found on GPU runner. Rate limit exhaustion ongoing.
 - Workflow Health (Apr 19 12:00Z): Score 75/100. 196 workflows. 17 stale locks. Codex P0. Copilot engine P1 failures.
-- Agent Performance (Apr 20 04:46Z): Q:73 E:70. 18 workflows, 33 runs. Codex P0 ongoing. 11/33 resource_heavy. Daily Chronicle + Persona Explorer high data-gathering. Schema Checker + jsweep silent startup failures.
-- Workflow Health (Apr 17 12:10Z): Score 73/100. 194 workflows. 0 stale lock files.
+- Agent Performance (Apr 20 04:46Z): Q:73 E:70. 18 workflows, 33 runs. Codex P0 ongoing.
 
-Last updated: 2026-04-19T12:00Z by workflow-health-manager
+Last updated: 2026-04-20T12:14Z by workflow-health-manager
