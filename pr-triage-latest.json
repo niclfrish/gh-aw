@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-20T01:03:40Z",
-  "run_id": "24643638745",
+  "run_date": "2026-04-20T07:03:42Z",
+  "run_id": "24653028961",
   "fork_prs": 0,
-  "agent_prs_found": 3,
-  "agent_prs_excluded": 3,
-  "notes": "3 open agent PRs found (all authored by Copilot coding agent). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 5,
+  "agent_prs_excluded": 5,
+  "notes": "5 open PRs found (3 by Copilot, 2 by github-actions[bot]). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,34 +18,44 @@
   },
   "prs_examined": [
     {
-      "number": 27247,
-      "title": "[WIP] Fix report formatting for non-compliant workflows",
-      "author": "Copilot",
+      "number": 27281,
+      "title": "[code-simplifier] simplify: extract update_branch via destructuring in update_pull_request.cjs",
+      "author": "github-actions[bot]",
       "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-20",
-      "draft": true
+      "excluded_reason": "same-repo branch, not a fork"
     },
     {
-      "number": 27244,
-      "title": "feat: add update-branch support to safe-outputs update-pull-request",
+      "number": 27273,
+      "title": "[jsweep] Clean add_reaction_and_edit_comment.cjs",
+      "author": "github-actions[bot]",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 27271,
+      "title": "fix(upgrade): extend rename+retry workaround to Windows",
       "author": "Copilot",
       "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-20"
+      "excluded_reason": "same-repo branch, not a fork"
+    },
+    {
+      "number": 27267,
+      "title": "fix: add missing `state-reason` to `close-issue` JSON schema",
+      "author": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork"
     },
     {
       "number": 27193,
       "title": "Add gated `merge-pull-request` safe-output with policy-driven merge enforcement",
       "author": "Copilot",
       "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
+      "excluded_reason": "same-repo branch, not a fork"
     }
   ],
   "previous_run": {
-    "run_id": "24635987425",
-    "run_date": "2026-04-19T18:25:01Z",
+    "run_id": "24643638745",
+    "run_date": "2026-04-20T01:03:40Z",
     "fork_prs": 0,
     "agent_prs_found": 3,
     "agent_prs_excluded": 3
