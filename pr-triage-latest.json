@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-19T18:25:01Z",
-  "run_id": "24635987425",
+  "run_date": "2026-04-20T01:03:40Z",
+  "run_id": "24643638745",
   "fork_prs": 0,
   "agent_prs_found": 3,
   "agent_prs_excluded": 3,
-  "notes": "3 open agent PRs found (2 Copilot + 1 github-actions[bot]). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "notes": "3 open agent PRs found (all authored by Copilot coding agent). All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,20 +18,21 @@
   },
   "prs_examined": [
     {
-      "number": 27210,
-      "title": "[q] fix: exclude cancelled create_discussion results from error export (#27185)",
-      "author": "github-actions[bot]",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
-    },
-    {
-      "number": 27207,
-      "title": "[WIP] Fix CLI bridge to pass integer and boolean parameters correctly",
+      "number": 27247,
+      "title": "[WIP] Fix report formatting for non-compliant workflows",
       "author": "Copilot",
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork",
-      "created_at": "2026-04-19"
+      "created_at": "2026-04-20",
+      "draft": true
+    },
+    {
+      "number": 27244,
+      "title": "feat: add update-branch support to safe-outputs update-pull-request",
+      "author": "Copilot",
+      "same_repo": true,
+      "excluded_reason": "same-repo branch, not a fork",
+      "created_at": "2026-04-20"
     },
     {
       "number": 27193,
@@ -43,10 +44,10 @@
     }
   ],
   "previous_run": {
-    "run_id": "24629036665",
-    "run_date": "2026-04-19T12:26:50Z",
+    "run_id": "24635987425",
+    "run_date": "2026-04-19T18:25:01Z",
     "fork_prs": 0,
-    "agent_prs_found": 17,
-    "agent_prs_excluded": 17
+    "agent_prs_found": 3,
+    "agent_prs_excluded": 3
   }
 }
