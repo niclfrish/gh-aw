@@ -6,6 +6,9 @@ const path = require("path");
 const http = require("http");
 const https = require("https");
 
+const REQUEST_TIMEOUT_MS = 15000;
+const MAX_MODELS_DISPLAY = 100;
+
 function ensureParent(filePath) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
 }
@@ -27,7 +30,7 @@ function requestJSON(url, headers) {
       {
         method: "GET",
         headers,
-        timeout: 15000,
+        timeout: REQUEST_TIMEOUT_MS,
       },
       res => {
         let body = "";
@@ -41,7 +44,10 @@ function requestJSON(url, headers) {
     );
 
     req.on("error", reject);
-    req.on("timeout", () => req.destroy(new Error("request timeout")));
+    req.on("timeout", () => {
+      req.destroy();
+      reject(new Error("request timeout"));
+    });
     req.end();
   });
 }
@@ -91,20 +97,22 @@ function buildHeaders(authType, token) {
   return headers;
 }
 
-async function writeSummary(engineId, models, warning) {
-  if (warning) {
-    core.summary.addDetails(`Available Models (${engineId})`, `\n\n⚠️ ${warning}\n`);
+async function writeSummary(engineId, models, errorMessage) {
+  if (errorMessage) {
+    core.summary.addDetails(`Available Models (${engineId})`, `\n\n⚠️ ${errorMessage}\n`);
     await core.summary.write();
     return;
   }
 
   const names = models.map(modelDisplayName);
+  // Keep summaries compact to avoid GitHub step summary size pressure.
   const lines = names
-    .slice(0, 100)
+    .slice(0, MAX_MODELS_DISPLAY)
     .map(name => `- \`${name}\``)
     .join("\n");
-  const hidden = names.length > 100 ? `\n\n_...and ${names.length - 100} more._` : "";
-  core.summary.addDetails(`Available Models (${engineId}, ${names.length})`, `\n\n${lines}${hidden}\n`);
+  const hidden = names.length > MAX_MODELS_DISPLAY ? `\n\n_...and ${names.length - MAX_MODELS_DISPLAY} more._` : "";
+  const body = names.length > 0 ? `\n\n${lines}${hidden}\n` : "\n\n_No models were returned by the provider._\n";
+  core.summary.addDetails(`Available Models (${engineId}, ${names.length})`, body);
   await core.summary.write();
 }
 
@@ -162,7 +170,7 @@ async function main() {
       core.info(`Copied models response to artifact path ${artifactFile}`);
     }
 
-    await writeSummary(engineId, models, models.length === 0 ? "No models were returned by the provider." : "");
+    await writeSummary(engineId, models, undefined);
   } catch (error) {
     const warning = `Model collection failed: ${error instanceof Error ? error.message : String(error)}`;
     core.warning(warning);

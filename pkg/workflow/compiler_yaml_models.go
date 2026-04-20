@@ -62,32 +62,30 @@ func getEngineModelsHost(engine CodingAgentEngine, workflowData *WorkflowData) s
 		}
 		return "api.anthropic.com"
 	case "codex":
-		if host := extractAPITargetHost(workflowData, "OPENAI_BASE_URL"); host != "" {
-			return host
-		}
-		return "api.openai.com"
+		return getOpenAIModelsHost(workflowData)
 	case "gemini":
 		if host := GetGeminiAPITarget(workflowData, engine.GetID()); host != "" {
 			return host
 		}
-		return ""
+		return DefaultGeminiAPITarget
 	case "crush":
-		if host := extractAPITargetHost(workflowData, "OPENAI_BASE_URL"); host != "" {
-			return host
-		}
-		return "api.openai.com"
+		return getOpenAIModelsHost(workflowData)
 	default:
 		return ""
 	}
 }
 
+func getOpenAIModelsHost(workflowData *WorkflowData) string {
+	if host := extractAPITargetHost(workflowData, "OPENAI_BASE_URL"); host != "" {
+		return host
+	}
+	return "api.openai.com"
+}
+
 func getEngineModelsTokenExpression(engine CodingAgentEngine, workflowData *WorkflowData) string {
 	switch engine.GetID() {
 	case "copilot":
-		if isFeatureEnabled(constants.CopilotRequestsFeatureFlag, workflowData) {
-			return "${{ github.token }}"
-		}
-		return "${{ secrets.COPILOT_GITHUB_TOKEN }}"
+		return getCopilotLikeModelsTokenExpression(workflowData)
 	case "claude":
 		return "${{ secrets.ANTHROPIC_API_KEY }}"
 	case "codex":
@@ -95,13 +93,17 @@ func getEngineModelsTokenExpression(engine CodingAgentEngine, workflowData *Work
 	case "gemini":
 		return "${{ secrets.GEMINI_API_KEY }}"
 	case "crush":
-		if isFeatureEnabled(constants.CopilotRequestsFeatureFlag, workflowData) {
-			return "${{ github.token }}"
-		}
-		return "${{ secrets.COPILOT_GITHUB_TOKEN }}"
+		return getCopilotLikeModelsTokenExpression(workflowData)
 	default:
 		return ""
 	}
+}
+
+func getCopilotLikeModelsTokenExpression(workflowData *WorkflowData) string {
+	if isFeatureEnabled(constants.CopilotRequestsFeatureFlag, workflowData) {
+		return "${{ github.token }}"
+	}
+	return "${{ secrets.COPILOT_GITHUB_TOKEN }}"
 }
 
 func getEngineModelsAuthType(engine CodingAgentEngine) string {
