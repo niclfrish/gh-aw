@@ -43,6 +43,11 @@ func applySafeOutputEnvToMap(env map[string]string, data *WorkflowData) {
 	}
 }
 
+// applyModelsEnvToMap adds the path to collected available-models JSON output.
+func applyModelsEnvToMap(env map[string]string) {
+	env[constants.EnvVarModels] = "${{ runner.temp }}/gh-aw/models.json"
+}
+
 // buildWorkflowMetadataEnvVars builds workflow name and source environment variables
 // This extracts the duplicated workflow metadata setup logic from safe-output job builders
 func buildWorkflowMetadataEnvVars(workflowName string, workflowSource string) []string {

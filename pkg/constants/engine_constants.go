@@ -238,6 +238,9 @@ const (
 	// EnvVarSafeOutputs is the safe-outputs configuration JSON
 	EnvVarSafeOutputs = "GH_AW_SAFE_OUTPUTS"
 
+	// EnvVarModels is the path to the collected available-models JSON file
+	EnvVarModels = "GH_AW_MODELS"
+
 	// EnvVarMaxTurns is the maximum number of turns for agent execution
 	EnvVarMaxTurns = "GH_AW_MAX_TURNS"
 

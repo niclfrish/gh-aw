@@ -251,6 +251,14 @@ type DriverProvider interface {
 	GetDriverScriptName() string
 }
 
+// ModelsRouteProvider is an optional interface for engines that expose a
+// provider models endpoint route (e.g. "/v1/models").
+type ModelsRouteProvider interface {
+	// GetModelsRoute returns the provider route used to list available models.
+	// Return an empty string when model listing is not supported.
+	GetModelsRoute() string
+}
+
 // CodingAgentEngine is a composite interface that combines all focused interfaces
 // This maintains backward compatibility with existing code while allowing more flexibility
 // Implementations can choose to implement only the interfaces they need by embedding BaseEngine

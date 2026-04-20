@@ -44,6 +44,11 @@ func (e *CrushEngine) GetModelEnvVarName() string {
 	return constants.CrushCLIModelEnvVar
 }
 
+// GetModelsRoute returns the models listing route for OpenAI-compatible APIs.
+func (e *CrushEngine) GetModelsRoute() string {
+	return "/v1/models"
+}
+
 // GetRequiredSecretNames returns the list of secrets required by the Crush engine.
 // By default, Crush routes through the Copilot API using COPILOT_GITHUB_TOKEN
 // (or ${{ github.token }} when copilot-requests feature is enabled).
@@ -242,6 +247,7 @@ func (e *CrushEngine) GetExecutionSteps(workflowData *WorkflowData, logFile stri
 
 	// Safe outputs env
 	applySafeOutputEnvToMap(env, workflowData)
+	applyModelsEnvToMap(env)
 
 	// Model env var (only when explicitly configured)
 	if modelConfigured {

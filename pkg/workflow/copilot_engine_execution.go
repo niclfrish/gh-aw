@@ -336,6 +336,7 @@ touch %s
 
 	// Always add GH_AW_PROMPT for agentic workflows
 	env["GH_AW_PROMPT"] = "/tmp/gh-aw/aw-prompts/prompt.txt"
+	applyModelsEnvToMap(env)
 
 	// Tag the step as a GitHub AW agentic execution for discoverability by agents
 	env["GITHUB_AW"] = "true"

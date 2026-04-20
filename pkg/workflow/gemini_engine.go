@@ -38,6 +38,11 @@ func (e *GeminiEngine) GetModelEnvVarName() string {
 	return constants.GeminiCLIModelEnvVar
 }
 
+// GetModelsRoute returns the models listing route for Gemini APIs.
+func (e *GeminiEngine) GetModelsRoute() string {
+	return "/v1beta/models"
+}
+
 // GetRequiredSecretNames returns the list of secrets required by the Gemini engine
 // This includes GEMINI_API_KEY and optionally MCP_GATEWAY_API_KEY, GITHUB_MCP_SERVER_TOKEN,
 // HTTP MCP header secrets, and mcp-scripts secrets
@@ -276,6 +281,7 @@ touch %s
 
 	// Add safe outputs env
 	applySafeOutputEnvToMap(env, workflowData)
+	applyModelsEnvToMap(env)
 
 	// Set the model environment variable only when explicitly configured.
 	// When model is configured, use the native GEMINI_MODEL env var - the Gemini CLI reads it

@@ -369,6 +369,9 @@ func (c *Compiler) generateMainJobSteps(yaml *strings.Builder, data *WorkflowDat
 	// connects to via host.docker.internal:18443.
 	c.generateStartCliProxyStep(yaml, data)
 
+	// Collect available models from the provider (when the engine exposes a models route).
+	modelsStepAdded := c.generateEngineModelsCollectionStep(yaml, data, engine)
+
 	// Add pre-agent-steps (if any) immediately before AI execution.
 	c.generatePreAgentSteps(yaml, data)
 
@@ -506,6 +509,11 @@ func (c *Compiler) generateMainJobSteps(yaml *strings.Builder, data *WorkflowDat
 	// Collect GitHub API rate-limit log for observability.
 	// Written by github_rate_limit_logger.cjs during REST API calls.
 	artifactPaths = append(artifactPaths, "/tmp/gh-aw/"+constants.GithubRateLimitsFilename)
+
+	// Collect discovered model metadata for downstream diagnostics.
+	if modelsStepAdded {
+		artifactPaths = append(artifactPaths, "/tmp/gh-aw/models.json")
+	}
 
 	// Collect OTLP span mirror — enables post-hoc trace debugging without a live collector.
 	// Written by send_otlp_span.cjs; each line is a full OTLP/HTTP JSON traces payload.

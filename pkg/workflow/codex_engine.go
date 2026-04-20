@@ -53,6 +53,11 @@ func (e *CodexEngine) GetModelEnvVarName() string {
 	return ""
 }
 
+// GetModelsRoute returns the models listing route for OpenAI-compatible APIs.
+func (e *CodexEngine) GetModelsRoute() string {
+	return "/v1/models"
+}
+
 // GetRequiredSecretNames returns the list of secrets required by the Codex engine
 // This includes CODEX_API_KEY, OPENAI_API_KEY, and optionally MCP_GATEWAY_API_KEY and mcp-scripts secrets
 func (e *CodexEngine) GetRequiredSecretNames(workflowData *WorkflowData) []string {
@@ -301,6 +306,7 @@ mkdir -p "$CODEX_HOME/logs"
 
 	// Add GH_AW_SAFE_OUTPUTS if output is needed
 	applySafeOutputEnvToMap(env, workflowData)
+	applyModelsEnvToMap(env)
 
 	// In sandbox (AWF) mode, set git identity environment variables so the first git commit
 	// succeeds inside the container. AWF's --env-all forwards these to the container, ensuring

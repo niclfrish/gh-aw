@@ -59,6 +59,11 @@ func (e *CopilotEngine) GetModelEnvVarName() string {
 	return constants.CopilotCLIModelEnvVar
 }
 
+// GetModelsRoute returns the models listing route for Copilot-compatible APIs.
+func (e *CopilotEngine) GetModelsRoute() string {
+	return "/models"
+}
+
 // GetRequiredSecretNames returns the list of secrets required by the Copilot engine
 // This includes COPILOT_GITHUB_TOKEN and optionally MCP_GATEWAY_API_KEY
 func (e *CopilotEngine) GetRequiredSecretNames(workflowData *WorkflowData) []string {

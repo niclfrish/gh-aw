@@ -42,6 +42,11 @@ func (e *ClaudeEngine) GetModelEnvVarName() string {
 	return constants.ClaudeCLIModelEnvVar
 }
 
+// GetModelsRoute returns the models listing route for Anthropic APIs.
+func (e *ClaudeEngine) GetModelsRoute() string {
+	return "/v1/models"
+}
+
 // GetAPMTarget returns "claude" so that apm-action packs Claude-specific primitives.
 func (e *ClaudeEngine) GetAPMTarget() string {
 	return "claude"
@@ -331,6 +336,7 @@ func (e *ClaudeEngine) GetExecutionSteps(workflowData *WorkflowData, logFile str
 
 	// Add GH_AW_SAFE_OUTPUTS if output is needed
 	applySafeOutputEnvToMap(env, workflowData)
+	applyModelsEnvToMap(env)
 
 	// Add GH_AW_STARTUP_TIMEOUT environment variable (in seconds) if startup-timeout is specified
 	// Supports both literal integers and GitHub Actions expressions (e.g. "${{ inputs.startup-timeout }}")
