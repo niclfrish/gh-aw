@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-22T00:59:24Z",
-  "run_id": "24754499067",
+  "run_date": "2026-04-22T06:53:46Z",
+  "run_id": "24764612643",
   "fork_prs": 0,
-  "agent_prs_found": 3,
-  "agent_prs_excluded": 3,
-  "notes": "3 open agent PRs found. All are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 2,
+  "agent_prs_excluded": 2,
+  "notes": "2 open agent PRs found. Both are same-repo branches, not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,32 +18,25 @@
   },
   "prs_examined": [
     {
-      "number": 27722,
-      "title": "[WIP] Bump MCPG to v0.2.30 and AWF firewall to v0.25.28",
-      "author": "Copilot",
+      "number": 27784,
+      "title": "[code-simplifier] refactor: extract lookupContainerPin helper to eliminate duplicate cache logic",
+      "author": "github-actions[bot]",
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork"
     },
     {
-      "number": 27708,
-      "title": "Update OpenCode/Crush universal LLM consumer backend handling",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork"
-    },
-    {
-      "number": 27707,
-      "title": "Refactor cli-proxy feature into tools.github.mode (gh-proxy) with codemod migration",
+      "number": 27783,
+      "title": "Accept deprecated `max_tokens` for MCP `audit`/`compile` and remove console output suppression flag",
       "author": "Copilot",
       "same_repo": true,
       "excluded_reason": "same-repo branch, not a fork"
     }
   ],
   "previous_run": {
-    "run_id": "24739811702",
-    "run_date": "2026-04-21T18:37:13Z",
+    "run_id": "24754499067",
+    "run_date": "2026-04-22T00:59:24Z",
     "fork_prs": 0,
-    "agent_prs_found": 4,
-    "agent_prs_excluded": 4
+    "agent_prs_found": 3,
+    "agent_prs_excluded": 3
   }
 }
