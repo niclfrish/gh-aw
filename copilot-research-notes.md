@@ -54,3 +54,12 @@
 | Cache-memory adoption growing | ✅ Improving | 2026-04-16 |
 | Custom agent adoption | ✅ Stable at 7 | 2026-04-21 |
 | engine.args/env adoption | ✅ Achieved (5%) | 2026-04-20 |
+
+### 2026-04-22 (Run 24802849397)
+- 197 total workflows; 87 explicit copilot; 111 total Copilot effective
+- **Trending up**: cache-memory (+4%), strict mode (+3%), mcp-cli (+2%), AWF sandbox (+6%), bare mode (+2%)
+- **Stable/persistent gaps**: engine.version (0%), api-target (0%), startup-timeout (0%), tool-timeout (0%), network.blocked (0%), max-continuations (1%)
+- **Confirmed: 5/11 custom agent files still unused**: grumpy-reviewer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer
+- 34 workflows (39%) have no network config at all
+- **New finding**: startup-timeout and tool-timeout have been features for multiple releases with 0% adoption
+- **test-quality-sentinel.md**: uses max-continuations: 40 (extremely high) - unique outlier
