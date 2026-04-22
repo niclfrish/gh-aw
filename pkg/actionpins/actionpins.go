@@ -270,7 +270,7 @@ func initWarnings(ctx *PinContext) {
 	}
 }
 
-func notifyResolutionFailure(ctx *PinContext, actionRepo, version string, errorType ResolutionErrorType) {
+func dispatchResolutionFailure(ctx *PinContext, actionRepo, version string, errorType ResolutionErrorType) {
 	if ctx == nil || ctx.RecordResolutionFailure == nil {
 		return
 	}
@@ -372,7 +372,7 @@ func ResolveActionPin(actionRepo, version string, ctx *PinContext) (string, erro
 	if ctx.Resolver != nil {
 		errorType = ResolutionErrorTypeDynamicResolutionFailed
 	}
-	notifyResolutionFailure(ctx, actionRepo, version, errorType)
+	dispatchResolutionFailure(ctx, actionRepo, version, errorType)
 	if ctx.EnforcePinned && !ctx.AllowActionRefs {
 		if ctx.Resolver != nil {
 			return "", fmt.Errorf("unable to pin action %s@%s: resolution failed", actionRepo, version)

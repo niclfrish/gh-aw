@@ -68,3 +68,33 @@ func TestGetContainerPin_ReturnsPinnedImage(t *testing.T) {
 	assert.NotEmpty(t, pin.Digest, "Expected digest to be populated")
 	assert.Contains(t, pin.PinnedImage, "@sha256:", "Expected pinned image to include digest")
 }
+
+func TestDispatchResolutionFailure(t *testing.T) {
+	t.Run("records failure when callback is present", func(t *testing.T) {
+		var recorded ResolutionFailure
+		called := false
+		ctx := &PinContext{
+			RecordResolutionFailure: func(f ResolutionFailure) {
+				called = true
+				recorded = f
+			},
+		}
+
+		dispatchResolutionFailure(ctx, "actions/checkout", "v5", ResolutionErrorTypePinNotFound)
+
+		require.True(t, called, "Expected resolution failure callback to be called")
+		assert.Equal(t, "actions/checkout", recorded.Repo, "Expected repo to be forwarded to callback")
+		assert.Equal(t, "v5", recorded.Ref, "Expected ref to be forwarded to callback")
+		assert.Equal(t, ResolutionErrorTypePinNotFound, recorded.ErrorType, "Expected error type to be forwarded to callback")
+	})
+
+	t.Run("no-op when context or callback is nil", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			dispatchResolutionFailure(nil, "actions/checkout", "v5", ResolutionErrorTypePinNotFound)
+		}, "Expected nil context to be safely ignored")
+
+		assert.NotPanics(t, func() {
+			dispatchResolutionFailure(&PinContext{}, "actions/checkout", "v5", ResolutionErrorTypePinNotFound)
+		}, "Expected missing callback to be safely ignored")
+	})
+}
