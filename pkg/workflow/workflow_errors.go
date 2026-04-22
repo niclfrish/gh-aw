@@ -258,7 +258,7 @@ func (c *ErrorCollector) FormattedError(category string) error {
 		sb.WriteString(err.Error())
 	}
 
-	return fmt.Errorf("%s", sb.String())
+	return errors.New(sb.String())
 }
 
 var sharedWorkflowLog = logger.New("workflow:shared_workflow_error")
