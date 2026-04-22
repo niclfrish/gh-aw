@@ -425,10 +425,70 @@ jobs:
             await main();
 `)
 
+	// Add agentic_workflow_logs trace indexer job for schedule and activity_report operation.
+	traceIndexerCondition := buildNotForkAndScheduledOrOperation("activity_report")
+	yaml.WriteString(`
+  agentic_workflow_logs:
+    name: Agentic workflow logs
+    if: ${{ ` + RenderCondition(traceIndexerCondition) + ` }}
+    runs-on: ` + runsOnValue + `
+    timeout-minutes: 120
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: ` + getActionPin("actions/checkout") + `
+        with:
+          persist-credentials: false
+
+      - name: Setup Scripts
+        uses: ` + setupActionRef + `
+        with:
+          destination: ${{ runner.temp }}/gh-aw/actions
+
+`)
+
+	yaml.WriteString(generateInstallCLISteps(actionMode, version, actionTag, resolver))
+	yaml.WriteString(`      - name: Restore agentic workflow logs cache
+        uses: ` + getActionPin("actions/cache/restore") + `
+        with:
+          path: ./.cache/gh-aw/agentic-workflow-logs
+          key: ${{ runner.os }}-agentic-workflow-logs-` + repoSlug + `-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-agentic-workflow-logs-` + repoSlug + `-
+            ${{ runner.os }}-agentic-workflow-logs-
+
+      - name: Refresh agentic workflow logs trace index in target repository
+        continue-on-error: true
+        uses: ` + getCachedActionPinFromResolver("actions/github-script", resolver) + `
+        env:
+          GH_TOKEN: ` + token + `
+          GH_AW_CMD_PREFIX: ` + getCLICmdPrefix(actionMode) + `
+          GH_AW_TARGET_REPO_SLUG: "` + repoSlug + `"
+          GH_AW_TRACE_INDEX_OUTPUT_DIR: ./.cache/gh-aw/agentic-workflow-logs
+        with:
+          github-token: ` + token + `
+          script: |
+            const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
+            setupGlobals(core, github, context, exec, io, getOctokit);
+            const { main } = require('${{ runner.temp }}/gh-aw/actions/run_trace_indexer.cjs');
+            await main();
+
+      - name: Save agentic workflow logs cache
+        if: ${{ always() }}
+        uses: ` + getActionPin("actions/cache/save") + `
+        with:
+          path: ./.cache/gh-aw/agentic-workflow-logs
+          key: ${{ runner.os }}-agentic-workflow-logs-` + repoSlug + `-${{ github.ref_name }}-${{ github.run_id }}
+`)
+
 	// Add activity_report job for workflow_dispatch/workflow_call with operation == 'activity_report'
 	yaml.WriteString(`
   activity_report:
     if: ${{ ` + RenderCondition(buildDispatchOperationCondition("activity_report")) + ` }}
+    needs:
+      - agentic_workflow_logs
     runs-on: ` + runsOnValue + `
     timeout-minutes: 120
     permissions:
@@ -459,22 +519,21 @@ jobs:
 `)
 
 	yaml.WriteString(generateInstallCLISteps(actionMode, version, actionTag, resolver))
-	yaml.WriteString(`      - name: Cache activity report logs
-        uses: ` + getActionPin("actions/cache") + `
+	yaml.WriteString(`      - name: Restore agentic workflow logs cache
+        uses: ` + getActionPin("actions/cache/restore") + `
         with:
-          path: ./.cache/gh-aw/activity-report-logs
-          key: ${{ runner.os }}-activity-report-logs-` + repoSlug + `-${{ github.ref_name }}-${{ github.run_id }}
+          path: ./.cache/gh-aw/agentic-workflow-logs
+          key: ${{ runner.os }}-agentic-workflow-logs-` + repoSlug + `-${{ github.ref_name }}-${{ github.run_id }}
           restore-keys: |
-            ${{ runner.os }}-activity-report-logs-` + repoSlug + `-
-            ${{ runner.os }}-activity-report-logs-
+            ${{ runner.os }}-agentic-workflow-logs-` + repoSlug + `-
+            ${{ runner.os }}-agentic-workflow-logs-
 `)
 	yaml.WriteString(`      - name: Generate agentic workflow activity report in target repository
         uses: ` + getCachedActionPinFromResolver("actions/github-script", resolver) + `
         env:
           GH_TOKEN: ` + token + `
-          GH_AW_CMD_PREFIX: ` + getCLICmdPrefix(actionMode) + `
           GH_AW_TARGET_REPO_SLUG: "` + repoSlug + `"
-          GH_AW_ACTIVITY_REPORT_OUTPUT_DIR: ./.cache/gh-aw/activity-report-logs
+          GH_AW_ACTIVITY_REPORT_OUTPUT_DIR: ./.cache/gh-aw/agentic-workflow-logs
         with:
           github-token: ` + token + `
           script: |

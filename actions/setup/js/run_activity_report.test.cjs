@@ -1,5 +1,8 @@
 // @ts-check
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import fs from "node:fs/promises";
+import path from "node:path";
+import os from "node:os";
 
 describe("run_activity_report", () => {
   let originalGlobals;
@@ -7,17 +10,17 @@ describe("run_activity_report", () => {
   let mockCore;
   let mockGithub;
   let mockContext;
-  let mockExec;
+  let tempOutputDir;
 
   beforeEach(() => {
     originalEnv = { ...process.env };
-    process.env.GH_AW_CMD_PREFIX = "gh aw";
+    tempOutputDir = path.join(os.tmpdir(), `run-activity-report-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    process.env.GH_AW_ACTIVITY_REPORT_OUTPUT_DIR = tempOutputDir;
 
     originalGlobals = {
       core: global.core,
       github: global.github,
       context: global.context,
-      exec: global.exec,
     };
 
     mockCore = {
@@ -39,44 +42,29 @@ describe("run_activity_report", () => {
         repo: "testrepo",
       },
     };
-    mockExec = {
-      getExecOutput: vi.fn(),
-    };
 
     global.core = mockCore;
     global.github = mockGithub;
     global.context = mockContext;
-    global.exec = mockExec;
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     process.env = originalEnv;
     global.core = originalGlobals.core;
     global.github = originalGlobals.github;
     global.context = originalGlobals.context;
-    global.exec = originalGlobals.exec;
+    await fs.rm(tempOutputDir, { recursive: true, force: true });
     vi.clearAllMocks();
   });
 
-  it("creates an activity report issue with 24h and 7d time ranges", async () => {
-    mockExec.getExecOutput.mockResolvedValueOnce({ stdout: "## 24h report\nok", stderr: "", exitCode: 0 }).mockResolvedValueOnce({ stdout: "## 7d report\nok", stderr: "", exitCode: 0 });
+  it("creates an activity report issue using cached 24h and 7d reports", async () => {
+    await fs.mkdir(path.join(tempOutputDir, "activity-report"), { recursive: true });
+    await fs.writeFile(path.join(tempOutputDir, "activity-report", "24h.md"), "## 24h report\nok\n", "utf8");
+    await fs.writeFile(path.join(tempOutputDir, "activity-report", "7d.md"), "## 7d report\nok\n", "utf8");
 
     const { main } = await import("./run_activity_report.cjs");
     await main();
 
-    expect(mockExec.getExecOutput).toHaveBeenCalledTimes(2);
-    expect(mockExec.getExecOutput).toHaveBeenNthCalledWith(
-      1,
-      "gh",
-      expect.arrayContaining(["aw", "logs", "--repo", "testowner/testrepo", "--start-date", "-1d", "--count", "1000", "--output", "./.cache/gh-aw/activity-report-logs", "--format", "markdown"]),
-      expect.objectContaining({ ignoreReturnCode: true })
-    );
-    expect(mockExec.getExecOutput).toHaveBeenNthCalledWith(
-      2,
-      "gh",
-      expect.arrayContaining(["aw", "logs", "--repo", "testowner/testrepo", "--start-date", "-1w", "--count", "1000", "--output", "./.cache/gh-aw/activity-report-logs", "--format", "markdown"]),
-      expect.objectContaining({ ignoreReturnCode: true })
-    );
     expect(mockGithub.rest.issues.create).toHaveBeenCalledWith(
       expect.objectContaining({
         owner: "testowner",
@@ -95,11 +83,14 @@ describe("run_activity_report", () => {
     expect(issueBody).toContain("#### 24h report");
   });
 
-  it("detects rate limit text helper", async () => {
-    const { hasRateLimitText } = await import("./run_activity_report.cjs");
-    expect(hasRateLimitText("API rate limit exceeded")).toBe(true);
-    expect(hasRateLimitText("secondary rate limit")).toBe(true);
-    expect(hasRateLimitText("normal output")).toBe(false);
+  it("uses fallback text when cached range reports are missing", async () => {
+    const { main } = await import("./run_activity_report.cjs");
+    await main();
+
+    const issueBody = mockGithub.rest.issues.create.mock.calls[0][0].body;
+    expect(issueBody).toContain("<summary>Last 24 hours</summary>");
+    expect(issueBody).toContain("_No cached trace index is available for this range yet._");
+    expect(mockCore.warning).toHaveBeenCalled();
   });
 
   it("demotes report headings by two levels", async () => {

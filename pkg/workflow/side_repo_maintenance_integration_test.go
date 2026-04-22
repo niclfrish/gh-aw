@@ -90,9 +90,17 @@ This workflow operates on a separate repository.
 	// Must have activity_report job.
 	assert.Contains(t, contentStr, "activity_report:",
 		"generated workflow should include activity_report job")
-	assert.Contains(t, contentStr, "Cache activity report logs",
-		"generated workflow should include cache step for activity_report logs")
-	assert.Contains(t, contentStr, "GH_AW_ACTIVITY_REPORT_OUTPUT_DIR: ./.cache/gh-aw/activity-report-logs",
+	assert.Contains(t, contentStr, "agentic_workflow_logs:",
+		"generated workflow should include the trace indexer job")
+	assert.Contains(t, contentStr, "name: Agentic workflow logs",
+		"generated workflow should include clear trace indexer job naming")
+	assert.Contains(t, contentStr, "Restore agentic workflow logs cache",
+		"generated workflow should include cache restore for activity_report logs")
+	assert.Contains(t, contentStr, "Save agentic workflow logs cache",
+		"generated workflow should include cache save for indexed logs")
+	assert.Contains(t, contentStr, "continue-on-error: true",
+		"trace indexer should use continue-on-error so cache update still runs")
+	assert.Contains(t, contentStr, "GH_AW_ACTIVITY_REPORT_OUTPUT_DIR: ./.cache/gh-aw/agentic-workflow-logs",
 		"generated workflow should set GH_AW_ACTIVITY_REPORT_OUTPUT_DIR for activity_report logs")
 	assert.Contains(t, contentStr, "actions: read\n      contents: read\n      issues: write",
 		"activity_report job should include contents: read with explicit permissions")

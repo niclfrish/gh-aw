@@ -288,6 +288,7 @@ func TestGenerateMaintenanceWorkflow_OperationJobConditions(t *testing.T) {
 	activityReportCondition := `(github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call') && inputs.operation == 'activity_report'`
 	closeAgenticWorkflowIssuesCondition := `(github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_call') && inputs.operation == 'close_agentic_workflows_issues'`
 	cleanCacheMemoriesCondition := `github.event_name != 'workflow_dispatch' && github.event_name != 'workflow_call' || inputs.operation == '' || inputs.operation == 'clean_cache_memories'`
+	traceIndexerCondition := `github.event_name != 'workflow_dispatch' && github.event_name != 'workflow_call' || inputs.operation == '' || inputs.operation == 'activity_report'`
 
 	const jobSectionSearchRange = 300
 	const runOpSectionSearchRange = 500
@@ -316,6 +317,23 @@ func TestGenerateMaintenanceWorkflow_OperationJobConditions(t *testing.T) {
 		cleanupCacheSection := yaml[cleanupCacheIdx : cleanupCacheIdx+jobSectionSearchRange]
 		if !strings.Contains(cleanupCacheSection, cleanCacheMemoriesCondition) {
 			t.Errorf("Job cleanup-cache-memory should have the clean_cache_memories condition %q in:\n%s", cleanCacheMemoriesCondition, cleanupCacheSection)
+		}
+	}
+
+	// agentic_workflow_logs job should run on schedule, empty operation, or activity_report operation
+	traceIndexerIdx := strings.Index(yaml, "\n  agentic_workflow_logs:")
+	if traceIndexerIdx == -1 {
+		t.Errorf("Job agentic_workflow_logs not found in generated workflow")
+	} else {
+		traceIndexerSection := yaml[traceIndexerIdx : traceIndexerIdx+runOpSectionSearchRange]
+		if !strings.Contains(traceIndexerSection, "name: Agentic workflow logs") {
+			t.Errorf("Job agentic_workflow_logs should include a clear job name in:\n%s", traceIndexerSection)
+		}
+		if !strings.Contains(traceIndexerSection, traceIndexerCondition) {
+			t.Errorf("Job agentic_workflow_logs should have the trace indexer condition %q in:\n%s", traceIndexerCondition, traceIndexerSection)
+		}
+		if !strings.Contains(traceIndexerSection, "continue-on-error: true") {
+			t.Errorf("Job agentic_workflow_logs should set continue-on-error for trace refresh step in:\n%s", traceIndexerSection)
 		}
 	}
 
@@ -383,15 +401,18 @@ func TestGenerateMaintenanceWorkflow_OperationJobConditions(t *testing.T) {
 		if !strings.Contains(activityReportSection, "timeout-minutes: 120") {
 			t.Errorf("Job activity_report should set timeout-minutes: 120 in:\n%s", activityReportSection)
 		}
+		if !strings.Contains(activityReportSection, "needs:\n      - agentic_workflow_logs") {
+			t.Errorf("Job activity_report should depend on agentic_workflow_logs in:\n%s", activityReportSection)
+		}
 	}
-	if !strings.Contains(yaml, "Cache activity report logs") {
-		t.Errorf("Job activity_report should include a cache step in:\n%s", yaml)
+	if !strings.Contains(yaml, "Restore agentic workflow logs cache") {
+		t.Errorf("Workflow should include a cache restore step for agentic workflow logs in:\n%s", yaml)
 	}
 	if !strings.Contains(yaml, "${{ github.run_id }}") {
 		t.Errorf("Job activity_report cache key should include run_id for latest-cache resolution in:\n%s", yaml)
 	}
 
-	if !strings.Contains(yaml, "GH_AW_ACTIVITY_REPORT_OUTPUT_DIR: ./.cache/gh-aw/activity-report-logs") {
+	if !strings.Contains(yaml, "GH_AW_ACTIVITY_REPORT_OUTPUT_DIR: ./.cache/gh-aw/agentic-workflow-logs") {
 		t.Errorf("Job activity_report should set GH_AW_ACTIVITY_REPORT_OUTPUT_DIR in:\n%s", yaml)
 	}
 
@@ -712,12 +733,12 @@ func TestGenerateMaintenanceWorkflow_RunOperationCLICodegen(t *testing.T) {
 			t.Fatalf("Expected maintenance workflow to be generated: %v", err)
 		}
 		yaml := string(content)
-		// run_operation, create_labels, activity_report, validate_workflows, and compile_workflows should use the same setup-go version
-		// (all use getActionPin, not hardcoded pins). Exactly 5 occurrences expected.
+		// run_operation, create_labels, agentic_workflow_logs, activity_report, validate_workflows,
+		// and compile_workflows should use the same setup-go version (all use getActionPin, not hardcoded pins).
 		setupGoPin := getActionPin("actions/setup-go")
 		occurrences := strings.Count(yaml, setupGoPin)
-		if occurrences != 5 {
-			t.Errorf("Expected exactly 5 occurrences of pinned setup-go ref %q (run_operation + create_labels + activity_report + validate_workflows + compile_workflows), got %d in:\n%s",
+		if occurrences != 6 {
+			t.Errorf("Expected exactly 6 occurrences of pinned setup-go ref %q (run_operation + create_labels + agentic_workflow_logs + activity_report + validate_workflows + compile_workflows), got %d in:\n%s",
 				setupGoPin, occurrences, yaml)
 		}
 	})
