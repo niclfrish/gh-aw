@@ -4,7 +4,8 @@
 #
 # This shared workflow creates a dedicated "apm" job (depending on activation) that
 # packs packages using microsoft/apm-action and uploads the bundle as an artifact.
-# The agent job then downloads and unpacks the bundle as pre-steps.
+# The agent job then downloads and unpacks the bundle as pre-agent-steps,
+# so restore runs after any user checkout steps.
 #
 # Documentation: https://github.com/microsoft/APM
 #
@@ -64,7 +65,7 @@ jobs:
           path: ${{ steps.apm_pack.outputs.bundle-path }}
           retention-days: '1'
 
-steps:
+pre-agent-steps:
   - name: Download APM bundle artifact
     uses: actions/download-artifact@v8.0.1
     with:
@@ -83,13 +84,13 @@ steps:
 ## APM Packages
 
 These packages are installed via a dedicated "apm" job that packs and uploads a bundle,
-which the agent job then downloads and unpacks as pre-steps.
+which the agent job then downloads and unpacks as pre-agent-steps (after user checkout steps).
 
 ### How it works
 
 1. **Pack** (`apm` job): `microsoft/apm-action` installs packages and creates a bundle archive,
    uploaded as a GitHub Actions artifact.
-2. **Unpack** (agent job pre-steps): the bundle is downloaded and unpacked via
+2. **Unpack** (agent job pre-agent-steps): the bundle is downloaded and unpacked via
    `microsoft/apm-action` in restore mode, making all skills and tools available to the AI agent.
 
 ### Package format
