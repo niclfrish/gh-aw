@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-04-23T06:54:12.141Z",
-  "run_id": "24821363508",
+  "run_date": "2026-04-23T12:37:27.601Z",
+  "run_id": "24835563152",
   "fork_prs": 0,
-  "agent_prs_found": 6,
-  "agent_prs_excluded": 6,
-  "notes": "6 open agent PRs found. All are same-repo branches (copilot/* branches), not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 14,
+  "agent_prs_excluded": 14,
+  "notes": "14 open agent PRs found. All are same-repo branches (copilot/* branches), not forks. Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -16,65 +16,9 @@
     "by_priority": {},
     "by_action": {}
   },
-  "prs_examined": [
-    {
-      "number": 28006,
-      "title": "docs: pre-consolidation analysis for observability/audit workflow overlap",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "draft": true,
-      "created_at": "2026-04-23"
-    },
-    {
-      "number": 28005,
-      "title": "[WIP] Fix integer parameters in logs tool for CLI bridge",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "draft": true,
-      "created_at": "2026-04-23"
-    },
-    {
-      "number": 28004,
-      "title": "[WIP] Add configurable labels for create_pull_request fallback issues",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "draft": true,
-      "created_at": "2026-04-23"
-    },
-    {
-      "number": 28003,
-      "title": "[WIP] Fix audit tool metrics for missing aw_info.json",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "draft": true,
-      "created_at": "2026-04-23"
-    },
-    {
-      "number": 28002,
-      "title": "[WIP] Fix skill invocation syntax for APM-restored skills",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "draft": true,
-      "created_at": "2026-04-23"
-    },
-    {
-      "number": 27909,
-      "title": "Mitigate intermittent AWF startup failures when awf-api-proxy health check flaps",
-      "author": "Copilot",
-      "same_repo": true,
-      "excluded_reason": "same-repo branch, not a fork",
-      "draft": true,
-      "created_at": "2026-04-22"
-    }
-  ],
   "previous_run": {
-    "run_id": "24810862932",
-    "run_date": "2026-04-23T01:03:46.101Z",
+    "run_id": "24821363508",
+    "run_date": "2026-04-23T06:54:12.141Z",
     "fork_prs": 0,
     "agent_prs_found": 6,
     "agent_prs_excluded": 6
