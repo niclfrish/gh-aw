@@ -63,3 +63,18 @@
 - 34 workflows (39%) have no network config at all
 - **New finding**: startup-timeout and tool-timeout have been features for multiple releases with 0% adoption
 - **test-quality-sentinel.md**: uses max-continuations: 40 (extremely high) - unique outlier
+
+### 2026-04-23 (Run 24858982293)
+- 200 total MD workflows; 88 explicit copilot (44%)
+- **Persistent gaps (7+ days now confirmed)**: engine.version (0%), api-target (0%), startup-timeout (0%), tool-timeout (0%), network.blocked (0 uses effectively), max-continuations (2 workflows only)
+- **Custom agent files**: 5/11 still unused (grumpy-reviewer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer)
+- **strict mode**: 120 workflows (improvement from ~115)
+- **mount-as-clis**: 155 workflows (widely adopted)
+- **copilot-requests**: 46 workflows (~23% of all)
+- **web-fetch**: 18 copilot workflows
+- **web-search**: 1 workflow (Brave)
+- **cache-memory**: 82 workflows
+- **mcp-scripts**: 1 workflow still
+- **Toolsets[default]**: 43 uses - overprovisioned GitHub access remains common
+- **bare mode**: 7 workflows
+- **AWF sandbox**: ~13 workflows

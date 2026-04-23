@@ -1,6 +1,7 @@
 {
-  "timestamp": "2026-04-17T21:07:29Z",
+  "timestamp": "2026-04-23T21:10:59Z",
   "analysis": "copilot-cli-deep-research",
-  "total_workflows": 269,
-  "copilot_workflows": 85
+  "total_workflows": 200,
+  "copilot_workflows": 88,
+  "run_id": "24858982293"
 }
