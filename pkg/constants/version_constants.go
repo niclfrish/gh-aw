@@ -42,7 +42,7 @@ const DefaultClaudeCodeVersion Version = "2.1.112"
 const DefaultCopilotVersion Version = "1.0.21"
 
 // DefaultCodexVersion is the default version of the OpenAI Codex CLI
-const DefaultCodexVersion Version = "0.121.0"
+const DefaultCodexVersion Version = "0.123.0"
 
 // DefaultGeminiVersion is the default version of the Google Gemini CLI
 const DefaultGeminiVersion Version = "0.37.2"
