@@ -136,5 +136,15 @@
     "recommendations_count": 5,
     "estimated_savings_per_run": 120000,
     "notes": "26/45 runs partially_reducible (58%), 9/45 resource_heavy. Avg 8 turns, agentic_fraction=0.5. Primary lever: pre-step deterministic test collection to reduce turns."
+  },
+  {
+    "date": "2026-04-23",
+    "workflow_name": "Architecture Guardian",
+    "workflow_file": "architecture-guardian",
+    "total_tokens_analyzed": 1969440,
+    "runs_audited": 1,
+    "recommendations_count": 4,
+    "estimated_savings_per_run": 900000,
+    "notes": "Single run, 47 turns, read_only, agentic_fraction=0.50. Primary lever: bash pre-step to collect all file metrics upfront (~800K-1M tokens). Also remove repos toolset, edit tool, and simplify per-violation suggestions."
   }
 ]
