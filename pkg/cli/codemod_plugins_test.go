@@ -162,6 +162,63 @@ func TestHasCopilotPluginsSharedImport_AcceptsExtensionlessPath(t *testing.T) {
 	assert.True(t, hasCopilotPluginsSharedImport(frontmatter), "Extensionless shared/copilot-plugins import should be detected")
 }
 
+func TestIsCopilotPluginsImportPath(t *testing.T) {
+	assert.True(t, isCopilotPluginsImportPath("shared/copilot-plugins.md"), "md path should be accepted")
+	assert.True(t, isCopilotPluginsImportPath("shared/copilot-plugins"), "extensionless path should be accepted")
+	assert.True(t, isCopilotPluginsImportPath("  shared/copilot-plugins.md  "), "trimmed md path should be accepted")
+	assert.False(t, isCopilotPluginsImportPath("shared/copilot-plugins-other.md"), "different import path should be rejected")
+}
+
+func TestExtractPluginsMigrationConfig(t *testing.T) {
+	t.Run("returns false for invalid type", func(t *testing.T) {
+		plugins, githubToken, ok := extractPluginsMigrationConfig(123)
+		assert.False(t, ok, "invalid plugins type should not be migratable")
+		assert.Empty(t, plugins)
+		assert.Empty(t, githubToken)
+	})
+
+	t.Run("returns false for empty list", func(t *testing.T) {
+		plugins, githubToken, ok := extractPluginsMigrationConfig([]any{})
+		assert.False(t, ok, "empty plugins list should not be migratable")
+		assert.Empty(t, plugins)
+		assert.Empty(t, githubToken)
+	})
+
+	t.Run("returns false when object repos key is missing", func(t *testing.T) {
+		plugins, githubToken, ok := extractPluginsMigrationConfig(map[string]any{
+			"github-token": "${{ secrets.MY_TOKEN }}",
+		})
+		assert.False(t, ok, "object plugins format without repos should not be migratable")
+		assert.Empty(t, plugins)
+		assert.Empty(t, githubToken)
+	})
+
+	t.Run("returns false when object repos has invalid value", func(t *testing.T) {
+		plugins, githubToken, ok := extractPluginsMigrationConfig(map[string]any{
+			"repos": "not-a-list",
+		})
+		assert.False(t, ok, "invalid repos format should not be migratable")
+		assert.Empty(t, plugins)
+		assert.Empty(t, githubToken)
+	})
+
+	t.Run("extracts repos and github-token in object format", func(t *testing.T) {
+		plugins, githubToken, ok := extractPluginsMigrationConfig(map[string]any{
+			"repos":        []any{"github/test-plugin", "acme/custom-tools"},
+			"github-token": "${{ secrets.MY_TOKEN }}",
+		})
+		assert.True(t, ok, "valid object plugins format should be migratable")
+		assert.Equal(t, []string{"github/test-plugin", "acme/custom-tools"}, plugins)
+		assert.Equal(t, "${{ secrets.MY_TOKEN }}", githubToken)
+	})
+}
+
+func TestTopLevelPluginsRegexDetection(t *testing.T) {
+	pattern := `(?m)^plugins:`
+	assert.NotRegexp(t, pattern, "imports:\n  - uses: shared/copilot-plugins.md\n    with:\n      plugins: [\"x\"]", "nested plugins key should not match top-level pattern")
+	assert.Regexp(t, pattern, "plugins:\n  - github/test-plugin", "top-level plugins key should match pattern")
+}
+
 func assertNoTopLevelPluginsKey(t *testing.T, content string) {
 	t.Helper()
 	assert.NotRegexp(t, `(?m)^plugins:`, content, "top-level plugins key should be removed")
