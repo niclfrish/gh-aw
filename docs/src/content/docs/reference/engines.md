@@ -113,6 +113,34 @@ engine:
 
 See [Copilot Agent Files](/gh-aw/reference/copilot-custom-agents/) for details.
 
+### OpenCode Configuration
+
+AWF automatically generates an `opencode.jsonc` file in `$GITHUB_WORKSPACE` before each run. This base config sets all built-in tool permissions (`bash`, `edit`, `read`, `glob`, `grep`, `write`, `webfetch`, `websearch`) to `allow` so that non-interactive `opencode run` mode does not hang waiting for permission prompts. If an `opencode.jsonc` already exists in the workspace, AWF deep-merges its own settings on top.
+
+When `mcp-servers:` are declared in the workflow frontmatter, AWF also sets `GH_AW_MCP_CONFIG` to point to the generated `opencode.jsonc` so that OpenCode picks up the MCP gateway configuration automatically.
+
+#### Extending `opencode.jsonc`
+
+If you maintain a project-level `opencode.jsonc` and want to add MCP servers that OpenCode discovers at startup, use the `mcp` key — **not** `mcpServers` (which is the VS Code / Cline convention and is silently ignored by OpenCode):
+
+```json
+{
+  "mcp": {
+    "my-server": {
+      "type": "remote",
+      "url": "http://host.docker.internal:${MCP_GATEWAY_PORT}/mcp/my-server",
+      "headers": { "Authorization": "${MCP_GATEWAY_API_KEY}" },
+      "timeout": 30000
+    }
+  }
+}
+```
+
+The MCP gateway runs in **routed mode** and exposes each server at `/mcp/<server-name>`. Pointing to the gateway root (e.g., `http://host.docker.internal:${PORT}`) returns 404; the full path is required.
+
+> [!NOTE]
+> MCP servers declared in the workflow frontmatter via `mcp-servers:` are handled automatically by AWF — you do not need to add them to `opencode.jsonc` manually. The manual `mcp` config is only needed for servers that exist outside the AWF-managed MCP gateway.
+
 ### Engine Environment Variables
 
 All engines support custom environment variables through the `env` field:
