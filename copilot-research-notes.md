@@ -78,3 +78,24 @@
 - **Toolsets[default]**: 43 uses - overprovisioned GitHub access remains common
 - **bare mode**: 7 workflows
 - **AWF sandbox**: ~13 workflows
+
+### 2026-04-24 (Run 24911974596)
+- 201 total MD workflows; 87 explicit copilot + 24 default = 111 total Copilot effective
+- **Persistent gaps (8+ days)**: engine.version (0%), api-target (0%), startup-timeout (0%), tool-timeout (0%), network.blocked (1 only), max-continuations (2 workflows only), mcp-scripts (1 workflow)
+- **bare mode DROPPED to 0**: was 7 in previous run, now 0 - regression or mis-count previously
+- **model overrides**: 10 workflows now using model overrides (gpt-5.4-mini, gpt-5, gpt-5-mini, etc) - **IMPROVEMENT**
+- **AWF sandbox**: 15 workflows (+2 from previous)
+- **web-fetch**: 19 total workflows (+1)
+- **Custom agent files**: 5/11 still unused (grumpy-reviewer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer)
+- **mcp-scripts**: still only 1 workflow
+- **engine.version**: 0 workflows use version pinning - reproducibility risk remains
+
+### Key Trend Summary (16 days of data)
+| Feature | Apr-16 | Apr-20 | Apr-21 | Apr-23 | Apr-24 |
+|---------|--------|--------|--------|--------|--------|
+| engine.version | 0% | 0% | 0% | 0% | 0% |
+| max-continuations | ~0 | ~0 | 0 | 2 | 2 |
+| mcp-scripts | 0 | 0 | 1 | 1 | 1 |
+| AWF sandbox | ~10 | ~13 | 11 | 13 | 15 |
+| model overrides | ~0 | ~0 | 0 | 0 | 10 |
+| custom agent files | 7 | 7 | 7 | 7 | 7 |
