@@ -34,8 +34,96 @@ func getMaxConcurrentDownloads() int {
 	return envutil.GetIntFromEnv("GH_AW_MAX_CONCURRENT_DOWNLOADS", MaxConcurrentDownloads, 1, 100, logsOrchestratorLog)
 }
 
-// DownloadWorkflowLogs downloads and analyzes workflow logs with metrics
+// DownloadWorkflowLogsOptions groups all configuration for DownloadWorkflowLogs.
+// Using a struct avoids a long positional parameter list and makes future additions
+// non-breaking at call sites.
+type DownloadWorkflowLogsOptions struct {
+	WorkflowName      string
+	Count             int
+	StartDate         string
+	EndDate           string
+	OutputDir         string
+	Engine            string
+	Ref               string
+	BeforeRunID       int64
+	AfterRunID        int64
+	RepoOverride      string
+	Verbose           bool
+	ToolGraph         bool
+	NoStaged          bool
+	FirewallOnly      bool
+	NoFirewall        bool
+	Parse             bool
+	JSONOutput        bool
+	Timeout           int
+	SummaryFile       string
+	SafeOutputType    string
+	FilteredIntegrity bool
+	Train             bool
+	Format            string
+	ArtifactSets      []string
+	ExcludeWorkflows  []string
+}
+
+// DownloadWorkflowLogs downloads and analyzes workflow logs with metrics.
+// It is a thin wrapper around DownloadWorkflowLogsWithOptions for backward compatibility.
 func DownloadWorkflowLogs(ctx context.Context, workflowName string, count int, startDate, endDate, outputDir, engine, ref string, beforeRunID, afterRunID int64, repoOverride string, verbose bool, toolGraph bool, noStaged bool, firewallOnly bool, noFirewall bool, parse bool, jsonOutput bool, timeout int, summaryFile string, safeOutputType string, filteredIntegrity bool, train bool, format string, artifactSets []string, excludeWorkflows []string) error {
+	return DownloadWorkflowLogsWithOptions(ctx, DownloadWorkflowLogsOptions{
+		WorkflowName:      workflowName,
+		Count:             count,
+		StartDate:         startDate,
+		EndDate:           endDate,
+		OutputDir:         outputDir,
+		Engine:            engine,
+		Ref:               ref,
+		BeforeRunID:       beforeRunID,
+		AfterRunID:        afterRunID,
+		RepoOverride:      repoOverride,
+		Verbose:           verbose,
+		ToolGraph:         toolGraph,
+		NoStaged:          noStaged,
+		FirewallOnly:      firewallOnly,
+		NoFirewall:        noFirewall,
+		Parse:             parse,
+		JSONOutput:        jsonOutput,
+		Timeout:           timeout,
+		SummaryFile:       summaryFile,
+		SafeOutputType:    safeOutputType,
+		FilteredIntegrity: filteredIntegrity,
+		Train:             train,
+		Format:            format,
+		ArtifactSets:      artifactSets,
+		ExcludeWorkflows:  excludeWorkflows,
+	})
+}
+
+// DownloadWorkflowLogsWithOptions downloads and analyzes workflow logs with metrics.
+func DownloadWorkflowLogsWithOptions(ctx context.Context, opts DownloadWorkflowLogsOptions) error {
+	workflowName := opts.WorkflowName
+	count := opts.Count
+	startDate := opts.StartDate
+	endDate := opts.EndDate
+	outputDir := opts.OutputDir
+	engine := opts.Engine
+	ref := opts.Ref
+	beforeRunID := opts.BeforeRunID
+	afterRunID := opts.AfterRunID
+	repoOverride := opts.RepoOverride
+	verbose := opts.Verbose
+	toolGraph := opts.ToolGraph
+	noStaged := opts.NoStaged
+	firewallOnly := opts.FirewallOnly
+	noFirewall := opts.NoFirewall
+	parse := opts.Parse
+	jsonOutput := opts.JSONOutput
+	timeout := opts.Timeout
+	summaryFile := opts.SummaryFile
+	safeOutputType := opts.SafeOutputType
+	filteredIntegrity := opts.FilteredIntegrity
+	train := opts.Train
+	format := opts.Format
+	artifactSets := opts.ArtifactSets
+	excludeWorkflows := opts.ExcludeWorkflows
 	logsOrchestratorLog.Printf("Starting workflow log download: workflow=%s, count=%d, startDate=%s, endDate=%s, outputDir=%s, summaryFile=%s, safeOutputType=%s, filteredIntegrity=%v, train=%v, format=%s, artifactSets=%v, excludeWorkflows=%v", workflowName, count, startDate, endDate, outputDir, summaryFile, safeOutputType, filteredIntegrity, train, format, artifactSets, excludeWorkflows)
 
 	// Validate and resolve artifact sets into a concrete filter (list of artifact base names).

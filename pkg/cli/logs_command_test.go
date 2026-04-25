@@ -297,6 +297,18 @@ func TestIsWorkflowExcluded(t *testing.T) {
 			expected:     true,
 		},
 		{
+			name:         "slug match - id matches display name",
+			workflowName: "Weekly Research",
+			excludes:     []string{"weekly-research"},
+			expected:     true,
+		},
+		{
+			name:         "slug match - multi-word id",
+			workflowName: "CI Failure Doctor",
+			excludes:     []string{"ci-failure-doctor"},
+			expected:     true,
+		},
+		{
 			name:         "no match",
 			workflowName: "Weekly Research",
 			excludes:     []string{"Nightly Build"},
