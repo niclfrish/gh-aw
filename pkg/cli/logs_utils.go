@@ -15,6 +15,7 @@ import (
 
 	"github.com/github/gh-aw/pkg/console"
 	"github.com/github/gh-aw/pkg/logger"
+	"github.com/github/gh-aw/pkg/workflow"
 )
 
 var logsUtilsLog = logger.New("cli:logs_utils")
@@ -82,4 +83,48 @@ func getAgenticWorkflowNames(verbose bool) ([]string, error) {
 	}
 
 	return workflowNames, nil
+}
+
+// resolveExcludeWorkflows resolves a list of workflow names (IDs or display names) to their
+// canonical display names for matching against WorkflowRun.WorkflowName.
+// If a name cannot be resolved (e.g., no .lock.yml files present or the workflow is from another
+// repo), the raw value is kept for case-insensitive matching.
+func resolveExcludeWorkflows(excludes []string, verbose bool) []string {
+	if len(excludes) == 0 {
+		return nil
+	}
+
+	resolved := make([]string, 0, len(excludes))
+	for _, name := range excludes {
+		name = strings.TrimSpace(name)
+		if name == "" {
+			continue
+		}
+		// Try to resolve to canonical display name via lock files.
+		displayName, err := workflow.FindWorkflowName(name)
+		if err == nil && displayName != "" {
+			logsUtilsLog.Printf("Resolved exclude workflow '%s' -> '%s'", name, displayName)
+			resolved = append(resolved, displayName)
+		} else {
+			// Cannot resolve - keep the raw value for case-insensitive matching.
+			logsUtilsLog.Printf("Could not resolve exclude workflow '%s' (using raw value for matching)", name)
+			if verbose {
+				fmt.Fprintln(os.Stderr, console.FormatInfoMessage(fmt.Sprintf("Exclude: using '%s' for matching (could not resolve to a known workflow)", name)))
+			}
+			resolved = append(resolved, name)
+		}
+	}
+	return resolved
+}
+
+// isWorkflowExcluded reports whether a workflow display name matches any entry in the exclude list.
+// Matching is case-insensitive to be resilient to capitalisation differences.
+func isWorkflowExcluded(workflowName string, excludes []string) bool {
+	lowerName := strings.ToLower(workflowName)
+	for _, ex := range excludes {
+		if strings.ToLower(ex) == lowerName {
+			return true
+		}
+	}
+	return false
 }

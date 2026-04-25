@@ -35,8 +35,8 @@ func getMaxConcurrentDownloads() int {
 }
 
 // DownloadWorkflowLogs downloads and analyzes workflow logs with metrics
-func DownloadWorkflowLogs(ctx context.Context, workflowName string, count int, startDate, endDate, outputDir, engine, ref string, beforeRunID, afterRunID int64, repoOverride string, verbose bool, toolGraph bool, noStaged bool, firewallOnly bool, noFirewall bool, parse bool, jsonOutput bool, timeout int, summaryFile string, safeOutputType string, filteredIntegrity bool, train bool, format string, artifactSets []string) error {
-	logsOrchestratorLog.Printf("Starting workflow log download: workflow=%s, count=%d, startDate=%s, endDate=%s, outputDir=%s, summaryFile=%s, safeOutputType=%s, filteredIntegrity=%v, train=%v, format=%s, artifactSets=%v", workflowName, count, startDate, endDate, outputDir, summaryFile, safeOutputType, filteredIntegrity, train, format, artifactSets)
+func DownloadWorkflowLogs(ctx context.Context, workflowName string, count int, startDate, endDate, outputDir, engine, ref string, beforeRunID, afterRunID int64, repoOverride string, verbose bool, toolGraph bool, noStaged bool, firewallOnly bool, noFirewall bool, parse bool, jsonOutput bool, timeout int, summaryFile string, safeOutputType string, filteredIntegrity bool, train bool, format string, artifactSets []string, excludeWorkflows []string) error {
+	logsOrchestratorLog.Printf("Starting workflow log download: workflow=%s, count=%d, startDate=%s, endDate=%s, outputDir=%s, summaryFile=%s, safeOutputType=%s, filteredIntegrity=%v, train=%v, format=%s, artifactSets=%v, excludeWorkflows=%v", workflowName, count, startDate, endDate, outputDir, summaryFile, safeOutputType, filteredIntegrity, train, format, artifactSets, excludeWorkflows)
 
 	// Validate and resolve artifact sets into a concrete filter (list of artifact base names).
 	if err := ValidateArtifactSets(artifactSets); err != nil {
@@ -47,6 +47,18 @@ func DownloadWorkflowLogs(ctx context.Context, workflowName string, count int, s
 		logsOrchestratorLog.Printf("Artifact filter active: %v", artifactFilter)
 		if verbose {
 			fmt.Fprintln(os.Stderr, console.FormatInfoMessage("Artifact filter: downloading only "+strings.Join(artifactFilter, ", ")))
+		}
+	}
+
+	// Resolve excluded workflow names to display names (for matching against WorkflowRun.WorkflowName).
+	// Each entry in excludeWorkflows may be a workflow ID (e.g., "weekly-research") or a display name
+	// (e.g., "Weekly Research"). We try to resolve each to its canonical display name; if resolution
+	// fails (e.g., no .lock.yml files present), we fall back to case-insensitive matching of the raw value.
+	resolvedExcludes := resolveExcludeWorkflows(excludeWorkflows, verbose)
+	if len(resolvedExcludes) > 0 {
+		logsOrchestratorLog.Printf("Exclude filter active: %v", resolvedExcludes)
+		if verbose {
+			fmt.Fprintln(os.Stderr, console.FormatInfoMessage("Exclude filter: skipping workflows: "+strings.Join(resolvedExcludes, ", ")))
 		}
 	}
 
@@ -193,6 +205,23 @@ func DownloadWorkflowLogs(ctx context.Context, workflowName string, count int, s
 		// forcing us to scan the entire batch.
 		batchProcessed := 0
 		runsRemaining := runs
+
+		// Apply exclude filter before chunking to avoid downloading artifacts for excluded workflows.
+		if len(resolvedExcludes) > 0 {
+			var filteredRuns []WorkflowRun
+			for _, run := range runsRemaining {
+				if isWorkflowExcluded(run.WorkflowName, resolvedExcludes) {
+					logsOrchestratorLog.Printf("Skipping run %d: workflow '%s' is in exclude list", run.DatabaseID, run.WorkflowName)
+					if verbose {
+						fmt.Fprintln(os.Stderr, console.FormatInfoMessage(fmt.Sprintf("Skipping run %d: workflow '%s' is excluded by --exclude", run.DatabaseID, run.WorkflowName)))
+					}
+					continue
+				}
+				filteredRuns = append(filteredRuns, run)
+			}
+			runsRemaining = filteredRuns
+		}
+
 		for len(runsRemaining) > 0 && len(processedRuns) < count {
 			remainingNeeded := count - len(processedRuns)
 			if remainingNeeded <= 0 {
