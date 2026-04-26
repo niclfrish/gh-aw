@@ -119,3 +119,18 @@
 | AWF sandbox | ~10 | ~13 | 11 | 13 | 15 |
 | model overrides | ~0 | ~0 | 0 | 0 | 10 |
 | custom agent files | 7 | 7 | 7 | 7 | 7 |
+
+### 2026-04-26 (Run 24967000842)
+- 204 total MD workflows; 90 explicit copilot (44%)
+- **Counting method**: Explicit `engine: copilot` only (excludes blank engine = copilot default)
+- **Network gap remains**: 47/90 (52%) copilot workflows without network restrictions — HIGH security risk
+- **max-continuations**: Only 2 workflows (smoke-copilot.md, test-quality-sentinel.md) — persistent gap
+- **engine.agent**: 11 workflows using custom agent files (stable)
+- **mcp-scripts**: 0 confirmed in copilot workflows (previous 6 may have been in other engines)
+- **playground/playwright**: 5 copilot workflows using browser automation
+- **version pinning**: 7 copilot workflows pin version — most still use "latest"
+- **model overrides**: 0 in copilot engine blocks (models used in other engines: gpt-5.4-mini, claude-haiku-4.5 etc)
+- **Unused agent files**: Same 5/11 as previous: grumpy-reviewer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer
+- **toolsets [all]**: 3 workflows using overly broad access (github-mcp-structural-analysis, github-mcp-tools-report, security-review)
+- **Key insight**: Copilot-exclusive features (max-continuations, engine.agent) remain significantly underutilized
+
