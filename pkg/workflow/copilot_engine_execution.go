@@ -365,14 +365,14 @@ touch %s
 		env["GH_AW_VERSION"] = "dev"
 	}
 
-	// Expose the models endpoint to the driver so it can query available models before the
+	// Expose the models route to the driver so it can query available models before the
 	// agent starts. Only emitted for agent runs (not detection) to avoid unnecessary requests.
-	// The driver reads GH_AW_MODELS_ENDPOINT and COPILOT_GITHUB_TOKEN; when either is absent
-	// it skips the query silently (e.g. in AWF mode where the token is excluded from the sandbox).
-	// The driver obtains the actual version by running `command --version` at runtime.
+	// The driver reads GH_AW_MODELS_ROUTE and combines it with GITHUB_COPILOT_BASE_URL
+	// to construct the full URL, ensuring requests are routed through the gateway.
+	// When either env var is absent the driver skips the query silently.
 	if !workflowData.IsDetectionRun {
-		if modelsEndpoint := e.GetModelsEndpoint(workflowData); modelsEndpoint != "" {
-			env["GH_AW_MODELS_ENDPOINT"] = modelsEndpoint
+		if route := e.GetModelsRoute(); route != "" {
+			env["GH_AW_MODELS_ROUTE"] = route
 		}
 	}
 

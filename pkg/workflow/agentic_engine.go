@@ -251,15 +251,18 @@ type DriverProvider interface {
 	GetDriverScriptName() string
 }
 
-// ModelsEndpointProvider is an optional interface implemented by engines that expose
-// a /models REST endpoint for listing available AI models. When implemented, the
-// compiler adds a pre-agent step that queries the endpoint before agent execution
-// and stores the results in /tmp/gh-aw/agents.json for inclusion in the artifact.
-type ModelsEndpointProvider interface {
-	// GetModelsEndpoint returns the full URL of the models endpoint given the
-	// current workflow configuration (e.g. "https://api.githubcopilot.com/models").
+// ModelsRouteProvider is an optional interface implemented by engines that expose
+// a models REST endpoint for listing available AI models. When implemented, the
+// driver JavaScript harness queries the endpoint before agent execution and stores
+// the results in /tmp/gh-aw/agents.json for inclusion in the artifact.
+// The route is combined with the configured API base URL (GITHUB_COPILOT_BASE_URL)
+// at runtime so the query works correctly through the gateway.
+type ModelsRouteProvider interface {
+	// GetModelsRoute returns the route path of the models endpoint
+	// (e.g. "/models"). The JavaScript harness combines this with the API base
+	// URL environment variable to construct the final request URL.
 	// Returns an empty string if the engine does not support models querying.
-	GetModelsEndpoint(workflowData *WorkflowData) string
+	GetModelsRoute() string
 }
 
 // engineRequiresNodeDriver reports whether the engine's execution command wraps

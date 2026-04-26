@@ -7,7 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const os = require("os");
 
-const { main, queryModels, fetchModels, extractModelsList, buildModelsMarkdown, logModels, AGENTS_JSON_PATH } = require("./agent_models.cjs");
+const { main, queryModels, fetchModels, extractModelsList, buildModelsMarkdown, logModels, AGENTS_JSON_PATH, DEFAULT_COPILOT_BASE_URL } = require("./agent_models.cjs");
 
 // ---------------------------------------------------------------------------
 // Sample API response fixtures
@@ -235,6 +235,12 @@ describe("agent_models", () => {
     });
   });
 
+  describe("DEFAULT_COPILOT_BASE_URL constant", () => {
+    test("points to the Copilot API domain", () => {
+      expect(DEFAULT_COPILOT_BASE_URL).toBe("https://api.githubcopilot.com");
+    });
+  });
+
   // -------------------------------------------------------------------------
   // main — github-script context wrapper
   // -------------------------------------------------------------------------
@@ -266,17 +272,17 @@ describe("agent_models", () => {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     });
 
-    test("skips when GH_AW_MODELS_ENDPOINT is not set", async () => {
-      delete process.env.GH_AW_MODELS_ENDPOINT;
+    test("skips when GH_AW_MODELS_ROUTE is not set", async () => {
+      delete process.env.GH_AW_MODELS_ROUTE;
       delete process.env.COPILOT_GITHUB_TOKEN;
 
       await main();
 
-      expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining("GH_AW_MODELS_ENDPOINT is not set"));
+      expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining("GH_AW_MODELS_ROUTE is not set"));
     });
 
     test("skips when COPILOT_GITHUB_TOKEN is not set", async () => {
-      process.env.GH_AW_MODELS_ENDPOINT = "https://api.githubcopilot.com/models";
+      process.env.GH_AW_MODELS_ROUTE = "/models";
       delete process.env.COPILOT_GITHUB_TOKEN;
 
       await main();
@@ -285,7 +291,8 @@ describe("agent_models", () => {
     });
 
     test("logs warning when endpoint is unreachable", async () => {
-      process.env.GH_AW_MODELS_ENDPOINT = "https://127.0.0.1:1/models";
+      process.env.GH_AW_MODELS_ROUTE = "/models";
+      process.env.GITHUB_COPILOT_BASE_URL = "https://127.0.0.1:1";
       process.env.COPILOT_GITHUB_TOKEN = "test-token";
       process.env.GH_AW_ENGINE_ID = "copilot";
       process.env.GH_AW_ENGINE_VERSION = "1.0.36";
@@ -293,6 +300,31 @@ describe("agent_models", () => {
       await main();
 
       expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining("warning: failed to query models endpoint"));
+    });
+
+    test("assembles URL from GITHUB_COPILOT_BASE_URL and GH_AW_MODELS_ROUTE", async () => {
+      const http = require("http");
+      const fakeModels = { models: [] };
+      const server = http.createServer((req, res) => {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(fakeModels));
+      });
+      await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
+      const port = server.address().port;
+
+      try {
+        process.env.GH_AW_MODELS_ROUTE = "/models";
+        process.env.GITHUB_COPILOT_BASE_URL = `http://127.0.0.1:${port}`;
+        process.env.COPILOT_GITHUB_TOKEN = "test-token";
+        process.env.GH_AW_ENGINE_ID = "copilot";
+
+        await main();
+
+        // Should have called info with the querying message (no warning)
+        expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining("querying models from"));
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
     });
   });
 });

@@ -815,7 +815,7 @@ jobs:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
           COPILOT_MODEL: ${{ vars.GH_AW_MODEL_AGENT_COPILOT || 'claude-sonnet-4.6' }}
           GH_AW_MCP_CONFIG: /home/runner/.copilot/mcp-config.json
-          GH_AW_MODELS_ENDPOINT: https://api.githubcopilot.com/models
+          GH_AW_MODELS_ROUTE: /models
           GH_AW_PHASE: agent
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
           GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}

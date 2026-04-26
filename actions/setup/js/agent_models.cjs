@@ -6,7 +6,7 @@
 /**
  * agent_models.cjs
  *
- * Queries the agentic engine's /models endpoint before agent execution and stores
+ * Queries the agentic engine's models endpoint before agent execution and stores
  * the results in /tmp/gh-aw/agents.json for inclusion in the agent artifact.
  *
  * The JSON file follows the structure:
@@ -19,16 +19,18 @@
  *   main()   — reads env vars and delegates to queryModels()
  *
  * Required environment variables when using main():
- *   - GH_AW_MODELS_ENDPOINT: Full URL of the models endpoint
- *   - COPILOT_GITHUB_TOKEN:   Bearer token for authentication
- *   - GH_AW_ENGINE_ID:        Agentic engine identifier (e.g. "copilot")
- *   - GH_AW_ENGINE_VERSION:   Version string of the engine CLI
+ *   - GH_AW_MODELS_ROUTE:       Route path for the models endpoint (e.g. "/models")
+ *   - GITHUB_COPILOT_BASE_URL:  API base URL; assembled with GH_AW_MODELS_ROUTE to form the full URL
+ *   - COPILOT_GITHUB_TOKEN:     Bearer token for authentication
+ *   - GH_AW_ENGINE_ID:          Agentic engine identifier (e.g. "copilot")
+ *   - GH_AW_ENGINE_VERSION:     Version string of the engine CLI
  */
 
 const fs = require("fs");
-const https = require("https");
-const http = require("http");
 const { getErrorMessage } = require("./error_helpers.cjs");
+
+/** Default Copilot API base URL when GITHUB_COPILOT_BASE_URL is not configured. */
+const DEFAULT_COPILOT_BASE_URL = "https://api.githubcopilot.com";
 
 /** Path where model data is written so it is bundled in the agent artifact. */
 const AGENTS_JSON_PATH = "/tmp/gh-aw/agents.json";
@@ -38,63 +40,29 @@ const REQUEST_TIMEOUT_MS = 15_000;
 
 /**
  * Perform an HTTP GET request to the models endpoint and return the parsed JSON body.
+ * Uses the Node.js built-in fetch API (available since Node 18, stable in Node 21+).
  *
  * @param {string} endpointUrl - Full URL of the models endpoint
  * @param {string} authToken   - Bearer token for the Authorization header
  * @returns {Promise<unknown>}  Parsed JSON response body
  */
-function fetchModels(endpointUrl, authToken) {
-  return new Promise((resolve, reject) => {
-    let url;
-    try {
-      url = new URL(endpointUrl);
-    } catch {
-      reject(new Error(`Invalid models endpoint URL: ${endpointUrl}`));
-      return;
-    }
-
-    const options = {
-      hostname: url.hostname,
-      port: url.port || (url.protocol === "https:" ? 443 : 80),
-      path: url.pathname + (url.search || ""),
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-
-    const requester = url.protocol === "https:" ? https : http;
-    const req = requester.request(options, res => {
-      let body = "";
-      res.on(
-        "data",
-        /** @param {Buffer} chunk */ chunk => {
-          body += chunk.toString();
-        }
-      );
-      res.on("end", () => {
-        if (res.statusCode !== 200) {
-          reject(new Error(`HTTP ${res.statusCode} from ${endpointUrl}: ${body.slice(0, 200)}`));
-          return;
-        }
-        try {
-          resolve(JSON.parse(body));
-        } catch {
-          reject(new Error(`Failed to parse models response as JSON: ${body.slice(0, 200)}`));
-        }
-      });
-    });
-
-    req.setTimeout(REQUEST_TIMEOUT_MS, () => {
-      req.destroy();
-      reject(new Error(`Request to ${endpointUrl} timed out after ${REQUEST_TIMEOUT_MS}ms`));
-    });
-
-    req.on("error", reject);
-    req.end();
+async function fetchModels(endpointUrl, authToken) {
+  const response = await fetch(endpointUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`HTTP ${response.status} from ${endpointUrl}: ${body.slice(0, 200)}`);
+  }
+
+  return response.json();
 }
 
 /**
@@ -226,9 +194,9 @@ async function queryModels({ endpoint, token, engineId, engineVersion, agentsJso
  * Exits cleanly (non-fatal) when required env vars are absent.
  */
 async function main() {
-  const modelsEndpoint = process.env.GH_AW_MODELS_ENDPOINT;
-  if (!modelsEndpoint) {
-    core.info("GH_AW_MODELS_ENDPOINT is not set — skipping models query");
+  const modelsRoute = process.env.GH_AW_MODELS_ROUTE;
+  if (!modelsRoute) {
+    core.info("GH_AW_MODELS_ROUTE is not set — skipping models query");
     return;
   }
 
@@ -238,11 +206,14 @@ async function main() {
     return;
   }
 
+  const baseUrl = (process.env.GITHUB_COPILOT_BASE_URL || DEFAULT_COPILOT_BASE_URL).replace(/\/$/, "");
+  const endpoint = baseUrl + modelsRoute;
+
   const engineId = process.env.GH_AW_ENGINE_ID || "copilot";
   const engineVersion = process.env.GH_AW_ENGINE_VERSION || "unknown";
 
   await queryModels({
-    endpoint: modelsEndpoint,
+    endpoint,
     token: authToken,
     engineId,
     engineVersion,
@@ -260,6 +231,7 @@ module.exports = {
   logModels,
   AGENTS_JSON_PATH,
   REQUEST_TIMEOUT_MS,
+  DEFAULT_COPILOT_BASE_URL,
 };
 
 if (require.main === module) {

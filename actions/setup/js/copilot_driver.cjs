@@ -396,14 +396,19 @@ async function main() {
   // Query available models before the agent starts. This is best-effort: if the endpoint
   // is unavailable or the token is missing (e.g. running inside the AWF sandbox where
   // COPILOT_GITHUB_TOKEN is excluded), the error is swallowed and the agent proceeds.
-  const modelsEndpoint = process.env.GH_AW_MODELS_ENDPOINT;
+  const modelsRoute = process.env.GH_AW_MODELS_ROUTE;
   const copilotToken = process.env.COPILOT_GITHUB_TOKEN;
-  if (modelsEndpoint && copilotToken) {
+  if (modelsRoute && copilotToken) {
+    // Construct the full models URL from the configured API base URL + route path.
+    // GITHUB_COPILOT_BASE_URL is set by the gateway so requests are proxied correctly;
+    // fall back to the public Copilot API when running outside the gateway.
+    const baseUrl = (process.env.GITHUB_COPILOT_BASE_URL || "https://api.githubcopilot.com").replace(/\/$/, "");
+    const modelsEndpoint = baseUrl + modelsRoute;
     // Obtain the real installed version by running `command --version` so that the
     // agents.json metadata always reflects what is actually executing, regardless of
     // the version that was compiled into the workflow YAML.
     const agentVersion = getAgentVersion(command);
-    log(`models: agent version=${agentVersion}`);
+    log(`models: agent version=${agentVersion} endpoint=${modelsEndpoint}`);
     try {
       await queryModels({
         endpoint: modelsEndpoint,
@@ -418,7 +423,7 @@ async function main() {
       log(`models: warning: unexpected error querying models — agent run will continue: ${err.message}`);
     }
   } else {
-    log(`models: skipping query (modelsEndpoint=${modelsEndpoint ? "set" : "unset"} token=${copilotToken ? "set" : "unset"})`);
+    log(`models: skipping query (modelsRoute=${modelsRoute ? "set" : "unset"} token=${copilotToken ? "set" : "unset"})`);
   }
 
   let delay = INITIAL_DELAY_MS;
