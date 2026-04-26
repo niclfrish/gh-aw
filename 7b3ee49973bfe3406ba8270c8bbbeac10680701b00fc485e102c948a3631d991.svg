@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="350">
+<rect width="600" height="350" fill="white"/>
+<text x="300" y="35" text-anchor="middle" font-size="18" font-weight="bold" font-family="sans-serif">Activity Overview (Latest 100)</text>
+<rect x="101.7" y="60" width="83.3" height="230" fill="#4ECDC4" rx="3"/>
+<text x="143.3" y="55" text-anchor="middle" font-size="14" font-weight="bold" font-family="sans-serif">100</text>
+<text x="143.3" y="310" text-anchor="middle" font-size="12" font-family="sans-serif">Pull Requests</text>
+<rect x="268.3" y="60" width="83.3" height="230" fill="#FF6B6B" rx="3"/>
+<text x="310.0" y="55" text-anchor="middle" font-size="14" font-weight="bold" font-family="sans-serif">100</text>
+<text x="310.0" y="310" text-anchor="middle" font-size="12" font-family="sans-serif">Issues</text>
+<rect x="435.0" y="60" width="83.3" height="230" fill="#45B7D1" rx="3"/>
+<text x="476.7" y="55" text-anchor="middle" font-size="14" font-weight="bold" font-family="sans-serif">100</text>
+<text x="476.7" y="310" text-anchor="middle" font-size="12" font-family="sans-serif">Discussions</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="350">
+<rect width="700" height="350" fill="white"/>
+<text x="350" y="35" text-anchor="middle" font-size="18" font-weight="bold" font-family="sans-serif">Performance Velocity Metrics</text>
+<rect x="200" y="75.6" width="116" height="31.2" fill="#9B59B6" rx="3"/>
+<text x="192" y="95.2" text-anchor="end" font-size="12" font-family="sans-serif">Avg PR Merge (h)</text>
+<text x="321" y="95.2" font-size="12" font-weight="bold" font-family="sans-serif">1.6</text>
+<rect x="200" y="138.1" width="400" height="31.2" fill="#1ABC9C" rx="3"/>
+<text x="192" y="157.8" text-anchor="end" font-size="12" font-family="sans-serif">Avg Issue Close (h)</text>
+<text x="605" y="157.8" font-size="12" font-weight="bold" font-family="sans-serif">5.5</text>
+<rect x="200" y="200.6" width="145" height="31.2" fill="#E67E22" rx="3"/>
+<text x="192" y="220.2" text-anchor="end" font-size="12" font-family="sans-serif">PR Authors</text>
+<text x="350" y="220.2" font-size="12" font-weight="bold" font-family="sans-serif">2</text>
+<rect x="200" y="263.1" width="0" height="31.2" fill="#3498DB" rx="3"/>
+<text x="192" y="282.8" text-anchor="end" font-size="12" font-family="sans-serif">Discussion Answer Rate (%)</text>
+<text x="205" y="282.8" font-size="12" font-weight="bold" font-family="sans-serif">0.0</text>
+</svg>
