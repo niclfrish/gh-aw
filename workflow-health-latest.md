@@ -1,49 +1,45 @@
-# Workflow Health — 2026-04-24T12:10Z
+# Workflow Health — 2026-04-26T12:03Z
 
-Score: 72/100 (↑+4 from 68 Apr 23). 201 workflows. Run: §24888666710
+Score: 73/100 (↑+1 from 72 Apr 24). 203 workflows. Run: §24956132230
 
 ## KEY FINDINGS
 
 ### Compilation Status
-- 201/201 lock files present ✅
+- 203/203 lock files present ✅
+- **0 missing lock files** ✅
 - **0 stale lock files** ✅
-- **1 known compilation error**: dependabot-go-checker.md — `vulnerability-alerts` permission not allowed at job level (P1, issue created Apr 23 — still open)
 
-### Today's Run Stats (30 scheduled runs, Apr 24)
-- Success: 28 (93%)
-- Failures: 2 (7%)
-  - **Daily Fact About gh-aw**: Start MCP Gateway step failed → #28245 auto-created
-  - **Daily Community Attribution**: model not supported (400) → #28235 auto-created (recurring #28025)
+### Today's Failures (Apr 26)
+- **Daily Issues Report Generator**: `node: command not found` on aw-gpu-runner-T4 → auto-issue #28568
+- **Daily Go Function Namer**: AWF binary CDN 502 (transient) → covered by #28529
+- **CI Integration Tests**: failing (non-agentic)
 
-### P0 Issues
-- None today
+### P0 Issues (NEW)
+- **aw-gpu-runner-T4: node not found** (NEW issue #aw_gpunode created): 3 workflows 100% failing — Daily News, Daily Fact About gh-aw, Daily Issues Report Generator. All use copilot engine + aw-gpu-runner-T4. Prior issue #27534 closed "not planned" Apr 21 without fix. All still failing.
 
-### P1 Issues (Active)
-- **dependabot-go-checker compilation failure** (#aw_deplck, Apr 23 issue created): `vulnerability-alerts: read` not allowed at job-level
-- **Daily Community Attribution model not supported** (#28025/#28235 OPEN): Recurring 400 error — model unavailable
-- **Daily Fact About gh-aw MCP Gateway failure** (#28245 NEW Apr 24): `Start MCP Gateway` step failing — different failure from yesterday
-- **Safe outputs "session not found" at 37min** (#27755 OPEN): Long-running workflows at risk
+### P1 Issues (Active/Ongoing)
+- **dependabot-go-checker compilation failure**: `vulnerability-alerts: read` not at job level
+- **AWF binary CDN 502** (#28529 OPEN): Intermittent gh-aw-firewall download failures
+- **Daily Community Attribution model not supported** (#28025/#28235 OPEN): Recurring 400
+- **Daily Fact About gh-aw** — subsumed by P0 aw-gpu-runner-T4 issue
+- **Safe outputs "session not found" at 37min** (#27755 OPEN)
 - **Design Decision Gate push bundle failure** (#27756 OPEN)
 - **Smoke Claude** (#27030 OPEN): Ongoing
-- **Smoke Copilot** (#27028 OPEN): Ongoing since Apr 14
-- **awf-api-proxy sidecar unhealthy** (#27888 OPEN): Docker compose failures
-- **GitHub Remote MCP Auth Test REGRESSION** (#27965 OPEN): model not supported
-- **node not found on GPU runner** (#27534 OPEN): Recurring
+- **Smoke Copilot** (#27028 OPEN): Ongoing
+- **awf-api-proxy sidecar unhealthy** (#27888 OPEN)
+- **GitHub Remote MCP Auth Test REGRESSION** (#27965 OPEN)
 - **GitHub App rate limit exhaustion** (#27251 OPEN)
 - **CODEX_HOME variable collision** (#27512 OPEN)
-- **Design Decision Gate max_turns=5** (#27470 OPEN)
 
-### P2 Issues
-- **THREAT_DETECTION_RESULT parse failure** (#aw_thrdet, Apr 23 issue created): Recurring
-- **Daily Fact About gh-aw** (#28035 Apr 23): Separate auto-issue from yesterday
+### P2 Issues (Watch)
+- **THREAT_DETECTION_RESULT parse failure**: Recurring
 - **Safe Outputs SEC-004** (#27235 OPEN)
 - **Daily Documentation Updater protected files** (#27801 OPEN)
 - **Performance regressions** (#27280/#27279/#27278 OPEN)
 - **MCP gateway long-running drops** (#23153 OPEN)
 
-## Open Issues (workflow-health related)
-- #28245 Daily Fact About gh-aw MCP Gateway failure (NEW Apr 24)
-- #28235 Daily Community Attribution model not supported (NEW Apr 24 — recurring)
-- #28025 Daily Community Attribution model not supported (Apr 23, prior instance)
-- #28035 Daily Fact About gh-aw (auto, Apr 23)
-- P1/P0 list above + prior issues
+## Issues Created This Run
+- #aw_gpunode: [P0] aw-gpu-runner-T4: node not found — 3 workflows failing 100%
+
+## Issues Updated
+- None (no resolved issues confirmed)
