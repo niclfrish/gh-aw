@@ -166,5 +166,15 @@
     "recommendations_count": 4,
     "estimated_savings_per_run": 1360000,
     "notes": "Single run, 56 turns, resource_heavy_for_domain (high severity), partially_reducible (agentic_fraction=0.50). Primary lever: bash pre-steps for workflow discovery (Phase 1) + compiler setup (~8-10 turns). Add max-turns:35 cap. Remove Category C error scenarios. Reduce scoring rubric in prompt."
+  },
+  {
+    "date": "2026-04-27",
+    "workflow_name": "Daily Firewall Logs Collector and Reporter",
+    "workflow_file": "daily-firewall-report",
+    "total_tokens_analyzed": 2486927,
+    "runs_audited": 1,
+    "recommendations_count": 5,
+    "estimated_savings_per_run": 1050000,
+    "notes": "Single run, 35 turns, 94% data-gathering (agentic_fraction=0.06). Primary lever: pre-step bash batch audit to collect all run data before agent starts (~15 turns saved). Also: move chart generation to pre-step, replace github:all with github:[discussions], add max-turns:40, remove edit tool."
   }
 ]
