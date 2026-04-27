@@ -1,180 +1,137 @@
 [
   {
-    "date": "2026-04-05",
-    "workflow_name": "CI Cleaner",
-    "workflow_file": "hourly-ci-cleaner",
-    "total_tokens_analyzed": 22734152,
-    "runs_audited": 2,
-    "recommendations_count": 6,
-    "estimated_savings_per_run": 8500000,
-    "notes": "Dominant fix type is golden file drift (automatable). make update-golden already exists. Turn avg 119.5 vs 15-20 target."
-  },
-  {
-    "date": "2026-04-05",
-    "workflow_name": "Smoke Copilot",
-    "workflow_file": "smoke-copilot",
-    "total_tokens_analyzed": 20140468,
-    "runs_audited": 9,
-    "recommendations_count": 5,
-    "estimated_savings_per_run": 500000,
-    "notes": "All 9 runs flagged resource_heavy + poor_agentic_control. Outlier 4.2M/62-turn run from PR review test complexity. Per-request cost ~64K stable, so turn reduction is primary lever."
-  },
-  {
-    "date": "2026-04-06",
-    "workflow_name": "Daily Syntax Error Quality Check",
-    "workflow_file": "daily-syntax-error-quality",
-    "total_tokens_analyzed": 18584032,
-    "runs_audited": 2,
-    "recommendations_count": 4,
-    "estimated_savings_per_run": 8300000,
-    "notes": "Root cause: gh aw compile * pattern blocks /tmp/ absolute paths. 2/2 runs show identical 129-131 turn failure \u2192 source code fallback. Fix tool pattern to allow /tmp/*.md paths."
-  },
-  {
-    "date": "2026-04-07",
-    "workflow_name": "Glossary Maintainer",
-    "total_tokens_analyzed": 3855042,
-    "runs_audited": 1,
-    "recommendations_count": 5,
-    "estimated_savings_per_run": 2000000
-  },
-  {
-    "date": "2026-04-10",
-    "workflow_name": "Test Quality Sentinel",
-    "workflow_file": "test-quality-sentinel",
-    "total_tokens_analyzed": 10374284,
-    "runs_audited": 10,
-    "recommendations_count": 4,
-    "estimated_savings_per_run": 200000,
-    "notes": "All 9 non-trivial runs flagged partially_reducible (50-96% data-gathering turns). Pre-fetching PR diff + file list in bash pre-steps is primary lever. Also remove repos toolset and 3 unused bash tools."
-  },
-  {
     "date": "2026-04-12",
     "workflow_name": "Q",
     "workflow_file": "q",
-    "total_tokens_analyzed": 34945652,
     "runs_audited": 11,
-    "recommendations_count": 4,
+    "total_tokens_analyzed": 34945652,
     "estimated_savings_per_run": 2000000,
-    "notes": "45% failure rate across 11 runs. Runaway 103-turn failed run consumed 9.1M tokens (75% of daily total). Primary lever: reduce timeout-minutes 15\u219210 + remove Serena import (unused Go LSP for .md optimization). No max-turns available for Copilot engine."
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-13",
     "workflow_name": "Contribution Check",
-    "total_tokens_analyzed": 5627252,
+    "workflow_file": "",
     "runs_audited": 2,
-    "recommendations_count": 4,
-    "estimated_savings_per_run": 1300000
+    "total_tokens_analyzed": 5627252,
+    "estimated_savings_per_run": 1300000,
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-14",
     "workflow_name": "Auto-Triage Issues",
     "workflow_file": "auto-triage-issues",
-    "total_tokens_analyzed": 1320994,
     "runs_audited": 2,
-    "recommendations_count": 4,
+    "total_tokens_analyzed": 1320994,
     "estimated_savings_per_run": 300000,
-    "notes": "Root causes: (1) list_issues fetches 120-125KB all-issues payload before using search_issues no:label. (2) 59-60 ghost search_repositories calls all fail with unknown tool. (3) bash parsing failures (python3/node not allowed). (4) Model overkill for label classification."
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-15",
     "workflow_name": "Daily Community Attribution Updater",
-    "total_tokens_analyzed": 6074098,
+    "workflow_file": "",
     "runs_audited": 1,
-    "recommendations_count": 5,
-    "estimated_savings_per_run": 3000000
+    "total_tokens_analyzed": 6074098,
+    "estimated_savings_per_run": 3000000,
+    "recommendations_count": 5
   },
   {
     "date": "2026-04-16",
     "workflow_name": "Workflow Skill Extractor",
-    "total_tokens_analyzed": 4439001,
+    "workflow_file": "",
     "runs_audited": 2,
-    "recommendations_count": 5,
-    "estimated_savings_per_run": 1800000
+    "total_tokens_analyzed": 4439001,
+    "estimated_savings_per_run": 1800000,
+    "recommendations_count": 5
   },
   {
     "date": "2026-04-17",
     "workflow_name": "Daily Compiler Quality Check",
-    "total_tokens_analyzed": 23050690,
+    "workflow_file": "",
     "runs_audited": 7,
-    "recommendations_count": 5,
-    "estimated_savings_per_run": 350000
+    "total_tokens_analyzed": 23050690,
+    "estimated_savings_per_run": 350000,
+    "recommendations_count": 5
   },
   {
     "date": "2026-04-18",
     "workflow_name": "Issue Monster",
-    "total_tokens_analyzed": 1009859,
+    "workflow_file": "",
     "runs_audited": 10,
-    "recommendations_count": 5,
-    "estimated_savings_per_run": 153000
+    "total_tokens_analyzed": 1009859,
+    "estimated_savings_per_run": 153000,
+    "recommendations_count": 5
   },
   {
     "date": "2026-04-21",
     "workflow_name": "Dead Code Removal Agent",
     "workflow_file": "dead-code-remover",
-    "total_tokens_analyzed": 4472171,
     "runs_audited": 1,
-    "recommendations_count": 4,
+    "total_tokens_analyzed": 4472171,
     "estimated_savings_per_run": 1265000,
-    "notes": "Single run (55 turns vs target 30). agentic_fraction=0.50, read_only actuation. Primary lever: bash pre-step to run deadcode+filter cache saves ~15 turns. Also remove pull_requests toolset and reduce timeout 30\u219220min."
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-22",
     "workflow_name": "Smoke CI",
     "workflow_file": "smoke-ci",
-    "total_tokens_analyzed": 2869490,
     "runs_audited": 14,
-    "recommendations_count": 4,
+    "total_tokens_analyzed": 2869490,
     "estimated_savings_per_run": 233295,
-    "notes": "64% cancellation rate (9/14 runs); all 14 runs from push-to-main trigger on single day. 1.17M tokens wasted on cancelled runs (40%). Primary fix: add paths filter to push trigger. Also: remove reaction/status-comment triggers, cap cache-memory haiku scan to last 10 files."
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-23",
     "workflow_name": "Test Quality Sentinel",
     "workflow_file": "test-quality-sentinel",
-    "total_tokens_analyzed": 15964870,
     "runs_audited": 45,
-    "recommendations_count": 5,
+    "total_tokens_analyzed": 15964870,
     "estimated_savings_per_run": 120000,
-    "notes": "26/45 runs partially_reducible (58%), 9/45 resource_heavy. Avg 8 turns, agentic_fraction=0.5. Primary lever: pre-step deterministic test collection to reduce turns."
+    "recommendations_count": 5
   },
   {
     "date": "2026-04-23",
     "workflow_name": "Architecture Guardian",
     "workflow_file": "architecture-guardian",
-    "total_tokens_analyzed": 1969440,
     "runs_audited": 1,
-    "recommendations_count": 4,
+    "total_tokens_analyzed": 1969440,
     "estimated_savings_per_run": 900000,
-    "notes": "Single run, 47 turns, read_only, agentic_fraction=0.50. Primary lever: bash pre-step to collect all file metrics upfront (~800K-1M tokens). Also remove repos toolset, edit tool, and simplify per-violation suggestions."
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-24",
     "workflow_name": "Documentation Noob Tester",
     "workflow_file": "docs-noob-tester",
-    "total_tokens_analyzed": 3009872,
     "runs_audited": 1,
-    "recommendations_count": 4,
+    "total_tokens_analyzed": 3009872,
     "estimated_savings_per_run": 1400000,
-    "notes": "Single run, 60 turns vs 3-page target (20-25 expected). agentic_fraction=0.5. 6 shared imports, no max-turns, npm install done agentically. Primary lever: bash pre-steps for npm install+server+IP (~10 turns), max-turns: 25 cap, prompt slimming."
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-27",
     "workflow_name": "Daily Syntax Error Quality Check",
     "workflow_file": "daily-syntax-error-quality",
-    "total_tokens_analyzed": 3399393,
     "runs_audited": 1,
-    "recommendations_count": 4,
+    "total_tokens_analyzed": 3399393,
     "estimated_savings_per_run": 1360000,
-    "notes": "Single run, 56 turns, resource_heavy_for_domain (high severity), partially_reducible (agentic_fraction=0.50). Primary lever: bash pre-steps for workflow discovery (Phase 1) + compiler setup (~8-10 turns). Add max-turns:35 cap. Remove Category C error scenarios. Reduce scoring rubric in prompt."
+    "recommendations_count": 4
   },
   {
     "date": "2026-04-27",
     "workflow_name": "Daily Firewall Logs Collector and Reporter",
     "workflow_file": "daily-firewall-report",
-    "total_tokens_analyzed": 2486927,
     "runs_audited": 1,
-    "recommendations_count": 5,
+    "total_tokens_analyzed": 2486927,
     "estimated_savings_per_run": 1050000,
-    "notes": "Single run, 35 turns, 94% data-gathering (agentic_fraction=0.06). Primary lever: pre-step bash batch audit to collect all run data before agent starts (~15 turns saved). Also: move chart generation to pre-step, replace github:all with github:[discussions], add max-turns:40, remove edit tool."
+    "recommendations_count": 5
+  },
+  {
+    "date": "2026-04-27",
+    "workflow_name": "Package Specification Extractor",
+    "workflow_file": "spec-extractor",
+    "runs_audited": 4,
+    "total_tokens_analyzed": 12740535,
+    "estimated_savings_per_run": 1620000,
+    "recommendations_count": 4
   }
 ]
