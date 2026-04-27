@@ -1,44 +1,15 @@
 {
   "daily_analysis": [
     {
-      "date": "2026-04-22",
-      "pr_count": 46,
+      "date": "2026-04-27",
+      "pr_count": 24,
       "message_count": 0,
-      "prs_with_body": 42,
-      "avg_sentiment": 0.026,
-      "top_topic": "Firewall / Error",
-      "top_keywords": [
-        "workflow",
-        "firewall",
-        "updated",
-        "behavior",
-        "test"
-      ],
-      "sentiment_breakdown": {
-        "positive": 18,
-        "neutral": 17,
-        "negative": 11
-      }
-    },
-    {
-      "date": "2026-04-24",
-      "pr_count": 42,
-      "message_count": 0,
-      "prs_with_body": 42,
-      "avg_sentiment": 0.059,
-      "top_topic": "Network/Firewall & MCP",
-      "top_keywords": [
-        "git",
-        "test",
-        "agent",
-        "mcp",
-        "blocked"
-      ],
-      "sentiment_breakdown": {
-        "positive": 23,
-        "neutral": 11,
-        "negative": 8
-      }
+      "avg_sentiment": 0.076,
+      "positive_count": 14,
+      "neutral_count": 7,
+      "negative_count": 3,
+      "top_topic": "command/http blocks",
+      "top_keywords": ["command", "triggering command", "block", "http", "http block"]
     }
   ]
 }
