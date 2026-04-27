@@ -1106,7 +1106,7 @@ The YAML frontmatter supports these fields:
     ```
 
     Operation types: `replace`, `append`, `prepend`.
-  - `upload-asset:` - Publish files to orphaned git branch (recommended for images/charts/screenshots)
+  - `upload-asset:` - Publish files to orphaned git branch (for persistent URLs that survive artifact expiration)
 
     ```yaml
     safe-outputs:
@@ -1117,8 +1117,8 @@ The YAML frontmatter supports these fields:
         max: 10                         # Optional: max assets (default: 10)
     ```
 
-    Publishes files to an orphaned git branch for persistent storage and URL-addressable embedding. Default allowed extensions include common non-executable types. Maximum file size is 50MB (51200 KB). **Use this for images, charts, and screenshots that need embeddable URLs in issues/PRs/discussions.**
-  - `upload-artifact:` - Upload files as run-scoped GitHub Actions artifacts (recommended for temporary run artifacts)
+    Publishes files to an orphaned git branch for persistent storage and URL-addressable embedding. Default allowed extensions include common non-executable types. Maximum file size is 50MB (51200 KB). **Use this only when you need persistent, publicly addressable URLs that survive artifact expiration.** For charts, images, and screenshots, prefer `upload-artifact` with `skip-archive: true` instead — it puts less pressure on git storage and automatically cleans up when the artifact expires.
+  - `upload-artifact:` - Upload files as run-scoped GitHub Actions artifacts (preferred for charts, images, and temporary artifacts)
 
     ```yaml
     safe-outputs:
@@ -1139,7 +1139,7 @@ The YAML frontmatter supports these fields:
           skip-archive: true            # Allow agent to upload files without zipping
     ```
 
-    Uploads files as run-scoped GitHub Actions artifacts. Artifacts are temporary and tied to the workflow run, automatically cleaned up when they expire. Agents call `upload_artifact` with a `name`, `path`, and optional `retention_days`. **Use this for temporary downloadable artifacts**, while `upload-asset` is preferred for embedding images/charts in GitHub content.
+    Uploads files as run-scoped GitHub Actions artifacts. Artifacts are temporary and tied to the workflow run, automatically cleaned up when they expire. Agents call `upload_artifact` with a `name`, `path`, and optional `retention_days`. **Use this for charts, images, and temporary downloadable artifacts.** Set `skip-archive: true` to upload individual files without zipping, enabling their URLs to be embedded in GitHub content. Prefer this over `upload-asset` for most image/chart use cases.
   - `dispatch-workflow:` - Trigger other workflows with inputs
 
     ```yaml
