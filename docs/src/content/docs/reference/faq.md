@@ -259,6 +259,53 @@ tools:
 
 See [Integrity Filtering](/gh-aw/reference/integrity/) for available levels, user blocking, and approval labels.
 
+### Should agentic workflows fail closed when an external check can't confirm execution is allowed?
+
+Yes — fail-closed is the design default. The architecture is intentionally layered so that if something can't be confirmed, nothing writes to your repository. The AI agent runs read-only, write operations only happen in a separate gated safe-outputs job after the agent finishes, and [threat detection](/gh-aw/reference/threat-detection/) runs between the agent and any writes.
+
+You can also add an admission boundary *before the agent ever runs*. This is the right place for external authority checks — environment freeze gates, deployment windows, external approval services, and so on.
+
+**`on.steps:` — pre-activation steps**
+
+Inject deterministic steps into the pre-activation job. If any step exits non-zero, the job fails and the activation job (where the agent runs) never starts:
+
+```yaml
+on:
+  issues:
+    types: [opened]
+  steps:
+    - name: Check external gate
+      run: |
+        STATUS=$(curl -sf https://your-authority.example.com/allow?repo=${{ github.repository }})
+        [ "$STATUS" = "allowed" ] || exit 1
+```
+
+If the external service is unreachable, `curl -sf` returns non-zero and the workflow fails closed — the agent won't run.
+
+**`skip-if-match:` / `skip-if-no-match:`**
+
+When the gate can be expressed as a GitHub search query (e.g., the presence of a `ops:freeze` label on an open issue), these fields skip the workflow cleanly before the agent starts:
+
+```yaml
+on:
+  schedule: daily
+  skip-if-match: 'label:ops:freeze is:issue is:open'
+```
+
+**`manual-approval:`**
+
+Gate execution on a GitHub environment protection rule — required reviewers, wait timers:
+
+```yaml
+on:
+  workflow_dispatch:
+  manual-approval: production
+```
+
+**Both layers together** — a pre-agent check answers "can this workflow run at all?"; the safe-outputs / threat-detection layer answers "is this specific output safe to write?" For high-assurance scenarios, using both is appropriate.
+
+See [Pre-Activation Steps](/gh-aw/reference/triggers/#pre-activation-steps-onsteps), [Skip-If-Match](/gh-aw/reference/triggers/#skip-if-match-condition-skip-if-match), [Manual Approval Gates](/gh-aw/reference/triggers/#manual-approval-gates-manual-approval), and [Safe Outputs](/gh-aw/reference/safe-outputs/).
+
 ## Configuration & Setup
 
 ### Why do slash-command workflows show many "started then skipped" runs on comments?
