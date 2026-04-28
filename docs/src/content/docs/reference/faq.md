@@ -166,6 +166,47 @@ if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
 See [Conditional Execution](/gh-aw/reference/frontmatter/#conditional-execution-if) in the Frontmatter Reference for details.
 
+### How do I write large content (like a wiki page) from an agentic workflow?
+
+Use `tools: repo-memory` with `wiki: true`. This lets the agent write files directly to the wiki's git repository — there is no body size limit because content is written as a file, not passed as a tool call parameter.
+
+```yaml wrap
+---
+tools:
+  repo-memory:
+    wiki: true
+    max-file-size: 1048576   # 1MB per file (default 10KB)
+    max-patch-size: 102400   # 100KB total diff (default 10KB)
+    allowed-extensions: [".md"]
+---
+```
+
+The agent writes to `/tmp/gh-aw/repo-memory-default/` at runtime. After the workflow completes, the framework automatically commits and pushes the changes to the wiki git endpoint (`{repo}.wiki.git`). See [Repo Memory](/gh-aw/reference/repo-memory/) for full configuration.
+
+If you use a custom safe output job to write large content, the framework saves body content that exceeds the inline size limit to a file under `/tmp/gh-aw/safeoutputs/` and stores a reference string `[Content too large, saved to file: <filename>]` in the agent output JSON instead. That file is included in the downloaded artifact, so it is accessible from the safe output job runner. To handle it robustly, extract the resolution into a helper:
+
+```javascript
+function resolveAgentField(value, fieldName = 'field') {
+  const FILE_REF_PREFIX = '[Content too large, saved to file: ';
+  if (typeof value === 'string' && value.startsWith(FILE_REF_PREFIX) && value.endsWith(']')) {
+    const filename = value.slice(FILE_REF_PREFIX.length, -1);
+    const filePath = path.join('/tmp/gh-aw/safeoutputs', filename);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`${fieldName}: referenced content file not found: ${filePath}`);
+    }
+    const content = fs.readFileSync(filePath, 'utf8');
+    core.info(`Resolved ${fieldName} from file (${content.length} bytes)`);
+    return content;
+  }
+  return value;
+}
+
+// Usage:
+const body = resolveAgentField(item.body, 'body');
+```
+
+For wiki pages specifically, `repo-memory` with `wiki: true` is the recommended approach as it avoids the size limit entirely. See [Custom Safe Output Jobs](/gh-aw/reference/custom-safe-outputs/) for details on the custom job pattern.
+
 ## Guardrails
 
 ### Agentic workflows run in GitHub Actions. Can they access my repository secrets?
