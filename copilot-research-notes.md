@@ -84,6 +84,21 @@
 - **New finding**: startup-timeout and tool-timeout have been features for multiple releases with 0% adoption
 - **test-quality-sentinel.md**: uses max-continuations: 40 (extremely high) - unique outlier
 
+### 2026-04-28 (Run 25078101819)
+- 203 total MD workflows; 89 explicit copilot (44%) — **1 fewer than yesterday**
+- Scope: This run analyzed only Copilot-engine workflows
+- **engine.bare**: 0 in copilot workflows (bare: true found in 8 but those are non-copilot engines)
+- **model selection**: 0/89 copilot workflows (model overrides used only in non-Copilot engines)
+- **mcp-scripts**: 0/89 copilot workflows this run (previous detection may have been non-Copilot)
+- **cache-memory**: 29/89 in copilot-specific scope (vs 84 all engines)
+- **copilot-requests**: 37/89 (42%) — strong adoption in Copilot workflows
+- **github toolsets**: 54/89 (61%) — majority use specific toolsets (good!)
+- **safe-outputs**: 74/89 (83%) — high adoption
+- **Custom agent files**: CONFIRMED 0/89 use engine.agent with non-AWF agent
+  - Available but unused: grumpy-reviewer, w3c-spec-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer
+- **Persistent 10+ run gaps**: engine.version, api-target, blocked-domains, max-continuations (2), mcp-scripts in copilot
+- **33/89 without github tool** — potential missed capability
+
 ### 2026-04-23 (Run 24858982293)
 - 200 total MD workflows; 88 explicit copilot (44%)
 - **Persistent gaps (7+ days now confirmed)**: engine.version (0%), api-target (0%), startup-timeout (0%), tool-timeout (0%), network.blocked (0 uses effectively), max-continuations (2 workflows only)
