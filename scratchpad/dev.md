@@ -1,7 +1,7 @@
 # Developer Instructions
 
-**Version**: 8.2
-**Last Updated**: 2026-04-27
+**Version**: 8.3
+**Last Updated**: 2026-04-28
 **Purpose**: Consolidated development guidelines for GitHub Agentic Workflows
 
 This document consolidates specifications from the scratchpad directory into unified developer instructions. It provides architecture patterns, security guidelines, code organization rules, and testing practices.
@@ -132,6 +132,10 @@ The codebase uses a layered package structure with three tiers: entry points, co
 | `pkg/types` | Shared type definitions across packages |
 
 **Utility Packages**: `pkg/fileutil`, `pkg/gitutil`, `pkg/logger`, `pkg/stringutil`, `pkg/sliceutil`, `pkg/repoutil`, `pkg/tty`, `pkg/envutil`, `pkg/timeutil`, `pkg/typeutil`, `pkg/semverutil`, `pkg/stats`, `pkg/testutil`, `pkg/styles`
+
+**Key utility notes**:
+- `pkg/repoutil`: `SplitRepoSlug(slug string) (owner, repo string, err error)` splits `owner/repo` strings. For GitHub Actions `uses:` fields that include sub-paths (e.g. `github/codeql-action/upload-sarif`), call `gitutil.ExtractBaseRepo` first to strip the sub-path before calling `SplitRepoSlug`.
+- `pkg/logger`: namespace-based debug logging — see the [Logger Namespace Convention](#logger-namespace-convention) section.
 
 All core packages depend on `pkg/constants` and `pkg/types` for shared definitions.
 
@@ -401,6 +405,19 @@ func ValidateFrontmatter(data map[string]any) error {
     return schema.Validate(data)
 }
 ```
+
+**Parsing Pipeline** (from `pkg/parser/README.md`):
+
+1. **Read** the raw markdown file content.
+2. **Extract** the YAML frontmatter block between `---` delimiters (`ExtractFrontmatterFromContent`).
+3. **Process imports**: resolve all `@import` directives recursively, merge imported YAML configurations, and deduplicate (`ProcessImportsFromFrontmatterWithSource`).
+4. **Validate** the merged frontmatter against the JSON schema (`ValidateMainWorkflowFrontmatterWithSchemaAndLocation`).
+5. **Expand includes** in the markdown body (`ExpandIncludesWithManifest`).
+6. **Pass** the merged frontmatter and markdown body to `pkg/workflow` for compilation.
+
+**Thread safety**: `ImportCache` is designed for single-goroutine use per compilation run. For concurrent compilations, create a separate `ImportCache` per run. `DefaultFileReader` is safe to read but must not be mutated after package initialization.
+
+See `pkg/parser/README.md` for the full public API reference including GitHub URL parsing, schedule parsing, frontmatter hashing, and MCP configuration extraction.
 
 ### Compiler Validation
 
@@ -1116,6 +1133,51 @@ var statusLog = logger.New("cli:status_command")
 var log = logger.New("audit")
 var logger = logger.New("compile")  // conflicts with package name
 ```
+
+**Logger Control via `DEBUG` Environment Variable**
+
+The `DEBUG` environment variable controls which loggers are enabled. When `ACTIONS_RUNNER_DEBUG=true` is set (as in GitHub Actions debug runs) and `DEBUG` is not explicitly set, all loggers are enabled — equivalent to `DEBUG=*`.
+
+```bash
+# Enable all loggers
+DEBUG=* gh aw compile workflow.md
+
+# Enable a specific namespace
+DEBUG=cli:* gh aw compile workflow.md
+
+# Enable multiple namespaces
+DEBUG=cli:*,workflow:compiler gh aw compile workflow.md
+
+# Exclude a specific logger (exclusions take precedence)
+DEBUG=*,-workflow:compiler gh aw compile workflow.md
+
+# Disable colors (auto-disabled when piping)
+DEBUG_COLORS=0 DEBUG=* gh aw compile workflow.md
+```
+
+**Pattern syntax**: `*` matches all; `namespace:*` matches all with that prefix; `-pattern` excludes (takes precedence); comma-separate multiple patterns.
+
+**Check `Enabled()` before expensive operations**:
+
+```go
+if log.Enabled() {
+    // Only executed when this logger is active
+    result := expensiveOperation()
+    log.Printf("Result: %v", result)
+}
+```
+
+**slog adapter**: Use `NewSlogHandler` or `NewSlogLoggerWithHandler` when a dependency expects a `*slog.Logger`:
+
+```go
+var log = logger.New("myapp:feature")
+slogLogger := logger.NewSlogLoggerWithHandler(log)
+slogLogger.Info("using slog interface", "key", "value")
+```
+
+`SlogHandler.Enabled` returns `false` when the underlying logger is disabled, preventing attribute collection overhead for inactive loggers.
+
+See `pkg/logger/README.md` for the full specification including color support, time-diff display, and implementation notes.
 
 ### Console Output Convention
 
@@ -2932,6 +2994,7 @@ These files are loaded automatically by compatible AI tools (e.g., GitHub Copilo
 ---
 
 **Document History**:
+- v8.3 (2026-04-28): Maintenance tone scan — 0 tone issues found. Documented 3 package specifications from PR #28918 (`pkg/logger`, `pkg/parser`, `pkg/repoutil`): (1) Logger: expanded Logger Namespace Convention section with `DEBUG` env var patterns, `ACTIONS_RUNNER_DEBUG=true` behavior, `Enabled()` check for expensive operations, and slog adapter (`NewSlogHandler`, `NewSlogLoggerWithHandler`); (2) Parser: added 6-step parsing pipeline and `ImportCache` thread safety note to Parser Validation section; (3) repoutil: added `SplitRepoSlug` usage note (including `gitutil.ExtractBaseRepo` prerequisite for sub-folder paths) to Utility Packages. Coverage: 64 spec files (no new files).
 - v8.2 (2026-04-27): Maintenance tone scan — fixed 2 tone issues across 2 spec files: `validation-architecture.md` (1 fix: "Developer-friendly warnings"→"Non-critical diagnostic warnings"), `oh-my-code.md` (1 fix: "Developers who want \"coding on steroids\""→"Developers who want high-throughput automated code assistance"). Coverage: 64 spec files (no new files).
 - v8.1 (2026-04-26): Maintenance tone scan — fixed 4 tone issues across 2 spec files: `oh-my-code.md` (3 fixes: "Smart search with relevance ranking"→"Search with relevance ranking", "**Best of both**: Power of oh-my-opencode..."→"**Combined use**: oh-my-opencode for development, gh-aw for automated workflows", "Best of both worlds"→"Combines local development with automated workflows"), `engine-architecture-review.md` (1 fix: "**Significantly improved**"→"**Improved**"). Coverage: 64 spec files (no new files).
 - v8.0 (2026-04-25): Maintenance tone scan — fixed 4 tone issues across 4 spec files: `file-inlining.md` (1 fix: "Smart email address filtering"→"Email address detection"), `firewall-log-parsing.md` (1 fix: "**Smart caching:**"→"**Result caching:**"), `gastown.md` (1 fix: "**Best of Both Worlds**:"→"**Combining both systems**:"), `agents/hierarchical-agents-quickstart.md` (1 fix: "nice to have"→"non-blocking"). Coverage: 64 spec files (no new files).
