@@ -216,6 +216,28 @@ See [Text Sanitization](/gh-aw/reference/safe-outputs/#text-sanitization-allowed
 
 Guardrails are foundational to the design. Agentic workflows implement defense-in-depth through compilation-time validation (schema checks, expression safety, action SHA pinning), runtime isolation (sandboxed containers with network controls), permission separation (read-only defaults with [safe outputs](/gh-aw/reference/safe-outputs/) for writes), tool allowlisting, and output sanitization. See the [Security Architecture](/gh-aw/introduction/architecture/).
 
+### Should the execution platform own the final admission decision for trusted execution context?
+
+This is a meaningful architectural distinction: *guardrail validation* answers whether the agent's proposed output looks acceptable; *admission authority* answers whether this execution intent is allowed to proceed at all.
+
+gh-aw's [layered trust model](/gh-aw/introduction/architecture/) roots at the GitHub Actions substrate (Layer 1). The execution platform — GitHub Actions — does own the final admission decision. Any in-workflow approval step, including GitHub Environments with required reviewers, is still within that same control plane.
+
+The closest approximation to an external admission gate today is to use **pre-agent `steps:`** to call an external policy service before the agent runs. If the step fails, the agent is blocked — fail-closed:
+
+```yaml wrap
+steps:
+  - name: External admission check
+    run: |
+      curl -sf -X POST https://admission.internal/check \
+        -d '{"repo":"${{ github.repository }}","ref":"${{ github.ref }}"}'
+```
+
+Use [GitHub Actions OIDC tokens](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect) in your admission service to cryptographically verify that the request genuinely originates from the expected repo and ref.
+
+Similarly, a [custom safe output job](/gh-aw/reference/safe-outputs/#custom-safe-output-jobs-jobs) can call an external policy service before applying the agent's proposed changes — providing an admission gate on the write side.
+
+The limitation is that both patterns still run within the GitHub Actions trust boundary. A truly external authority that intercepts execution before the workflow receives its token is not currently supported. If this is a hard requirement, the current approach treats the external call as a policy enforcement layer while accepting GitHub Actions as the underlying substrate.
+
 ### How is my code and data processed?
 
 By default, your workflow is run on GitHub Actions, like any other GitHub Actions workflow, and as one if its jobs it invokes your nominated [AI Engine (coding agent)](/gh-aw/reference/engines/), run in a container. This engine may in turn make tool calls and MCP calls. When using the default **GitHub Copilot CLI**, the workflow is processed by the `copilot` CLI tool which uses GitHub Copilot's services and related AI models. The specifics depend on your engine choice:
