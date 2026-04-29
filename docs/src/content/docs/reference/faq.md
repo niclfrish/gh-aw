@@ -546,6 +546,23 @@ Costs vary depending on workflow complexity, AI model, and execution time. GitHu
 
 Reduce costs by optimizing prompts, using smaller models, limiting tool calls, reducing run frequency, and caching results.
 
+### Are GitHub Actions minutes billed separately from AI usage?
+
+Yes — these are two independent costs. Agentic workflows run as GitHub Actions workflows, so standard Actions minutes apply and are subject to your organization's [Actions spending limits](https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-actions/managing-your-spending-limit-for-github-actions). AI usage is billed separately through your AI provider (see [Who pays for the use of AI?](#who-pays-for-the-use-of-ai) above).
+
+### How do I control and cap AI spend?
+
+gh-aw doesn't have a built-in spend cap. Cost governance happens at two levels:
+
+- **GitHub Actions minutes**: Set a spending limit in your GitHub organization's billing settings.
+- **AI provider budgets**: For Claude and Codex, use Anthropic's or OpenAI's dashboard to set usage caps and alerts. For Copilot CLI, usage is constrained by the premium request quota in your Copilot plan.
+
+To attribute costs per repository, use a separate PAT or API key for each repo — then provider dashboards show usage scoped to that key.
+
+### How do retries and frequent triggers affect cost?
+
+Each workflow execution — including retries — runs a full agent session and consumes a similar amount of AI credits and Actions minutes. Agentic workflows don't loop indefinitely; the agent runs once per trigger. However, a high-frequency event trigger (e.g., firing on every comment across a busy repo) multiplies costs proportionally. Limit trigger frequency using conditions in the `on:` block of your workflow frontmatter, or restrict triggers to specific labels, paths, or actor filters.
+
 ### Can I change the model being used, e.g., use a cheaper or more advanced one?
 
 Yes! You can configure the model in your workflow frontmatter:
