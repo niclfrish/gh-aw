@@ -1,34 +1,35 @@
-# Agent Performance — 2026-04-28
-Run: §25034542635 | Q:74→74 E:71→71
+# Agent Performance — 2026-04-29
+Run: §25091475936 | Q:74→74 E:71→71
 
-## Ecosystem Overview (Apr 28)
+## Ecosystem Overview (Apr 29)
 - Overall quality: 74/100 (→ stable), effectiveness: 71/100 (→ stable)
-- 30 runs observed (past 2 days): 27 success, 3 failure
-- Effective success rate: ~90% (27/30) — slight dip vs yesterday 93%
+- 26 completed runs observed today: 22 success, 4 failure
+- Effective success rate: ~85% (22/26) — slight dip vs yesterday 90%
 
 ## Top Performers
-1. **Test Quality Sentinel** (Q:90 E:92) — 7/7 success ✅
-2. **Design Decision Gate** (Q:88 E:85) — 7/7 success ✅
-3. **Smoke CI** (Q:85 E:88) — 5/5 success ✅
-4. **Issue Monster** (Q:77 E:76) — 2/2 success ✅
+1. **Test Quality Sentinel** (Q:90 E:92) — 5/5 success ✅
+2. **Design Decision Gate** (Q:88 E:85) — 4/4 success ✅
+3. **Smoke OpenCode/Claude/Codex/Copilot** (Q:85 E:85) — all passing ✅
+4. **Issue Monster** (Q:77 E:76) — 1/1 success ✅
 5. **Agent Persona Explorer** (Q:75 E:73) — 1/1 success ✅
 
-## New Failures (Apr 28)
-- **CLI Version Checker**: docker compose failure (`docker compose up -d --pull never` exit 1) — related to awf-api-proxy sidecar P1 #27888
+## New Failures (Apr 29)
+- **Smoke Crush**: failure (new today)
+- **Smoke Gemini**: failure (new today)
 
 ## Regressed / Still Failing 📉
-- **GitHub Remote MCP Authentication Test** (Q:10 E:0) — Day 7+ model not supported (#27965)
+- **GitHub Remote MCP Authentication Test** (Q:10 E:0) — Day 8+ model not supported (#27965)
 - **Documentation Unbloat** — Claude auth failure (#28659), continuing
 
-## 6-day Trends
-- Quality: 68→72→73→74→74→74 (→ stable)
-- Effectiveness: 62→68→69→70→71→71 (→ leveling off)
-- Success rate: 47%→93%→94%→95%→93%→90% (slight dip, docker sidecar impact)
-- P1 open: 12→13→13→13→13→13 (→ stable)
+## 7-day Trends
+- Quality: 72→73→74→74→74→74→74 (→ stable)
+- Effectiveness: 68→69→70→71→71→71→71 (→ stable)
+- Success rate: 93%→94%→95%→93%→90%→85% (slight dip, new Smoke failures)
+- P1 open: 13→13→13→13→13→13→13 (→ stable, backlog not shrinking)
 
 ## Issues/Actions This Run
-- Discussion created (performance report, Apr 28)
+- Discussion created (performance report, Apr 29)
 - No new improvement issues (existing issues cover active failures)
-- CLI Version Checker docker failure → linked to P1 #27888
+- Smoke Crush and Smoke Gemini failures noted — likely engine-side transient issues
 
-Last updated: 2026-04-28T05:00Z by agent-performance-manager
+Last updated: 2026-04-29T05:00Z by agent-performance-manager
