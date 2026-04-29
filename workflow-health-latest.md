@@ -1,6 +1,6 @@
-# Workflow Health — 2026-04-28T12:20Z
+# Workflow Health — 2026-04-29T12:24Z
 
-Score: 57/100 (↓-17 from 74 Apr 27). 204 workflows. Run: §25052372422
+Score: 73/100 (↑+16 from 57 Apr 28). 204 workflows. Run: §25108329742
 
 ## KEY FINDINGS
 
@@ -9,40 +9,39 @@ Score: 57/100 (↓-17 from 74 Apr 27). 204 workflows. Run: §25052372422
 - **0 missing lock files** ✅
 - **0 stale lock files** ✅
 
-### Today's Failures (Apr 28)
-13 scheduled runs failed out of 30 (57% success rate — significant regression from 93% yesterday)
+### Today's Failures (Apr 29)
+8 scheduled runs failed out of 30 (73% success rate — improvement from 57% yesterday)
 
-**Category 1: THREAT_DETECTION_RESULT parse failure (systemic)**
-- **Dead Code Removal Agent** — detection job: "No THREAT_DETECTION_RESULT found"
-- **Daily Testify Uber Super Expert** — detection job: same error
-- **Update Astro** — detection job: same error
-- Tracked in #28866 ([aw] Detection Runs)
+**Category 1: Codex engine crash (P0 ongoing)**
+- **Daily Fact About gh-aw** — `codex: command not found` (auto-issue #29088)
 
-**Category 2: Agent job failures (various)**
-- **Daily Fact About gh-aw** — codex engine agent crash (P0 ongoing)
-- **Sub-Issue Closer** — agent job crash (no OTEL = possible runtime issue)
-- **Daily Team Evolution Insights** — agent job crash
-- **Daily AstroStyleLite Markdown Spellcheck** — agent crash (no OTEL)
-- **Daily Rendering Scripts Verifier** — agent crash (Docker/Playwright env)
-- **Developer Documentation Consolidator** — agent crash (Docker env)
-- **Semantic Function Refactoring** — agent crash
+**Category 2: CI integration test failures (P1)**
+- **CI** — 4 jobs failed: js-integration-live-api (`ERR_API: fetch file audit-workflows.md failed`), Integration Release Availability, DIFC Proxy sh Integration Test, Integration Update - Preserve Local Imports
 
-**Category 3: Safe outputs failure**
-- **Daily Documentation Updater** — safe_outputs job failed
+**Category 3: Safe outputs failures (likely agent crashes)**
+- **Daily Rendering Scripts Verifier** — safe_outputs failed, no OTEL (Docker/Playwright env)
+- **Daily Go Function Namer** — safe_outputs failed
+- **Developer Documentation Consolidator** — safe_outputs failed (Docker env)
+- **Daily AstroStyleLite Markdown Spellcheck** — safe_outputs failed, no OTEL
+- **Instructions Janitor** — safe_outputs failed, no OTEL
+- **Daily AW Cross-Repo Compile Check** — safe_outputs failed
 
-**Category 4: CI**
-- **CI** (scheduled integration tests) — 4 integration test jobs failed
+### Improvements vs Yesterday
+- THREAT_DETECTION_RESULT parse failure: NOT appearing in today's failures (was systemic yesterday - resolved or intermittent)
+- Total failure count: 8 (down from 13)
+- Success rate: 73% (up from 57%)
 
 ### P0 Issues (Active)
-- **Daily Fact About gh-aw codex failure** (auto-issues #28703 etc): codex binary/engine crash. Daily recurring.
+- **Daily Fact About gh-aw codex failure** (#29088 auto-created today): codex binary not found. Daily recurring.
 
-### P1 Issues (Carry from Apr 27)
-- **Documentation Unbloat claude auth failure** (#28659 OPEN): Claude OAuth token issue
-- **GitHub Remote MCP Authentication Test** (#27965 OPEN): gpt-5.1-codex-mini model not supported, day 7+
-- **THREAT_DETECTION_RESULT parse failure** — NOW SYSTEMIC: affecting ≥3 workflows today (was 1-2 workflows). Tracked #28866.
-- **Safe outputs session not found** (#23153 OPEN): long-running workflows
-- **GitHub App rate limit** (#27251 OPEN)
+### P1 Issues (Carry from Apr 28)
+- **CI integration tests failing** (new today): js-integration-live-api `ERR_API: fetch file audit-workflows.md failed`
+- **Node.js 20 deprecation warning** in CI: actions/setup-go using deprecated Node.js 20 (end-of-life Sep 2026)
+- **Documentation Unbloat claude auth failure** (#28659 OPEN)
+- **GitHub Remote MCP Authentication Test** (#27965 OPEN): day 8+
+- **Safe outputs session not found** (#23153 OPEN)
 - **awf-api-proxy sidecar unhealthy** (#27888 OPEN)
+- **GitHub App rate limit** (#27251 OPEN)
 - **CODEX_HOME collision** (#27512 OPEN)
 
 ### P2 Issues
@@ -52,14 +51,12 @@ Score: 57/100 (↓-17 from 74 Apr 27). 204 workflows. Run: §25052372422
 - **MCP gateway long-running drops** (#23153 OPEN)
 
 ## Issues Created This Run
-- None (existing tracking issues cover identified failures; threat detection tracked in #28866)
+- None (codex failure tracked in auto-issue #29088; CI issues tracked in existing #28659)
 
 ## Issues Updated
 - None
 
 ## Positive Notes
 - 204/204 workflows compiled, all lock files present
-- Smoke Codex ran today (issue #28881) — mostly passing (2/8 checks failed: web-fetch unavailable, comment-memory unavailable)
-
-## Regression Alert
-- **Success rate dropped from 93% → 57%**: THREAT_DETECTION_RESULT parse failure expanded to hit multiple new workflows today. Possibly related to a detection model change or outage.
+- THREAT_DETECTION_RESULT systemic failure from Apr 28 did NOT recur today
+- Success rate improved significantly: 57% → 73%
