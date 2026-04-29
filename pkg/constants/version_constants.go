@@ -32,14 +32,14 @@ func (v Version) IsValid() bool {
 type ModelName string
 
 // DefaultClaudeCodeVersion is the default version of the Claude Code CLI.
-const DefaultClaudeCodeVersion Version = "2.1.119"
+const DefaultClaudeCodeVersion Version = "2.1.123"
 
 // DefaultCopilotVersion is the default version of the GitHub Copilot CLI.
 //
 // When unpinning or upgrading this version, verify:
 //   - MCPs are not blocked from loading (tools.mcp configuration still works end-to-end)
 //   - /models does not silently fail on PATs (check that model listing works with PAT auth)
-const DefaultCopilotVersion Version = "1.0.36"
+const DefaultCopilotVersion Version = "1.0.39"
 
 // DefaultCodexVersion is the default version of the OpenAI Codex CLI
 const DefaultCodexVersion Version = "0.125.0"
@@ -86,7 +86,7 @@ const DefaultMCPGatewayVersion Version = "v0.3.1"
 const MCPGIntegrityReactionsMinVersion Version = "v0.2.18"
 
 // DefaultPlaywrightMCPVersion is the default version of the @playwright/mcp package
-const DefaultPlaywrightMCPVersion Version = "0.0.70"
+const DefaultPlaywrightMCPVersion Version = "0.0.71"
 
 // DefaultPlaywrightBrowserVersion is the default version of the Playwright browser Docker image
 const DefaultPlaywrightBrowserVersion Version = "v1.59.1"
