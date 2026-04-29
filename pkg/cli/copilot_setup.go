@@ -81,7 +81,7 @@ jobs:
 `, actionRepo, actionRef, version)
 	}
 
-	// Default (dev/script mode): use curl to download install script
+	// Default (dev/script mode): use gh extension install
 	return `name: "Copilot Setup Steps"
 
 # This workflow configures the environment for GitHub Copilot Agent with gh-aw MCP server
@@ -103,8 +103,9 @@ jobs:
 
     steps:
       - name: Install gh-aw extension
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh extension install github/gh-aw
 `
 }
 
@@ -129,8 +130,9 @@ jobs:
 
     steps:
       - name: Install gh-aw extension
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh extension install github/gh-aw
 `
 
 // CopilotWorkflowStep represents a GitHub Actions workflow step for Copilot setup scaffolding
@@ -200,15 +202,16 @@ func ensureCopilotSetupStepsWithUpgrade(verbose bool, actionMode workflow.Action
 			return fmt.Errorf("failed to read existing copilot-setup-steps.yml: %w", err)
 		}
 
-		// Check if the extension install step is already present (check for both modes)
+		// Check if the extension install step is already present (check for all modes)
 		contentStr := string(content)
 		hasLegacyInstall := strings.Contains(contentStr, "install-gh-aw.sh") ||
 			(strings.Contains(contentStr, "Install gh-aw extension") && strings.Contains(contentStr, "curl -fsSL"))
 		hasActionInstall := strings.Contains(contentStr, "actions/setup-cli")
+		hasGHExtensionInstall := strings.Contains(contentStr, "gh extension install github/gh-aw")
 
 		// If we have an install step and upgradeVersion is true, this is from upgrade command
 		// In this case, we still update the file for backward compatibility
-		if (hasLegacyInstall || hasActionInstall) && upgradeVersion {
+		if (hasLegacyInstall || hasActionInstall || hasGHExtensionInstall) && upgradeVersion {
 			copilotSetupLog.Print("Extension install step exists, attempting version upgrade (upgrade command)")
 
 			upgraded, updatedContent, err := upgradeSetupCliVersionInContent(content, actionMode, version, resolver)
@@ -236,7 +239,7 @@ func ensureCopilotSetupStepsWithUpgrade(verbose bool, actionMode workflow.Action
 		}
 
 		// File exists - render instructions instead of editing
-		if hasLegacyInstall || hasActionInstall {
+		if hasLegacyInstall || hasActionInstall || hasGHExtensionInstall {
 			copilotSetupLog.Print("Extension install step already exists, file is up to date")
 			if verbose {
 				fmt.Fprintf(os.Stderr, "Skipping %s (already has gh-aw extension install step)\n", setupStepsPath)
@@ -286,8 +289,9 @@ func renderCopilotSetupUpdateInstructions(filePath string, actionMode workflow.A
 		fmt.Fprintf(os.Stderr, "          version: %s\n", version)
 	} else {
 		fmt.Fprintln(os.Stderr, "      - name: Install gh-aw extension")
-		fmt.Fprintln(os.Stderr, "        run: |")
-		fmt.Fprintln(os.Stderr, "          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash")
+		fmt.Fprintln(os.Stderr, "        env:")
+		fmt.Fprintln(os.Stderr, "          GH_TOKEN: ${{ github.token }}")
+		fmt.Fprintln(os.Stderr, "        run: gh extension install github/gh-aw")
 	}
 	fmt.Fprintln(os.Stderr)
 }

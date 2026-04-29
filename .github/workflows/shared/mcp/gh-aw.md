@@ -19,7 +19,7 @@ steps:
       # Install gh-aw if not already available
       if ! gh aw --version >/dev/null 2>&1; then
         echo "Installing gh-aw extension..."
-        curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        gh extension install github/gh-aw
       fi
       gh aw --version
       # Copy the gh-aw binary to ${RUNNER_TEMP}/gh-aw for MCP server containerization

@@ -72,8 +72,8 @@ func TestInitRepository_WithMCP(t *testing.T) {
 		if !strings.Contains(contentStr, "copilot-setup-steps:") {
 			t.Errorf("Expected copilot-setup-steps.yml to contain job name")
 		}
-		if !strings.Contains(contentStr, "install-gh-aw.sh") {
-			t.Errorf("Expected copilot-setup-steps.yml to contain gh-aw installation steps with bash script")
+		if !strings.Contains(contentStr, "gh extension install github/gh-aw") {
+			t.Errorf("Expected copilot-setup-steps.yml to contain gh-aw installation step")
 		}
 	}
 

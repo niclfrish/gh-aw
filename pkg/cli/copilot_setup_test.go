@@ -40,11 +40,8 @@ func TestEnsureCopilotSetupSteps(t *testing.T) {
 				if !strings.Contains(string(content), "copilot-setup-steps") {
 					t.Error("Expected workflow to contain 'copilot-setup-steps' job name")
 				}
-				if !strings.Contains(string(content), "install-gh-aw.sh") {
-					t.Error("Expected workflow to contain install-gh-aw.sh bash script")
-				}
-				if !strings.Contains(string(content), "curl -fsSL") {
-					t.Error("Expected workflow to contain curl command")
+				if !strings.Contains(string(content), "gh extension install github/gh-aw") {
+					t.Error("Expected workflow to contain gh extension install command")
 				}
 			},
 		},
@@ -63,7 +60,7 @@ func TestEnsureCopilotSetupSteps(t *testing.T) {
 							},
 							{
 								Name: "Install gh-aw extension",
-								Run:  "curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash",
+								Run:  "gh extension install github/gh-aw",
 							},
 						},
 					},
@@ -265,14 +262,14 @@ func TestCopilotSetupStepsYAMLConstant(t *testing.T) {
 	// Verify it has the extension install step
 	hasExtensionInstall := false
 	for _, step := range job.Steps {
-		if strings.Contains(step.Run, "install-gh-aw.sh") || strings.Contains(step.Run, "curl -fsSL") {
+		if strings.Contains(step.Run, "gh extension install github/gh-aw") {
 			hasExtensionInstall = true
 			break
 		}
 	}
 
 	if !hasExtensionInstall {
-		t.Error("Expected copilotSetupStepsYAML to contain extension install step with bash script")
+		t.Error("Expected copilotSetupStepsYAML to contain extension install step with gh extension install")
 	}
 
 	// Verify it does NOT have checkout, Go setup or build steps (for universal use)
@@ -519,9 +516,9 @@ func TestEnsureCopilotSetupSteps_DevMode(t *testing.T) {
 
 	contentStr := string(content)
 
-	// Verify it uses curl method
-	if !strings.Contains(contentStr, "install-gh-aw.sh") {
-		t.Error("Expected copilot-setup-steps.yml to use install-gh-aw.sh in dev mode")
+	// Verify it uses gh extension install method
+	if !strings.Contains(contentStr, "gh extension install github/gh-aw") {
+		t.Error("Expected copilot-setup-steps.yml to use gh extension install in dev mode")
 	}
 
 	// Verify it doesn't use actions/setup-cli
@@ -598,11 +595,8 @@ func TestEnsureCopilotSetupSteps_CreateWithDevMode(t *testing.T) {
 	contentStr := string(content)
 
 	// Verify dev mode characteristics
-	if !strings.Contains(contentStr, "curl -fsSL") {
-		t.Errorf("Expected curl command in dev mode")
-	}
-	if !strings.Contains(contentStr, "install-gh-aw.sh") {
-		t.Errorf("Expected install-gh-aw.sh reference in dev mode")
+	if !strings.Contains(contentStr, "gh extension install github/gh-aw") {
+		t.Errorf("Expected gh extension install command in dev mode")
 	}
 	if strings.Contains(contentStr, "actions/setup-cli") {
 		t.Errorf("Did not expect actions/setup-cli in dev mode")
@@ -739,6 +733,9 @@ jobs:
 	if strings.Contains(contentStr, "install-gh-aw.sh") {
 		t.Errorf("Expected 'install-gh-aw.sh' to NOT be injected (instructions should be rendered)")
 	}
+	if strings.Contains(contentStr, "gh extension install github/gh-aw") {
+		t.Errorf("Expected 'gh extension install' to NOT be injected (instructions should be rendered)")
+	}
 	if strings.Contains(contentStr, "actions/setup-cli") {
 		t.Errorf("Did not expect actions/setup-cli in dev mode")
 	}
@@ -806,7 +803,7 @@ jobs:
 	}
 }
 
-// TestEnsureCopilotSetupSteps_SkipsUpdateWhenCurlExists tests that update is skipped when curl install exists
+// TestEnsureCopilotSetupSteps_SkipsUpdateWhenGHExtensionInstallExists tests that update is skipped when gh extension install exists
 func TestEnsureCopilotSetupSteps_SkipsUpdateWhenCurlExists(t *testing.T) {
 	tmpDir := t.TempDir()
 	originalDir, err := os.Getwd()
@@ -825,7 +822,7 @@ func TestEnsureCopilotSetupSteps_SkipsUpdateWhenCurlExists(t *testing.T) {
 		t.Fatalf("Failed to create workflows directory: %v", err)
 	}
 
-	// Write existing workflow WITH curl install (dev mode)
+	// Write existing workflow WITH gh extension install (secure method)
 	existingContent := `name: "Copilot Setup Steps"
 on: workflow_dispatch
 jobs:
@@ -833,7 +830,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install gh-aw extension
-        run: curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh extension install github/gh-aw
 `
 	setupStepsPath := filepath.Join(workflowsDir, "copilot-setup-steps.yml")
 	if err := os.WriteFile(setupStepsPath, []byte(existingContent), 0644); err != nil {
@@ -976,7 +975,7 @@ func TestUpgradeCopilotSetupSteps_DevMode(t *testing.T) {
 		t.Fatalf("Failed to create workflows directory: %v", err)
 	}
 
-	// Write existing workflow with curl install (dev mode)
+	// Write existing workflow with gh extension install (dev mode)
 	existingContent := `name: "Copilot Setup Steps"
 on: workflow_dispatch
 jobs:
@@ -984,7 +983,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install gh-aw extension
-        run: curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh extension install github/gh-aw
       - name: Verify gh-aw installation
         run: gh aw version
 `
@@ -999,7 +1000,7 @@ jobs:
 		t.Fatalf("upgradeCopilotSetupSteps() failed: %v", err)
 	}
 
-	// Verify file was not changed (dev mode doesn't upgrade curl-based installs)
+	// Verify file was not changed (dev mode doesn't upgrade gh extension install-based installs)
 	content, err := os.ReadFile(setupStepsPath)
 	if err != nil {
 		t.Fatalf("Failed to read file: %v", err)
