@@ -9,6 +9,8 @@ permissions:
   issues: read
   pull-requests: read
 engine: copilot
+imports:
+  - shared/slash-command-base.md
 tools:
   cli-proxy: true
   edit:
@@ -23,8 +25,6 @@ steps:
       gh extension install .
 timeout-minutes: 15
 safe-outputs:
-  add-comment:
-    max: 1
   push-to-pull-request-branch:
   messages:
     footer: "> ⚒️ *Crafted with care by [{workflow_name}]({run_url})*{effective_tokens_suffix}{history_link}"

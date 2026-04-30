@@ -17,6 +17,7 @@ engine:
   agent: adr-writer
 strict: true
 imports:
+  - shared/slash-command-base.md
   - shared/mcp/serena-go.md
 tools:
   cli-proxy: true
@@ -26,8 +27,6 @@ tools:
   edit:
   bash: true
 safe-outputs:
-  add-comment:
-    max: 1
   messages:
     footer: "> 📊 *Diagram rendered by [{workflow_name}]({run_url})*{effective_tokens_suffix}{history_link}"
     footer-workflow-recompile: "> 🔧 *Workflow sync report by [{workflow_name}]({run_url}) for {repository}*"

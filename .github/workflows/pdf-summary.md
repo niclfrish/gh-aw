@@ -28,6 +28,7 @@ permissions:
 engine: copilot
 
 imports:
+  - shared/slash-command-base.md
   - shared/mcp/markitdown.md
   - shared/reporting.md
 
@@ -36,8 +37,6 @@ tools:
   cache-memory: true
 
 safe-outputs:
-  add-comment:
-    max: 1
   create-discussion:
     expires: 1d
     max: 1

@@ -11,10 +11,9 @@ permissions:
 engine: copilot
 strict: true
 imports:
+  - shared/slash-command-base.md
   - shared/mcp/brave.md
 safe-outputs:
-  add-comment:
-    max: 1
   messages:
     footer: "> 🦁 *Search results brought to you by [{workflow_name}]({run_url})*{effective_tokens_suffix}{history_link}"
     footer-workflow-recompile: "> 🔄 *Maintenance report by [{workflow_name}]({run_url}) for {repository}*"

@@ -24,6 +24,7 @@ permissions:
   pull-requests: read
 engine: claude
 imports:
+  - shared/slash-command-base.md
   - shared/reporting.md
   - shared/mcp/arxiv.md
   - shared/mcp/tavily.md
@@ -38,8 +39,6 @@ tools:
     allowed-repos: all
     min-integrity: none
 safe-outputs:
-  add-comment:
-    max: 1
   add-labels:
     max: 1
   messages:

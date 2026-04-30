@@ -32,6 +32,7 @@ engine:
 
 # Import shared reporting guidelines
 imports:
+  - shared/slash-command-base.md
   - shared/reporting.md
 
 # Deny all network access

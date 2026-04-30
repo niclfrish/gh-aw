@@ -15,6 +15,7 @@ permissions:
   discussions: read
 engine: copilot
 imports:
+  - shared/slash-command-base.md
   - shared/mcp/serena-go.md
 tools:
   cli-proxy: true
@@ -31,8 +32,6 @@ tools:
 safe-outputs:
   add-labels:
     allowed: [spam]
-  add-comment:
-    max: 1
   create-pull-request:
     expires: 2d
     title-prefix: "[q] "

@@ -17,6 +17,7 @@ engine:
   id: claude
   max-turns: 100
 imports:
+  - shared/slash-command-base.md
   - shared/jqschema.md
   - shared/mcp/serena-go.md
   - shared/reporting.md
@@ -36,8 +37,6 @@ safe-outputs:
     excluded-files:
       - ".github/workflows/*.lock.yml"
     protected-files: fallback-to-issue
-  add-comment:
-    max: 1
   messages:
     footer: "> 🎤 *Magnifique! Performance by [{workflow_name}]({run_url})*{effective_tokens_suffix}{history_link}"
     run-started: "🎵 Comme d'habitude! [{workflow_name}]({run_url}) takes the stage on this {event_type}..."
