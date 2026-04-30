@@ -46,7 +46,7 @@ imports:
     with:
       branch-name: "memory/copilot-cli-research"
       description: "Copilot CLI research notes and analysis history"
-      max-file-size: 204800  # 200KB — extended to handle larger research artifacts
+      max-file-size: 204800  # 200 KB — extended to handle larger research artifacts
 features:
   copilot-requests: true
 ---

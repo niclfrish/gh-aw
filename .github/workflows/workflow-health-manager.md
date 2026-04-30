@@ -29,7 +29,7 @@ imports:
     with:
       branch-name: "memory/meta-orchestrators"
       description: "Historical workflow health and failure metrics"
-      max-patch-size: 51200  # 5x the default limit to handle larger diffs
+      max-patch-size: 51200  # 50 KB — 5x the default 10 KB limit to handle larger diffs
 steps:
   - name: build-inventory
     env:
