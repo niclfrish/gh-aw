@@ -7,3 +7,4 @@
 ./pkg/parser/schedule_cron_detection_test.go|2026-04-25
 ./pkg/cli/health_command_test.go|2026-04-26
 ./pkg/parser/schedule_time_utils_test.go|2026-04-27
+./pkg/cli/logs_formatting_test.go|2026-04-30
