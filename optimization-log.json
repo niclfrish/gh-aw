@@ -160,5 +160,14 @@
     "total_tokens_analyzed": 2078746,
     "estimated_savings_per_run": 530000,
     "recommendations_count": 4
+  },
+  {
+    "date": "2026-04-30",
+    "workflow_name": "Copilot CLI Deep Research Agent",
+    "workflow_file": "copilot-cli-deep-research",
+    "runs_audited": 1,
+    "total_tokens_analyzed": 2455394,
+    "estimated_savings_per_run": 1400000,
+    "recommendations_count": 5
   }
 ]
