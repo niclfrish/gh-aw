@@ -178,5 +178,14 @@
     "total_tokens_analyzed": 1784366,
     "estimated_savings_per_run": 900000,
     "recommendations_count": 4
+  },
+  {
+    "date": "2026-05-01",
+    "workflow_name": "Daily Security Observability Report",
+    "workflow_file": "daily-security-observability",
+    "runs_audited": 1,
+    "total_tokens_analyzed": 2439064,
+    "estimated_savings_per_run": 1100000,
+    "recommendations_count": 4
   }
 ]
