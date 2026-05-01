@@ -86,6 +86,25 @@ func (e *GeminiEngine) GetInstallationSteps(workflowData *WorkflowData) []GitHub
 		return []GitHubActionStep{}
 	}
 
+	// Determine the GEMINI_API_KEY expression, respecting engine.env overrides.
+	apiKeyExpr := "${{ secrets.GEMINI_API_KEY }}"
+	if overrides := getEngineEnvOverrides(workflowData); overrides != nil {
+		if override, ok := overrides["GEMINI_API_KEY"]; ok {
+			apiKeyExpr = override
+		}
+	}
+
+	// Pre-flight: validate the API key with a lightweight call to the Generative Language API
+	// before installing the Gemini CLI. When the key is expired or revoked this step fails
+	// immediately with a clear error message and rotation instructions, saving the time that
+	// would otherwise be spent on the npm install and agent execution.
+	apiKeyValidationStep := GitHubActionStep{
+		"      - name: Validate Gemini API key",
+		"        run: bash \"${RUNNER_TEMP}/gh-aw/actions/validate_gemini_api_key.sh\"",
+		"        env:",
+		"          GEMINI_API_KEY: " + apiKeyExpr,
+	}
+
 	npmSteps := BuildStandardNpmEngineInstallSteps(
 		"@google/gemini-cli",
 		string(constants.DefaultGeminiVersion),
@@ -93,7 +112,9 @@ func (e *GeminiEngine) GetInstallationSteps(workflowData *WorkflowData) []GitHub
 		"gemini",
 		workflowData,
 	)
-	return BuildNpmEngineInstallStepsWithAWF(npmSteps, workflowData)
+	allSteps := []GitHubActionStep{apiKeyValidationStep}
+	allSteps = append(allSteps, BuildNpmEngineInstallStepsWithAWF(npmSteps, workflowData)...)
+	return allSteps
 }
 
 // GetDeclaredOutputFiles returns the output files that Gemini may produce.

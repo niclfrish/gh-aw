@@ -81,21 +81,49 @@ func TestGeminiEngineInstallation(t *testing.T) {
 		steps := engine.GetInstallationSteps(workflowData)
 		require.NotEmpty(t, steps, "Should generate installation steps")
 
-		// Should have at least: Node.js setup + Install Gemini
-		// (secret validation is now in the activation job via GetSecretValidationStep)
-		assert.GreaterOrEqual(t, len(steps), 2, "Should have at least 2 installation steps")
+		// Should have at least: API key validation + Node.js setup + Install Gemini
+		// (secret presence check is in the activation job via GetSecretValidationStep)
+		assert.GreaterOrEqual(t, len(steps), 3, "Should have at least 3 installation steps")
 
-		// Verify first step is Node.js setup
+		// Verify first step is the API key validation
 		if len(steps) > 0 && len(steps[0]) > 0 {
 			stepContent := strings.Join(steps[0], "\n")
-			assert.Contains(t, stepContent, "Setup Node.js", "First step should setup Node.js")
+			assert.Contains(t, stepContent, "Validate Gemini API key", "First step should validate the Gemini API key")
+			assert.Contains(t, stepContent, "validate_gemini_api_key.sh", "First step should run the API key validation script")
+			assert.Contains(t, stepContent, "GEMINI_API_KEY", "First step should set the GEMINI_API_KEY env var")
 		}
 
-		// Verify second step is Install Gemini CLI
+		// Verify second step is Node.js setup
 		if len(steps) > 1 && len(steps[1]) > 0 {
 			stepContent := strings.Join(steps[1], "\n")
-			assert.Contains(t, stepContent, "Install Gemini CLI", "Second step should install Gemini CLI")
+			assert.Contains(t, stepContent, "Setup Node.js", "Second step should setup Node.js")
+		}
+
+		// Verify third step is Install Gemini CLI
+		if len(steps) > 2 && len(steps[2]) > 0 {
+			stepContent := strings.Join(steps[2], "\n")
+			assert.Contains(t, stepContent, "Install Gemini CLI", "Third step should install Gemini CLI")
 			assert.Contains(t, stepContent, "@google/gemini-cli", "Should install @google/gemini-cli package")
+		}
+	})
+
+	t.Run("engine env override for api key", func(t *testing.T) {
+		workflowData := &WorkflowData{
+			Name: "test-workflow",
+			EngineConfig: &EngineConfig{
+				Env: map[string]string{
+					"GEMINI_API_KEY": "${{ secrets.MY_ORG_GEMINI_KEY }}",
+				},
+			},
+		}
+
+		steps := engine.GetInstallationSteps(workflowData)
+		require.NotEmpty(t, steps, "Should generate installation steps")
+
+		// First step should use the overridden key expression
+		if len(steps) > 0 && len(steps[0]) > 0 {
+			stepContent := strings.Join(steps[0], "\n")
+			assert.Contains(t, stepContent, "MY_ORG_GEMINI_KEY", "API key validation should use the engine.env override")
 		}
 	})
 
