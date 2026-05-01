@@ -33,7 +33,12 @@ jobs:
       contents: read
     steps:
       - name: Install gh-aw extension
-        run: curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        run: |
+          INSTALL_SCRIPT=$(mktemp)
+          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o "$INSTALL_SCRIPT"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT"
+          rm -f "$INSTALL_SCRIPT"
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:

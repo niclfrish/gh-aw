@@ -81,7 +81,7 @@ jobs:
 `, actionRepo, actionRef, version)
 	}
 
-	// Default (dev/script mode): use curl to download install script
+	// Default (dev/script mode): download install script to temp file and execute
 	return `name: "Copilot Setup Steps"
 
 # This workflow configures the environment for GitHub Copilot Agent with gh-aw MCP server
@@ -104,7 +104,11 @@ jobs:
     steps:
       - name: Install gh-aw extension
         run: |
-          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+          INSTALL_SCRIPT=$(mktemp)
+          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o "$INSTALL_SCRIPT"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT"
+          rm -f "$INSTALL_SCRIPT"
 `
 }
 
@@ -130,7 +134,11 @@ jobs:
     steps:
       - name: Install gh-aw extension
         run: |
-          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+          INSTALL_SCRIPT=$(mktemp)
+          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o "$INSTALL_SCRIPT"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT"
+          rm -f "$INSTALL_SCRIPT"
 `
 
 // CopilotWorkflowStep represents a GitHub Actions workflow step for Copilot setup scaffolding
@@ -287,7 +295,11 @@ func renderCopilotSetupUpdateInstructions(filePath string, actionMode workflow.A
 	} else {
 		fmt.Fprintln(os.Stderr, "      - name: Install gh-aw extension")
 		fmt.Fprintln(os.Stderr, "        run: |")
-		fmt.Fprintln(os.Stderr, "          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash")
+		fmt.Fprintln(os.Stderr, "          INSTALL_SCRIPT=$(mktemp)")
+		fmt.Fprintln(os.Stderr, "          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o \"$INSTALL_SCRIPT\"")
+		fmt.Fprintln(os.Stderr, "          chmod +x \"$INSTALL_SCRIPT\"")
+		fmt.Fprintln(os.Stderr, "          \"$INSTALL_SCRIPT\"")
+		fmt.Fprintln(os.Stderr, "          rm -f \"$INSTALL_SCRIPT\"")
 	}
 	fmt.Fprintln(os.Stderr)
 }

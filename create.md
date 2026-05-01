@@ -19,7 +19,11 @@ gh extension upgrade aw
 to upgrade to latest. If it is not installed, run the installation script from the main branch of the gh-aw repository:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
+INSTALL_SCRIPT=$(mktemp)
+curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh -o "$INSTALL_SCRIPT"
+chmod +x "$INSTALL_SCRIPT"
+"$INSTALL_SCRIPT"
+rm -f "$INSTALL_SCRIPT"
 ```
 
 **What this does**: Downloads and installs the gh-aw binary to `~/.local/share/gh/extensions/gh-aw/`

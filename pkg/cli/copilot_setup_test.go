@@ -46,6 +46,9 @@ func TestEnsureCopilotSetupSteps(t *testing.T) {
 				if !strings.Contains(string(content), "curl -fsSL") {
 					t.Error("Expected workflow to contain curl command")
 				}
+				if strings.Contains(string(content), "install-gh-aw.sh | bash") {
+					t.Error("Expected workflow to NOT pipe install script directly to bash (use temp file instead)")
+				}
 			},
 		},
 		{
@@ -524,6 +527,11 @@ func TestEnsureCopilotSetupSteps_DevMode(t *testing.T) {
 		t.Error("Expected copilot-setup-steps.yml to use install-gh-aw.sh in dev mode")
 	}
 
+	// Verify it uses the secure temp-file pattern, not pipe-to-bash
+	if strings.Contains(contentStr, "install-gh-aw.sh | bash") {
+		t.Error("Expected copilot-setup-steps.yml to NOT pipe install script directly to bash (use temp file instead)")
+	}
+
 	// Verify it doesn't use actions/setup-cli
 	if strings.Contains(contentStr, "actions/setup-cli") {
 		t.Error("Expected copilot-setup-steps.yml to NOT use actions/setup-cli in dev mode")
@@ -603,6 +611,9 @@ func TestEnsureCopilotSetupSteps_CreateWithDevMode(t *testing.T) {
 	}
 	if !strings.Contains(contentStr, "install-gh-aw.sh") {
 		t.Errorf("Expected install-gh-aw.sh reference in dev mode")
+	}
+	if strings.Contains(contentStr, "install-gh-aw.sh | bash") {
+		t.Errorf("Expected dev mode to NOT pipe install script directly to bash (use temp file instead)")
 	}
 	if strings.Contains(contentStr, "actions/setup-cli") {
 		t.Errorf("Did not expect actions/setup-cli in dev mode")

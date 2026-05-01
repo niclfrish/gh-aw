@@ -67,7 +67,7 @@ func TestExtractStepsFromCopilotSetup(t *testing.T) {
 				"steps": []any{
 					map[string]any{
 						"name": "Install gh-aw extension",
-						"run":  "curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash",
+						"run":  "INSTALL_SCRIPT=$(mktemp)\ncurl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o \"$INSTALL_SCRIPT\"\nchmod +x \"$INSTALL_SCRIPT\"\n\"$INSTALL_SCRIPT\"\nrm -f \"$INSTALL_SCRIPT\"\n",
 					},
 					map[string]any{
 						"name": "Checkout code",
@@ -154,7 +154,7 @@ func TestExtractStepsFromCopilotSetup_StripsCheckoutStep(t *testing.T) {
 				"steps": []any{
 					map[string]any{
 						"name": "Install gh-aw extension",
-						"run":  "curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash",
+						"run":  "INSTALL_SCRIPT=$(mktemp)\ncurl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o \"$INSTALL_SCRIPT\"\nchmod +x \"$INSTALL_SCRIPT\"\n\"$INSTALL_SCRIPT\"\nrm -f \"$INSTALL_SCRIPT\"\n",
 					},
 					map[string]any{
 						"name": "Checkout code",
@@ -318,7 +318,12 @@ jobs:
       contents: read
     steps:
       - name: Install gh-aw extension
-        run: curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        run: |
+          INSTALL_SCRIPT=$(mktemp)
+          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o "$INSTALL_SCRIPT"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT"
+          rm -f "$INSTALL_SCRIPT"
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Node.js
@@ -411,7 +416,12 @@ jobs:
       contents: read
     steps:
       - name: Install gh-aw extension
-        run: curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
+        run: |
+          INSTALL_SCRIPT=$(mktemp)
+          curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh -o "$INSTALL_SCRIPT"
+          chmod +x "$INSTALL_SCRIPT"
+          "$INSTALL_SCRIPT"
+          rm -f "$INSTALL_SCRIPT"
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
