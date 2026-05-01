@@ -165,3 +165,23 @@
 - **toolsets [all]**: 3 workflows using overly broad access (github-mcp-structural-analysis, github-mcp-tools-report, security-review)
 - **Key insight**: Copilot-exclusive features (max-continuations, engine.agent) remain significantly underutilized
 
+
+### 2026-05-01 (Run 25213682014)
+- 205 total MD workflows; 110 Copilot (89 simple form + 21 object form)
+- **startup-timeout**: 0 (12th consecutive run — CRITICAL persistent gap)
+- **tool-timeout**: 0 (12th run — persistent gap)
+- **engine.version pinning (Copilot)**: 0 (runtimes pin node/python/etc versions, not engine)
+- **bare mode**: 8 workflows (smoke-copilot, daily-*, hippo, poem-bot, constraint-solving)
+- **max-continuations**: 2 workflows (test-quality-sentinel:40, smoke-copilot:2)
+- **sandbox AWF**: ~17 workflows
+- **cache-memory**: 62 workflows
+- **web-fetch**: 19; **web-search**: 2
+- **mcp-scripts**: 1
+- **safe-outputs**: 162 occurrences
+- **github MCP tool**: 144 workflows (dominant pattern)
+- **playwright**: 13 workflows
+- **engine.agent**: 11 actual custom agent files used (not counting `agent: awf`)
+  - Used: adr-writer(1), agentic-workflows(2), ci-cleaner(1), contribution-checker(1), developer.instructions(1), technical-doc-writer(2)
+  - UNUSED: grumpy-reviewer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer
+- **engine.model**: 6 workflows using model overrides
+- **network config**: 104 workflows (good adoption)
