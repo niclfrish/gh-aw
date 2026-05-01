@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-05-01T07:10:33.608Z",
-  "run_id": "25206065799",
+  "run_date": "2026-05-01T12:36:34.645Z",
+  "run_id": "25214440487",
   "fork_prs": 0,
-  "agent_prs_found": 7,
-  "agent_prs_excluded": 7,
-  "notes": "7 open agent PRs found (#29455, #29454, #29452, #29440, #29431, #29416, #29223). All are same-repo branches (isCrossRepository=false). Per policy, only fork PRs are triaged. No fork PRs to triage.",
+  "agent_prs_found": 0,
+  "agent_prs_excluded": 0,
+  "notes": "GitHub API returned 403 (access issues). Previous run (25206065799) confirmed all 7 open agent PRs are same-repo branches (isCrossRepository=false). Per policy, only fork PRs are triaged. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -16,20 +16,11 @@
     "by_priority": {},
     "by_action": {}
   },
-  "pr_list": [
-    {"number": 29455, "title": "feat: avoid secrets:inherit as default, infer minimal set automatically", "same_repo": true},
-    {"number": 29454, "title": "feat: add --cool-down flag to update command with 7d default", "same_repo": true},
-    {"number": 29452, "title": "fix(jsweep): resolve 100% cache miss by adding concrete state management", "same_repo": true},
-    {"number": 29440, "title": "feat: structured-output mode for Codex engine via --output-schema", "same_repo": true},
-    {"number": 29431, "title": "Fix compiler to pass --enable-opencode to AWF when engine is opencode", "same_repo": true},
-    {"number": 29416, "title": "spec: add disapproval-labels to MCP gateway integrity specification", "same_repo": true},
-    {"number": 29223, "title": "feat: enable checksum validation by default in install-gh-aw.sh", "same_repo": true}
-  ],
   "previous_run": {
-    "run_id": "25197443613",
-    "run_date": "2026-05-01T01:13:38.670Z",
+    "run_id": "25206065799",
+    "run_date": "2026-05-01T07:10:33.608Z",
     "fork_prs": 0,
-    "agent_prs_found": 6,
-    "agent_prs_excluded": 6
+    "agent_prs_found": 7,
+    "agent_prs_excluded": 7
   }
 }
