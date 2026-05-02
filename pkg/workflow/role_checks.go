@@ -1,7 +1,6 @@
 package workflow
 
 import (
-	"encoding/json"
 	"fmt"
 	"slices"
 	"sort"
@@ -9,7 +8,6 @@ import (
 
 	"github.com/github/gh-aw/pkg/constants"
 	"github.com/github/gh-aw/pkg/logger"
-	"github.com/github/gh-aw/pkg/parser"
 	"github.com/github/gh-aw/pkg/sliceutil"
 )
 
@@ -566,74 +564,4 @@ func (c *Compiler) mergeSkipBots(topSkipBots []string, importedSkipBots []string
 // mergeBots merges top-level bots with imported bots (union)
 func (c *Compiler) mergeBots(topBots []string, importedBots []string) []string {
 	return mergeStringSlicesDedup(topBots, importedBots, "bots")
-}
-
-// extractActivationGitHubToken extracts the 'github-token' field from the 'on:' section of frontmatter.
-// This token is used for pre-activation reactions and activation status comments.
-func (c *Compiler) extractActivationGitHubToken(frontmatter map[string]any) string {
-	if onValue, exists := frontmatter["on"]; exists {
-		if onMap, ok := onValue.(map[string]any); ok {
-			if tokenValue, hasToken := onMap["github-token"]; hasToken {
-				if tokenStr, ok := tokenValue.(string); ok {
-					roleLog.Printf("Extracted activation github-token from on section")
-					return tokenStr
-				}
-			}
-		}
-	}
-	return ""
-}
-
-// extractActivationGitHubApp extracts the 'github-app' field from the 'on:' section of frontmatter.
-// When configured, a GitHub App installation access token is minted for use in reactions and status comments.
-func (c *Compiler) extractActivationGitHubApp(frontmatter map[string]any) *GitHubAppConfig {
-	if onValue, exists := frontmatter["on"]; exists {
-		if onMap, ok := onValue.(map[string]any); ok {
-			if appValue, hasApp := onMap["github-app"]; hasApp {
-				if appMap, ok := appValue.(map[string]any); ok {
-					roleLog.Printf("Extracted activation github-app from on section")
-					return parseAppConfig(appMap)
-				}
-			}
-		}
-	}
-	return nil
-}
-
-// resolveActivationGitHubToken returns the GitHub token to use for activation operations
-// (reactions, status comments, skip-if checks). Precedence:
-//  1. Current workflow's on.github-token (explicit override wins)
-//  2. First on.github-token found across imported shared workflows
-//  3. Empty string (use default GITHUB_TOKEN)
-func (c *Compiler) resolveActivationGitHubToken(frontmatter map[string]any, importsResult *parser.ImportsResult) string {
-	if token := c.extractActivationGitHubToken(frontmatter); token != "" {
-		return token
-	}
-	if importsResult != nil && importsResult.MergedActivationGitHubToken != "" {
-		roleLog.Print("Using on.github-token from imported shared workflow")
-		return importsResult.MergedActivationGitHubToken
-	}
-	return ""
-}
-
-// resolveActivationGitHubApp returns the GitHub App config to use for activation operations
-// (reactions, status comments, skip-if checks). Precedence:
-//  1. Current workflow's on.github-app (explicit override wins)
-//  2. First on.github-app found across imported shared workflows
-//  3. Nil (use default GITHUB_TOKEN)
-func (c *Compiler) resolveActivationGitHubApp(frontmatter map[string]any, importsResult *parser.ImportsResult) *GitHubAppConfig {
-	if app := c.extractActivationGitHubApp(frontmatter); app != nil {
-		return app
-	}
-	if importsResult != nil && importsResult.MergedActivationGitHubApp != "" {
-		var appMap map[string]any
-		if err := json.Unmarshal([]byte(importsResult.MergedActivationGitHubApp), &appMap); err == nil {
-			app := parseAppConfig(appMap)
-			if app.AppID != "" && app.PrivateKey != "" {
-				roleLog.Print("Using on.github-app from imported shared workflow")
-				return app
-			}
-		}
-	}
-	return nil
 }
