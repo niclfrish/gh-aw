@@ -59,13 +59,35 @@ func (e *CrushEngine) GetInstallationSteps(workflowData *WorkflowData) []GitHubA
 		return []GitHubActionStep{}
 	}
 
-	npmSteps := BuildStandardNpmEngineInstallSteps(
-		"@charmland/crush",
-		string(constants.DefaultCrushVersion),
-		"Install Crush CLI",
-		"crush",
-		workflowData,
-	)
+	// Use version from engine config if provided, otherwise default to pinned version
+	version := string(constants.DefaultCrushVersion)
+	if workflowData.EngineConfig != nil && workflowData.EngineConfig.Version != "" {
+		version = workflowData.EngineConfig.Version
+	}
+
+	// The @charmland/crush npm package downloads the actual binary at runtime into its package
+	// directory (a subdirectory of the npm global prefix). In AWF chroot mode, the standard npm
+	// global prefix (/opt/hostedtoolcache/...) is read-only (EROFS), so the runtime download
+	// fails with "Installation failed: EROFS: read-only file system".
+	// Installing to /tmp/npm-global ensures the package directory is always writable.
+	var installStep GitHubActionStep
+	if ExpressionPattern.MatchString(version) {
+		installCmd := `NPM_CONFIG_PREFIX=/tmp/npm-global npm install --ignore-scripts -g @charmland/crush@"${ENGINE_VERSION}"`
+		installStep = GitHubActionStep{
+			"      - name: Install Crush CLI",
+			"        run: " + installCmd,
+			"        env:",
+			"          ENGINE_VERSION: " + version,
+		}
+	} else {
+		installCmd := fmt.Sprintf("NPM_CONFIG_PREFIX=/tmp/npm-global npm install --ignore-scripts -g @charmland/crush@%s", version)
+		installStep = GitHubActionStep{
+			"      - name: Install Crush CLI",
+			"        run: " + installCmd,
+		}
+	}
+
+	npmSteps := []GitHubActionStep{GenerateNodeJsSetupStep(), installStep}
 	return BuildNpmEngineInstallStepsWithAWF(npmSteps, workflowData)
 }
 
@@ -153,7 +175,9 @@ func (e *CrushEngine) GetExecutionSteps(workflowData *WorkflowData, logFile stri
 			panic(fmt.Sprintf("BUG: invalid model %q reached domain computation (should have been caught by validation): %v", model, err))
 		}
 
-		npmPathSetup := GetNpmBinPathSetup()
+		// Prepend /tmp/npm-global/bin to PATH so the crush binary installed to the writable
+		// npm prefix (see GetInstallationSteps) can be found inside the AWF chroot.
+		npmPathSetup := `export PATH="/tmp/npm-global/bin:$PATH" && ` + GetNpmBinPathSetup()
 		crushCommandWithPath := fmt.Sprintf("%s && %s", npmPathSetup, crushCommand)
 		if mcpCLIPath := GetMCPCLIPathSetup(workflowData); mcpCLIPath != "" {
 			crushCommandWithPath = fmt.Sprintf("%s && %s", mcpCLIPath, crushCommandWithPath)
@@ -168,7 +192,8 @@ func (e *CrushEngine) GetExecutionSteps(workflowData *WorkflowData, logFile stri
 			AllowedDomains: allowedDomains,
 		})
 	} else {
-		command = fmt.Sprintf("set -o pipefail\n%s 2>&1 | tee -a %s", crushCommand, logFile)
+		npmPathSetup := `export PATH="/tmp/npm-global/bin:$PATH" && ` + GetNpmBinPathSetup()
+		command = fmt.Sprintf("set -o pipefail\n%s && %s 2>&1 | tee -a %s", npmPathSetup, crushCommand, logFile)
 	}
 
 	env := map[string]string{
