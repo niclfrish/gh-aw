@@ -63,6 +63,9 @@ safe-outputs:
 
 features:
   copilot-requests: true
+
+imports:
+  - shared/reporting.md
 ---
 
 {{#runtime-import? .github/shared-instructions.md}}
@@ -200,9 +203,12 @@ experiments:
 - `<variant1>`: <what changes, expected behavior>
 - `<variant2>`: <what changes, expected behavior>
 
-### Workflow Changes Required
+<details>
+<summary><b>Workflow Changes Required</b></summary>
 
 List the exact changes needed in the workflow markdown body to implement the experiment, using `{{#if experiments.<name> }}...{{/if}}` handlebars blocks. Show the concrete before/after diff.
+
+</details>
 
 ### Success Metrics
 
@@ -220,7 +226,8 @@ List the exact changes needed in the workflow markdown body to implement the exp
 - **Expected experiment duration**: <days until minimum sample size reached>
 - **Analysis approach**: <proportion test / t-test / Mann-Whitney U>
 
-### Implementation Steps
+<details>
+<summary><b>Implementation Steps</b></summary>
 
 - [ ] Add `experiments:` section to frontmatter
 - [ ] Add conditional blocks to workflow prompt body using `{{#if experiments.<name> }}`
@@ -228,6 +235,8 @@ List the exact changes needed in the workflow markdown body to implement the exp
 - [ ] Monitor experiment artifact uploaded per run to `/tmp/gh-aw/experiments/state.json`
 - [ ] After sufficient runs, analyze variant distribution via workflow run artifacts
 - [ ] Document findings and promote winning variant
+
+</details>
 
 ### References
 
