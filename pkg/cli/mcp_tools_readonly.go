@@ -11,6 +11,18 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// StatusOutput is the typed structured output for the status MCP tool.
+// AI clients can parse structuredContent directly instead of re-parsing embedded JSON text.
+type StatusOutput struct {
+	Workflows []WorkflowStatus `json:"workflows"`
+}
+
+// CompileOutput is the typed structured output for the compile MCP tool.
+// AI clients can parse structuredContent directly instead of re-parsing embedded JSON text.
+type CompileOutput struct {
+	Results []ValidationResult `json:"results"`
+}
+
 // registerStatusTool registers the status tool with the MCP server.
 // The status tool is read-only and idempotent.
 func registerStatusTool(server *mcp.Server) {
@@ -18,7 +30,7 @@ func registerStatusTool(server *mcp.Server) {
 		Pattern string `json:"pattern,omitempty" jsonschema:"Optional pattern to filter workflows by name"`
 	}
 
-	mcp.AddTool(server, &mcp.Tool{
+	mcp.AddTool[statusArgs, StatusOutput](server, &mcp.Tool{
 		Name: "status",
 		Annotations: &mcp.ToolAnnotations{
 			ReadOnlyHint:   true,
@@ -36,11 +48,11 @@ Returns a JSON array where each element has the following structure:
 		Icons: []mcp.Icon{
 			{Source: "📊"},
 		},
-	}, func(ctx context.Context, req *mcp.CallToolRequest, args statusArgs) (*mcp.CallToolResult, any, error) {
+	}, func(ctx context.Context, req *mcp.CallToolRequest, args statusArgs) (*mcp.CallToolResult, StatusOutput, error) {
 		// Check for cancellation before starting
 		select {
 		case <-ctx.Done():
-			return nil, nil, newMCPError(jsonrpc.CodeInternalError, "request cancelled", ctx.Err().Error())
+			return nil, StatusOutput{}, newMCPError(jsonrpc.CodeInternalError, "request cancelled", ctx.Err().Error())
 		default:
 		}
 
@@ -49,13 +61,13 @@ Returns a JSON array where each element has the following structure:
 		// Call GetWorkflowStatuses directly instead of spawning subprocess
 		statuses, err := GetWorkflowStatuses(args.Pattern, "", "", "")
 		if err != nil {
-			return nil, nil, newMCPError(jsonrpc.CodeInternalError, "failed to get workflow statuses", map[string]any{"error": err.Error()})
+			return nil, StatusOutput{}, newMCPError(jsonrpc.CodeInternalError, "failed to get workflow statuses", map[string]any{"error": err.Error()})
 		}
 
 		// Marshal to JSON
 		jsonBytes, err := json.Marshal(statuses)
 		if err != nil {
-			return nil, nil, newMCPError(jsonrpc.CodeInternalError, "failed to marshal workflow statuses", map[string]any{"error": err.Error()})
+			return nil, StatusOutput{}, newMCPError(jsonrpc.CodeInternalError, "failed to marshal workflow statuses", map[string]any{"error": err.Error()})
 		}
 
 		outputStr := string(jsonBytes)
@@ -64,7 +76,7 @@ Returns a JSON array where each element has the following structure:
 			Content: []mcp.Content{
 				&mcp.TextContent{Text: outputStr},
 			},
-		}, nil, nil
+		}, StatusOutput{Workflows: statuses}, nil
 	})
 }
 
@@ -97,7 +109,7 @@ func registerCompileTool(server *mcp.Server, execCmd execCmdFunc, manifestCacheF
 		mcpLog.Printf("Failed to add default for strict: %v", err)
 	}
 
-	mcp.AddTool(server, &mcp.Tool{
+	mcp.AddTool[compileArgs, CompileOutput](server, &mcp.Tool{
 		Name: "compile",
 		Annotations: &mcp.ToolAnnotations{
 			IdempotentHint:  true,
@@ -124,11 +136,11 @@ Returns JSON array with validation results for each workflow:
 		Icons: []mcp.Icon{
 			{Source: "🔨"},
 		},
-	}, func(ctx context.Context, req *mcp.CallToolRequest, args compileArgs) (*mcp.CallToolResult, any, error) {
+	}, func(ctx context.Context, req *mcp.CallToolRequest, args compileArgs) (*mcp.CallToolResult, CompileOutput, error) {
 		// Check for cancellation before starting
 		select {
 		case <-ctx.Done():
-			return nil, nil, newMCPError(jsonrpc.CodeInternalError, "request cancelled", ctx.Err().Error())
+			return nil, CompileOutput{}, newMCPError(jsonrpc.CodeInternalError, "request cancelled", ctx.Err().Error())
 		default:
 		}
 
@@ -160,18 +172,18 @@ Returns JSON array with validation results for each workflow:
 					results := buildDockerErrorResults(args.Workflows, err.Error())
 					jsonBytes, jsonErr := json.Marshal(results)
 					if jsonErr != nil {
-						return nil, nil, newMCPError(jsonrpc.CodeInternalError, "failed to marshal docker error results", jsonErr.Error())
+						return nil, CompileOutput{}, newMCPError(jsonrpc.CodeInternalError, "failed to marshal docker error results", jsonErr.Error())
 					}
 					return &mcp.CallToolResult{
 						Content: []mcp.Content{&mcp.TextContent{Text: string(jsonBytes)}},
-					}, nil, nil
+					}, CompileOutput{Results: results}, nil
 				}
 			}
 
 			// Check for cancellation after Docker image preparation
 			select {
 			case <-ctx.Done():
-				return nil, nil, newMCPError(jsonrpc.CodeInternalError, "request cancelled", ctx.Err().Error())
+				return nil, CompileOutput{}, newMCPError(jsonrpc.CodeInternalError, "request cancelled", ctx.Err().Error())
 			default:
 			}
 		}
@@ -239,7 +251,7 @@ Returns JSON array with validation results for each workflow:
 				if errors.As(err, &exitErr) {
 					stderr = string(exitErr.Stderr)
 				}
-				return nil, nil, newMCPError(jsonrpc.CodeInternalError, "failed to compile workflows", map[string]any{"error": err.Error(), "stderr": stderr})
+				return nil, CompileOutput{}, newMCPError(jsonrpc.CodeInternalError, "failed to compile workflows", map[string]any{"error": err.Error(), "stderr": stderr})
 			}
 			// Otherwise, we have output (likely validation errors in JSON), so continue
 			// and return it to the LLM
@@ -252,11 +264,16 @@ Returns JSON array with validation results for each workflow:
 			outputStr = injectDockerUnavailableWarning(outputStr, dockerUnavailableWarning)
 		}
 
+		// Parse the JSON output for structured content (best-effort).
+		// If parsing fails, structured content will be an empty CompileOutput.
+		var compileResults []ValidationResult
+		_ = json.Unmarshal([]byte(outputStr), &compileResults)
+
 		return &mcp.CallToolResult{
 			Content: []mcp.Content{
 				&mcp.TextContent{Text: outputStr},
 			},
-		}, nil, nil
+		}, CompileOutput{Results: compileResults}, nil
 	})
 
 	return nil
