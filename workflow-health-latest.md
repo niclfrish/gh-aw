@@ -1,35 +1,45 @@
-# Workflow Health — 2026-05-03T05:38Z
+# Workflow Health — 2026-05-04T05:39Z
 
-Score: 65/100 (↓3 from 68). 209 workflows. Run: §25271042058
+Score: 65/100 (→ stable from 65). 211 workflows. Run: §25302920193
 
 ## KEY FINDINGS
 
 ### Compilation Status
-- 209/209 lock files present ✅ (+2 new workflows)
+- 211/211 lock files present ✅ (+2 new workflows)
 - 0 missing lock files ✅
 
 ### P0 Issues (Active)
-- **Smoke Gemini** (#29459, #29852, #29816 OPEN): 100% failure rate (5/5). API_KEY_INVALID — long-standing.
-- **Smoke Copilot** (#29863 OPEN): 2/5 failures (new regression ~03:37 UTC May 3)
-- **Smoke Claude** (#29864 OPEN): 3/5 failures (new regression ~03:37 UTC May 3)
-- **Smoke CI** (#29666 OPEN): 4/5 action_required — Crush EROFS persist
-- **CGO build failures** (#29669 OPEN): ongoing failure
+- **Smoke Gemini** (#29852, #29816, #29459 OPEN): 100% failure, proxy blocks traffic (chronic 30+ days)
+- **Smoke CI** (#29666 OPEN): 100% action_required, EROFS crash (chronic)
+- **Smoke macOS ARM64**: 100% failure since Feb 2026, NO ISSUE FILED — needs one
+- **Daily Model Inventory Checker** (#30043 OPEN): New P0 — Copilot CLI silent startup crash
 
 ### P1 Issues (Active)
-- **Smoke Codex**: 1/5 failures (minor regression today)
-- **Smoke Crush**: 2/5 failures, 3 skipped (blocked by Gemini infrastructure issue)
-- **MCP gateway session timeout** (#23153 OPEN): Ongoing structural risk
+- **Smoke Claude** (#29974 OPEN): 1 failure at 01:49 UTC May 4 (transient wave)
+- **Smoke Pi** (#29973 OPEN): 1 failure at 01:49 UTC May 4 (transient wave)
+- **Smoke Codex**: 1 failure at 01:49 UTC May 4 (transient wave, no dedicated issue yet)
+- **Smoke Copilot ARM64**: 1 failure at 01:49 UTC May 4 (transient wave)
+- **Smoke OpenCode**: 1 failure at 01:49 UTC May 4 (transient wave)
+- **Metrics Collector** (#30050 OPEN)
+- **Auto-Triage Issues** (#30039 OPEN)
+- **Dev** (#29969 OPEN)
+- **Documentation Unbloat** (#29964 OPEN)
+- **Step Name Alignment** (#30069 OPEN)
 
 ### P2 Issues
-- Node.js 20 deprecation in CI (deadline Sep 16, 2026)
-- #29779 YAMLGeneration 21.7% regression
+- Node.js 20 deprecation deadline Sep 16, 2026
+- MCP gateway session timeout (#23153)
+- 6 PR-review agents with approval queue backlog
+
+### Recovery
+- Smoke Copilot: SUCCESS at 00:56 UTC ✅ (was failing May 3)
 
 ### Actions Taken This Run
-- Updated dashboard issue #29693 with today's status
+- Created health dashboard issue
 - Updated shared memory
 
 ### Trends
-- Score: 65/100 (↓3 from 68 yesterday)
-- New smoke regression wave: Copilot, Claude, Codex all started failing ~03:37 UTC
-- P1 backlog: still reduced vs historic highs
-- 2 new workflows added (209 total)
+- Score: 65/100 (→ stable)
+- 01:49 UTC transient wave: 5 smoke tests failed simultaneously
+- Gemini still completely broken (30+ days, P0 unresolved)
+- macOS ARM64 chronic failure since Feb 2026 — needs attention
