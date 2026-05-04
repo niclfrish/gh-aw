@@ -1,11 +1,10 @@
 {
-  "run_date": "2026-05-04T07:21:02Z",
-  "run_id": "25306231342",
+  "run_date": "2026-05-04T12:51:49Z",
+  "run_id": "25319957101",
   "fork_prs": 0,
-  "agent_prs_found": 6,
-  "agent_prs_excluded": 6,
-  "notes": "All 6 open agent PRs (by app/copilot-swe-agent) are same-repo branches (isCrossRepository=false). Per policy, only fork PRs are triaged. No fork PRs to triage.",
-  "same_repo_prs": [30072, 30071, 30070, 30060, 29626, 29223],
+  "agent_prs_found": 0,
+  "agent_prs_excluded": 0,
+  "notes": "No open fork PRs from app/github-copilot found. 31 total open PRs, all from same-repo branches. Per policy, only fork PRs are triaged.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,10 +17,10 @@
     "by_action": {}
   },
   "previous_run": {
-    "run_id": "25296173705",
-    "run_date": "2026-05-04T01:09:47Z",
+    "run_id": "25306231342",
+    "run_date": "2026-05-04T07:21:02Z",
     "fork_prs": 0,
-    "agent_prs_found": 4,
-    "agent_prs_excluded": 4
+    "agent_prs_found": 6,
+    "agent_prs_excluded": 6
   }
 }
