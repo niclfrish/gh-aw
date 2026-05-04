@@ -1,5 +1,24 @@
 # Copilot CLI Research Notes
 
+### 2026-05-04 (Run 25301640113)
+- 211 total MD workflows; 95 Copilot (simple form)
+- **startup-timeout**: 0 (14th consecutive run — CRITICAL persistent gap)
+- **tool-timeout**: 0 (14th run — persistent gap)
+- **engine.api-target**: 0 (persistent gap)
+- **engine.harness**: 0 (persistent gap)
+- **max-continuations**: 2 (test-quality-sentinel:40, smoke-copilot:2)
+- **engine.version pinning**: 6 (slight uptick vs 0 in older runs)
+- **engine.model**: 4 (gpt-5-mini for auto-triage-issues)
+- **engine.bare**: 2 (smoke-copilot + 1 more)
+- **cache-memory**: 30 (solid adoption)
+- **mcp-scripts**: 1 (daily-performance-summary only)
+- **engine.agent (custom)**: 7 unique workflows
+- **sandbox AWF**: 11; **network config**: 45
+- 5/11 custom agent files still unused (grumpy-reviewer, w3c-spec-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer)
+- Discussion created: "Copilot CLI Deep Research - 2026-05-04"
+
+
+
 ## Analysis History
 
 ### 2026-04-29 (Run 25134300030)
