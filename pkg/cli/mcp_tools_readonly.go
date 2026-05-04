@@ -267,7 +267,9 @@ Returns JSON array with validation results for each workflow:
 		// Parse the JSON output for structured content (best-effort).
 		// If parsing fails, structured content will be an empty CompileOutput.
 		var compileResults []ValidationResult
-		_ = json.Unmarshal([]byte(outputStr), &compileResults)
+		if err := json.Unmarshal([]byte(outputStr), &compileResults); err != nil {
+			mcpLog.Printf("Failed to parse compile output as JSON for structured content: %v", err)
+		}
 
 		return &mcp.CallToolResult{
 			Content: []mcp.Content{

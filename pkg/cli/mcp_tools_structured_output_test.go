@@ -79,7 +79,7 @@ func TestStatusToolStructuredContent(t *testing.T) {
 	var output StatusOutput
 	require.NoError(t, json.Unmarshal(raw, &output), "unmarshal StructuredContent as StatusOutput")
 	// The temp dir has one .md file, so Workflows should contain at least one entry.
-	assert.NotNil(t, output.Workflows, "Workflows field should be non-nil (may be empty slice)")
+	assert.NotEmpty(t, output.Workflows, "Workflows should contain at least one entry")
 }
 
 // TestCompileToolStructuredContent verifies that the compile tool returns
@@ -89,8 +89,8 @@ func TestCompileToolStructuredContent(t *testing.T) {
 	// Mock execCmd that writes valid JSON compile output to stdout.
 	jsonOutput := `[{"workflow":"test.md","valid":true,"errors":[],"warnings":[]}]`
 	mockExecCmd := func(ctx context.Context, args ...string) *exec.Cmd {
-		// "echo" writes jsonOutput to stdout, simulating a successful compile.
-		return exec.CommandContext(ctx, "sh", "-c", "printf '%s'", jsonOutput)
+		// Use "echo" to write the JSON output to stdout, simulating a successful compile.
+		return exec.CommandContext(ctx, "echo", jsonOutput)
 	}
 
 	server := mcp.NewServer(&mcp.Implementation{Name: "test", Version: "1.0.0"}, nil)
