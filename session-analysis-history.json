@@ -122,13 +122,30 @@
         "Zero escalation-threshold orphans - all Copilot branches have Copilot assigned",
         "No conversation logs available (0 conversation.txt files)"
       ]
+    },
+    {
+      "date": "2026-05-05",
+      "sessions_analyzed": 50,
+      "completion_rate_pct": 2.0,
+      "copilot_coding_agents": 4,
+      "copilot_success_rate_pct": 25.0,
+      "avg_copilot_duration_min": 9.0,
+      "experimental_strategy": "Gate Workflow Composition Fingerprinting",
+      "key_insights": [
+        "add-models-section: 38 gate fires across 9 workflows in 9min - largest gate footprint of the day",
+        "bump-awf-firewall: 1 gate (Haiku Printer only), immediate success - simplest task type",
+        "Gate count strongly predicts task complexity: 1 gate = simple, 9 workflows = feature addition",
+        "Security Review Agent + Grumpy Code Reviewer co-occurrence = high-risk/high-scrutiny signal",
+        "0% orphaned branches - all 8 open PRs have Copilot assigned (vs 40% historical baseline)",
+        "No conversation logs available (0 conversation.txt files)"
+      ]
     }
   ],
-  "last_updated": "2026-05-04",
+  "last_updated": "2026-05-05",
   "historical_summary": {
-    "avg_completion_rate_pct": 15.2,
-    "avg_copilot_success_rate_pct": 50.1,
-    "avg_copilot_duration_min": 15.3,
-    "note": "Averages computed across Apr 23 - May 4 (9 data days)"
+    "avg_completion_rate_pct": 13.9,
+    "avg_copilot_success_rate_pct": 46.8,
+    "avg_copilot_duration_min": 14.0,
+    "note": "Averages computed across Apr 23 - May 5 (10 data days)"
   }
 }
