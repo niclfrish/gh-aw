@@ -86,3 +86,22 @@
 - **imports (agentic-workflows)**: 40 workflows
 - 5 unused custom agent files (same 5 since April)
 - Discussion created: "Copilot CLI Deep Research - 2026-05-03"
+
+### 2026-05-05 (Run 25358259379) — Run #15
+- 213 total MD workflows; 92 Copilot (simple form)
+- **startup-timeout**: 0 (15th consecutive run — CRITICAL persistent gap)
+- **tool-timeout**: 0 (15th run — persistent gap)
+- **engine.version pinning**: 0 (15th run)
+- **engine.api-target**: 0 (persistent)
+- **engine.harness**: 0 (persistent)
+- **max-continuations**: 2 (test-quality-sentinel:40, smoke-copilot:2) — stable
+- **engine.model**: 20 workflows (↑↑↑ from 4 — surge in model diversity)
+- **engine.agent**: 34 workflows (↑↑↑ from 7 — custom agent adoption surging)
+- **cache-memory**: 88 workflows (near-universal, methodology improved)
+- **sandbox AWF**: 18 (↑ from 11)
+- **strict mode**: 126 (expanded scope measurement)
+- **web-fetch**: 23; **web-search**: 1 (ci-doctor only)
+- **mcp-scripts**: 3 (↑ from 1)
+- **GitHub MCP full-access**: 13 prod workflows without toolsets restriction
+- 5 custom agent files still unused (unchanged since tracking began)
+- Discussion created: "Copilot CLI Deep Research - 2026-05-05"
