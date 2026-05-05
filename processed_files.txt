@@ -10,3 +10,4 @@
 ./pkg/cli/logs_formatting_test.go|2026-04-30
 ./pkg/cli/update_cooldown_test.go|2026-05-01
 ./pkg/cli/actions_test.go|2026-05-02
+./pkg/parser/import_error_test.go|2026-05-05
