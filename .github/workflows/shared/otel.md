@@ -5,7 +5,7 @@
 #
 # Required secrets:
 #   GH_AW_OTEL_ENDPOINT — OTLP collector endpoint URL
-#   GH_AW_OTEL_HEADERS  — OTLP authentication headers (e.g. "Authorization=Bearer <token>")
+#   GH_AW_OTEL_HEADERS  — OTLP Authorization header value (e.g. "Bearer <token>")
 #
 # Usage:
 #   imports:
