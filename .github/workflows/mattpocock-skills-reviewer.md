@@ -16,6 +16,8 @@ tools:
 pre-agent-steps:
   - name: Upgrade gh CLI
     run: |
+      curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
       sudo apt-get update -qq
       sudo apt-get install -y gh
   - name: Install Matt Pocock skills
@@ -81,7 +83,7 @@ gh pr view ${{ github.event.pull_request.number }} --repo ${{ github.repository 
 Read the installed Matt Pocock skills from `.github/skills/`. List what is available:
 
 ```bash
-find .github/skills -name "SKILL.md" 2>/dev/null | head -30
+find "${GITHUB_WORKSPACE}/.github/skills" -name "SKILL.md" 2>/dev/null | head -30
 ```
 
 Read the content of each relevant skill file before applying it so you understand its exact guidance.
