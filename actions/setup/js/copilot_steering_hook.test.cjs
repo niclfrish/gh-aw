@@ -41,7 +41,7 @@ describe("copilot_steering_hook.cjs", () => {
     expect(config.timeCriticalMinutes).toBe(2);
     expect(config.runsWarningRemaining).toBe(2);
     expect(config.runsCriticalRemaining).toBe(1);
-    expect(config.hookLogPath).toBe("/tmp/gh-aw/copilot-steering-hook.log");
+    expect(config.hookLogPath).toBe("/tmp/gh-aw/sandbox/agent/logs/copilot-steering-hook.log");
   });
 
   it("appends hook event log entries as JSON lines", () => {

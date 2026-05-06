@@ -11,7 +11,7 @@ const DEFAULT_TIME_CRITICAL_MINUTES = 2;
 const DEFAULT_RUN_WARNING_REMAINING = 2;
 const DEFAULT_RUN_CRITICAL_REMAINING = 1;
 const DEFAULT_STATE_PATH = "/tmp/gh-aw/copilot-steering-state.json";
-const DEFAULT_HOOK_LOG_PATH = "/tmp/gh-aw/copilot-steering-hook.log";
+const DEFAULT_HOOK_LOG_PATH = "/tmp/gh-aw/sandbox/agent/logs/copilot-steering-hook.log";
 const MS_PER_MINUTE = 60000;
 
 /**
