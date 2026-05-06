@@ -106,7 +106,12 @@ function isValidSteeringState(value) {
   if (!value || typeof value !== "object") {
     return false;
   }
-  const candidate = /** @type {Record<string, unknown>} */ value;
+  const candidate = /** @type {{
+   *   startedAtMs?: unknown,
+   *   turns?: unknown,
+   *   warningInjected?: unknown,
+   *   criticalInjected?: unknown
+   * }} */ value;
   return (
     typeof candidate.startedAtMs === "number" &&
     Number.isFinite(candidate.startedAtMs) &&
