@@ -1,0 +1,29 @@
+{
+  "last_updated": "2026-05-06T00:00:00Z",
+  "tools": [
+    {"name": "activate_project", "description": "Activates the project with the given name or path"},
+    {"name": "check_onboarding_performed", "description": "Checks whether project onboarding was already performed"},
+    {"name": "delete_memory", "description": "Delete a memory file"},
+    {"name": "edit_memory", "description": "Replaces content matching a regular expression in a memory"},
+    {"name": "find_file", "description": "Finds non-gitignored files matching the given file mask within the given relative path"},
+    {"name": "find_referencing_symbols", "description": "Finds references to the symbol at the given name_path"},
+    {"name": "find_symbol", "description": "Retrieves information on all symbols/code entities based on the given name path pattern"},
+    {"name": "get_current_config", "description": "Print the current configuration of the agent, including active and available projects"},
+    {"name": "get_symbols_overview", "description": "Get a high-level understanding of the code symbols in a file"},
+    {"name": "initial_instructions", "description": "Provides the Serena Instructions Manual"},
+    {"name": "insert_after_symbol", "description": "Inserts the given body/content after the end of the definition of the given symbol"},
+    {"name": "insert_before_symbol", "description": "Inserts the given content before the beginning of the definition of the given symbol"},
+    {"name": "list_dir", "description": "Lists files and directories in the given directory"},
+    {"name": "list_memories", "description": "List available memories"},
+    {"name": "onboarding", "description": "Call this tool if onboarding was not performed yet"},
+    {"name": "read_memory", "description": "Read the content of a memory file"},
+    {"name": "rename_symbol", "description": "Renames the symbol with the given name_path to new_name throughout the entire codebase"},
+    {"name": "replace_symbol_body", "description": "Replaces the body of the symbol with the given name_path"},
+    {"name": "search_for_pattern", "description": "Flexible search for arbitrary patterns in the codebase"},
+    {"name": "think_about_collected_information", "description": "Think about collected information"},
+    {"name": "think_about_task_adherence", "description": "Think about task adherence"},
+    {"name": "think_about_whether_you_are_done", "description": "Think about whether you are done"},
+    {"name": "write_memory", "description": "Write a memory file"}
+  ],
+  "notes": "LSP tools (get_symbols_overview, find_symbol, find_referencing_symbols, search_for_pattern, get_symbols_overview) returned EOF errors during this run. Only get_current_config and list_dir worked successfully. Language server may need warm-up time."
+}
