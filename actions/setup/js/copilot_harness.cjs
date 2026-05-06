@@ -398,6 +398,7 @@ function installCopilotSteeringHooks(resolvedArgs) {
     process.env.GH_AW_STEERING_TIME_CRITICAL_MINUTES = process.env.GH_AW_STEERING_TIME_CRITICAL_MINUTES || "2";
     process.env.GH_AW_STEERING_RUN_WARNING_REMAINING = process.env.GH_AW_STEERING_RUN_WARNING_REMAINING || "2";
     process.env.GH_AW_STEERING_RUN_CRITICAL_REMAINING = process.env.GH_AW_STEERING_RUN_CRITICAL_REMAINING || "1";
+    process.env.GITHUB_COPILOT_PROMPT_MODE_REPO_HOOKS = "true";
 
     fs.mkdirSync(hooksDir, { recursive: true });
     const hookConfig = buildSteeringHookConfig(hookScriptPath, process.execPath);
