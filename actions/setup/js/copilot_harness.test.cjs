@@ -652,12 +652,14 @@ describe("copilot_harness.cjs", () => {
       expect(computeMaxAutopilotRuns(["--add-dir", "/tmp"])).toBe(1);
     });
 
-    it("builds hook config with sessionStart and agentStop command hooks", () => {
+    it("builds hook config with sessionStart/sessionEnd and agentStop command hooks", () => {
       const config = buildSteeringHookConfig("/tmp/gh-aw/actions/copilot_steering_hook.cjs", "/usr/bin/node");
       expect(config.version).toBe(1);
       expect(config.hooks.sessionStart).toHaveLength(1);
+      expect(config.hooks.sessionEnd).toHaveLength(1);
       expect(config.hooks.agentStop).toHaveLength(1);
       expect(config.hooks.sessionStart[0].bash).toContain("sessionStart");
+      expect(config.hooks.sessionEnd[0].bash).toContain("sessionEnd");
       expect(config.hooks.agentStop[0].bash).toContain("agentStop");
     });
 

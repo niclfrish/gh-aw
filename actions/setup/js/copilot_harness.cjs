@@ -348,6 +348,13 @@ function buildSteeringHookConfig(hookScriptPath, nodeExecPath) {
           timeoutSec: 10,
         },
       ],
+      sessionEnd: [
+        {
+          type: "command",
+          bash: `${quotedNodePath} ${quotedHookScriptPath} sessionEnd`,
+          timeoutSec: 10,
+        },
+      ],
       agentStop: [
         {
           type: "command",

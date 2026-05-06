@@ -23,15 +23,6 @@ const MS_PER_MINUTE = 60000;
  */
 
 /**
- * @typedef {{
- *   startedAtMs?: unknown,
- *   turns?: unknown,
- *   warningInjected?: unknown,
- *   criticalInjected?: unknown
- * }} PartialSteeringState
- */
-
-/**
  * @param {string | undefined} rawValue
  * @param {number} fallback
  * @returns {number}
@@ -115,14 +106,14 @@ function isValidSteeringState(value) {
   if (!value || typeof value !== "object") {
     return false;
   }
-  const candidate = /** @type {PartialSteeringState} */ value;
+  const candidate = /** @type {Record<string, unknown>} */ value;
   return (
-    typeof candidate.startedAtMs === "number" &&
-    Number.isFinite(candidate.startedAtMs) &&
-    typeof candidate.turns === "number" &&
-    Number.isFinite(candidate.turns) &&
-    typeof candidate.warningInjected === "boolean" &&
-    typeof candidate.criticalInjected === "boolean"
+    typeof candidate["startedAtMs"] === "number" &&
+    Number.isFinite(candidate["startedAtMs"]) &&
+    typeof candidate["turns"] === "number" &&
+    Number.isFinite(candidate["turns"]) &&
+    typeof candidate["warningInjected"] === "boolean" &&
+    typeof candidate["criticalInjected"] === "boolean"
   );
 }
 
@@ -212,7 +203,7 @@ function computeSteeringDecision(state, config, timestamp) {
 }
 
 /**
- * @param {"sessionStart" | "agentStop"} eventName
+ * @param {"sessionStart" | "sessionEnd" | "agentStop"} eventName
  * @param {Record<string, any>} payload
  * @param {NodeJS.ProcessEnv} env
  * @returns {{ state: SteeringState, decision: { decision: "block", reason: string } | null }}
@@ -227,6 +218,17 @@ function handleSteeringEvent(eventName, payload, env = process.env) {
     const state = isNewSession ? createInitialState(timestamp) : priorState;
     saveState(config.statePath, state);
     return { state, decision: null };
+  }
+
+  if (eventName === "sessionEnd") {
+    try {
+      if (fs.existsSync(config.statePath)) {
+        fs.unlinkSync(config.statePath);
+      }
+    } catch {
+      // best-effort cleanup only
+    }
+    return { state: priorState, decision: null };
   }
 
   const result = computeSteeringDecision(priorState, config, timestamp);
@@ -249,7 +251,7 @@ function readStdinJSON() {
 function main() {
   try {
     const eventName = process.argv[2];
-    if (eventName !== "sessionStart" && eventName !== "agentStop") {
+    if (eventName !== "sessionStart" && eventName !== "sessionEnd" && eventName !== "agentStop") {
       process.stderr.write(`[copilot-steering-hook] unsupported event: ${eventName || ""}\n`);
       return;
     }

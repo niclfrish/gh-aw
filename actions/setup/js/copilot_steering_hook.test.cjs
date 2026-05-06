@@ -105,4 +105,14 @@ describe("copilot_steering_hook.cjs", () => {
     expect(result.decision).toBeNull();
     expect(fs.existsSync(nestedStatePath)).toBe(true);
   });
+
+  it("removes persisted state on sessionEnd", () => {
+    const env = makeTestEnv();
+    handleSteeringEvent("sessionStart", { timestamp: 1000, source: "new" }, env);
+    expect(fs.existsSync(statePath)).toBe(true);
+
+    const result = handleSteeringEvent("sessionEnd", { timestamp: 2000 }, env);
+    expect(result.decision).toBeNull();
+    expect(fs.existsSync(statePath)).toBe(false);
+  });
 });
