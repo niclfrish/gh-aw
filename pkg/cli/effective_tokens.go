@@ -51,13 +51,29 @@ type tokenClassWeights struct {
 	CacheWrite  float64 `json:"cache_write"`
 }
 
+// cacheTokenMultiplier holds per-vendor cache factors for computing effective tokens from cached input.
+type cacheTokenMultiplier struct {
+	Description string  `json:"description"`
+	Anthropic   float64 `json:"anthropic"`
+	OpenAI      float64 `json:"openai"`
+}
+
+// modelCostInfo holds cost per million tokens for a model.
+type modelCostInfo struct {
+	InputPerMillion  float64 `json:"input_per_million"`
+	OutputPerMillion float64 `json:"output_per_million"`
+	Vendor           string  `json:"vendor"`
+}
+
 // modelMultipliersData is the top-level structure of model_multipliers.json.
 type modelMultipliersData struct {
-	Version           string             `json:"version"`
-	Description       string             `json:"description"`
-	ReferenceModel    string             `json:"reference_model"`
-	TokenClassWeights tokenClassWeights  `json:"token_class_weights"`
-	Multipliers       map[string]float64 `json:"multipliers"`
+	Version              string                   `json:"version"`
+	Description          string                   `json:"description"`
+	ReferenceModel       string                   `json:"reference_model"`
+	TokenClassWeights    tokenClassWeights        `json:"token_class_weights"`
+	CacheTokenMultiplier cacheTokenMultiplier     `json:"cache_token_multiplier"`
+	ModelCosts           map[string]modelCostInfo `json:"model_costs"`
+	Multipliers          map[string]float64       `json:"multipliers"`
 }
 
 // loadedMultipliers is the parsed multiplier table, keyed by lowercase model name.
@@ -67,6 +83,14 @@ var loadedMultipliers map[string]float64
 // loadedTokenWeights holds the token class weights from the JSON file.
 // Initialized once on first call to initMultipliers.
 var loadedTokenWeights tokenClassWeights
+
+// loadedCacheMultiplier holds the per-vendor cache token multipliers.
+// Initialized once on first call to initMultipliers.
+var loadedCacheMultiplier cacheTokenMultiplier
+
+// loadedModelCosts holds the cost information per model.
+// Initialized once on first call to initMultipliers.
+var loadedModelCosts map[string]modelCostInfo
 
 // initMultipliers parses the embedded JSON and populates loadedMultipliers and
 // loadedTokenWeights. Safe to call multiple times; only initializes once.
@@ -107,9 +131,26 @@ func initMultipliers() {
 		loadedTokenWeights.CacheWrite = defaults.CacheWrite
 	}
 
-	effectiveTokensLog.Printf("Loaded %d model multipliers (reference: %s, w_in=%.1f w_cache=%.1f w_out=%.1f)",
-		len(loadedMultipliers), data.ReferenceModel,
-		loadedTokenWeights.Input, loadedTokenWeights.CachedInput, loadedTokenWeights.Output)
+	// Load cache token multiplier
+	loadedCacheMultiplier = data.CacheTokenMultiplier
+	// Set default values if not provided
+	if loadedCacheMultiplier.Anthropic == 0 {
+		loadedCacheMultiplier.Anthropic = 0.1
+	}
+	if loadedCacheMultiplier.OpenAI == 0 {
+		loadedCacheMultiplier.OpenAI = 0.5
+	}
+
+	// Load model costs
+	loadedModelCosts = make(map[string]modelCostInfo, len(data.ModelCosts))
+	for model, cost := range data.ModelCosts {
+		loadedModelCosts[strings.ToLower(model)] = cost
+	}
+
+	effectiveTokensLog.Printf("Loaded %d model multipliers, %d model costs (reference: %s, w_in=%.1f w_cache=%.1f w_out=%.1f, cache_mult: Anthropic=%.1f OpenAI=%.1f)",
+		len(loadedMultipliers), len(loadedModelCosts), data.ReferenceModel,
+		loadedTokenWeights.Input, loadedTokenWeights.CachedInput, loadedTokenWeights.Output,
+		loadedCacheMultiplier.Anthropic, loadedCacheMultiplier.OpenAI)
 }
 
 // defaultTokenClassWeights returns the specification-mandated default weights.
@@ -221,4 +262,43 @@ func computeModelEffectiveTokensWithWeights(model string, inputTokens, outputTok
 	}
 
 	return int(math.Round(base * mult))
+}
+
+// GetCacheTokenMultiplier returns the cache token multiplier for a given vendor.
+// Supported vendors: "anthropic", "openai". Returns default 0.1 for unknown vendors.
+func GetCacheTokenMultiplier(vendor string) float64 {
+	initMultipliers()
+
+	key := strings.ToLower(strings.TrimSpace(vendor))
+	switch key {
+	case "anthropic":
+		return loadedCacheMultiplier.Anthropic
+	case "openai":
+		return loadedCacheMultiplier.OpenAI
+	default:
+		return 0.1 // Default cache multiplier
+	}
+}
+
+// GetModelCostInfo returns the cost information for a given model.
+// Returns nil if cost information is not available for the model.
+func GetModelCostInfo(model string) *modelCostInfo {
+	initMultipliers()
+
+	key := strings.ToLower(strings.TrimSpace(model))
+	if cost, ok := loadedModelCosts[key]; ok {
+		return &cost
+	}
+	return nil
+}
+
+// GetAllModelCosts returns a copy of all loaded model cost information.
+func GetAllModelCosts() map[string]modelCostInfo {
+	initMultipliers()
+
+	result := make(map[string]modelCostInfo, len(loadedModelCosts))
+	for model, cost := range loadedModelCosts {
+		result[model] = cost
+	}
+	return result
 }

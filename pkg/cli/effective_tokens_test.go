@@ -121,3 +121,116 @@ func TestPopulateEffectiveTokensWithCustomWeightsNilSummary(t *testing.T) {
 		populateEffectiveTokensWithCustomWeights(nil, nil)
 	})
 }
+
+func TestCacheTokenMultiplier(t *testing.T) {
+	loadedMultipliers = nil
+	initMultipliers()
+
+	tests := []struct {
+		name     string
+		vendor   string
+		expected float64
+	}{
+		{
+			name:     "anthropic cache multiplier",
+			vendor:   "anthropic",
+			expected: 0.1,
+		},
+		{
+			name:     "openai cache multiplier",
+			vendor:   "openai",
+			expected: 0.5,
+		},
+		{
+			name:     "anthropic uppercase",
+			vendor:   "ANTHROPIC",
+			expected: 0.1,
+		},
+		{
+			name:     "openai mixed case",
+			vendor:   "OpenAI",
+			expected: 0.5,
+		},
+		{
+			name:     "unknown vendor returns default",
+			vendor:   "unknown",
+			expected: 0.1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := GetCacheTokenMultiplier(tt.vendor)
+			assert.InDelta(t, tt.expected, result, 1e-9, "cache multiplier for %s", tt.vendor)
+		})
+	}
+}
+
+func TestGetModelCostInfo(t *testing.T) {
+	loadedMultipliers = nil
+	initMultipliers()
+
+	tests := []struct {
+		name       string
+		model      string
+		expectNil  bool
+		expectCost *modelCostInfo
+	}{
+		{
+			name:      "claude-sonnet-4.5",
+			model:     "claude-sonnet-4.5",
+			expectNil: false,
+			expectCost: &modelCostInfo{
+				InputPerMillion:  3.0,
+				OutputPerMillion: 15.0,
+				Vendor:           "anthropic",
+			},
+		},
+		{
+			name:      "gpt-4o case insensitive",
+			model:     "GPT-4O",
+			expectNil: false,
+			expectCost: &modelCostInfo{
+				InputPerMillion:  2.5,
+				OutputPerMillion: 10.0,
+				Vendor:           "openai",
+			},
+		},
+		{
+			name:      "unknown model",
+			model:     "unknown-model",
+			expectNil: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := GetModelCostInfo(tt.model)
+			if tt.expectNil {
+				assert.Nil(t, result, "should return nil for unknown model")
+			} else {
+				require.NotNil(t, result, "should return cost info")
+				assert.InDelta(t, tt.expectCost.InputPerMillion, result.InputPerMillion, 1e-9, "input cost")
+				assert.InDelta(t, tt.expectCost.OutputPerMillion, result.OutputPerMillion, 1e-9, "output cost")
+				assert.Equal(t, tt.expectCost.Vendor, result.Vendor, "vendor")
+			}
+		})
+	}
+}
+
+func TestGetAllModelCosts(t *testing.T) {
+	loadedMultipliers = nil
+	initMultipliers()
+
+	costs := GetAllModelCosts()
+	assert.NotEmpty(t, costs, "should return model costs")
+
+	// Check a few expected models
+	claudeSonnet, ok := costs["claude-sonnet-4.5"]
+	assert.True(t, ok, "should have claude-sonnet-4.5")
+	assert.InDelta(t, 3.0, claudeSonnet.InputPerMillion, 1e-9, "claude-sonnet-4.5 input cost")
+
+	gpt4o, ok := costs["gpt-4o"]
+	assert.True(t, ok, "should have gpt-4o")
+	assert.Equal(t, "openai", gpt4o.Vendor, "gpt-4o vendor")
+}
