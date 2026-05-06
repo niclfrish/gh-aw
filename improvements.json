@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-03",
+  "last_updated": "2026-05-06",
   "pending_tasks": [
     {
       "file": "docs/src/content/docs/guides/self-hosted-runners.md",
@@ -12,6 +12,18 @@
       "created": "2026-05-03",
       "status": "pending",
       "description": "Rename 'Using a magic secret' section to 'Using a reserved secret name'"
+    },
+    {
+      "file": "docs/src/content/docs/examples/manual.md",
+      "created": "2026-05-06",
+      "status": "pending",
+      "description": "Clarify UI steps 3 and 5 — both say 'Run workflow'; step 3 should read 'Click Run workflow to open the input form', step 5 'Click the green Run workflow button to start the run'"
+    },
+    {
+      "file": "pkg/cli/validate_command.go",
+      "created": "2026-05-06",
+      "status": "pending",
+      "description": "Trim --strict flag description from 189 chars to one concise sentence; move default-behaviour note into Long: block"
     }
   ]
 }
