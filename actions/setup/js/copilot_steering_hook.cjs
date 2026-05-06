@@ -23,6 +23,15 @@ const MS_PER_MINUTE = 60000;
  */
 
 /**
+ * @typedef {{
+ *   startedAtMs?: unknown,
+ *   turns?: unknown,
+ *   warningInjected?: unknown,
+ *   criticalInjected?: unknown
+ * }} PartialSteeringState
+ */
+
+/**
  * @param {string | undefined} rawValue
  * @param {number} fallback
  * @returns {number}
@@ -106,12 +115,7 @@ function isValidSteeringState(value) {
   if (!value || typeof value !== "object") {
     return false;
   }
-  const candidate = /** @type {{
-   *   startedAtMs?: unknown,
-   *   turns?: unknown,
-   *   warningInjected?: unknown,
-   *   criticalInjected?: unknown
-   * }} */ value;
+  const candidate = /** @type {PartialSteeringState} */ value;
   return (
     typeof candidate.startedAtMs === "number" &&
     Number.isFinite(candidate.startedAtMs) &&
