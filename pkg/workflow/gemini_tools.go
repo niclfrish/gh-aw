@@ -4,7 +4,7 @@ package workflow
 //
 // It handles two key responsibilities:
 //
-//  1. Tool Core Mapping (computeGeminiToolsCore):
+//  1. Tool Core Mapping (computeGeminiToolArguments):
 //     Converts neutral tool names from the workflow configuration into
 //     Gemini CLI built-in tool names for the tools.core allowlist in
 //     .gemini/settings.json. This restricts the agent to only the tools
@@ -28,7 +28,7 @@ import (
 
 var geminiToolsLog = logger.New("workflow:gemini_tools")
 
-// computeGeminiToolsCore maps neutral tool names to Gemini CLI built-in tool names
+// computeGeminiToolArguments maps neutral tool names to Gemini CLI built-in tool names
 // for use in the tools.core allowlist in .gemini/settings.json.
 //
 // Neutral tool → Gemini CLI tool mapping:
@@ -41,7 +41,7 @@ var geminiToolsLog = logger.New("workflow:gemini_tools")
 //
 // See: https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/file-system.md
 // See: https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/shell.md
-func computeGeminiToolsCore(tools map[string]any) []string {
+func computeGeminiToolArguments(tools map[string]any) []string {
 	// Always include essential read-only file system tools
 	toolsCore := []string{
 		"glob",
@@ -105,6 +105,12 @@ func computeGeminiToolsCore(tools map[string]any) []string {
 	return toolsCore
 }
 
+// computeGeminiToolsCore is a backward-compatible wrapper around
+// computeGeminiToolArguments.
+func computeGeminiToolsCore(tools map[string]any) []string {
+	return computeGeminiToolArguments(tools)
+}
+
 // generateGeminiSettingsStep creates a GitHub Actions step that writes the
 // Gemini CLI project settings file (.gemini/settings.json) before execution.
 //
@@ -130,7 +136,7 @@ func (e *GeminiEngine) generateGeminiSettingsStep(workflowData *WorkflowData) Gi
 	tools = withMountedCLIShellCommandsInRestrictedBash(&workflowDataWithEffectiveTools)
 
 	// Compute tools.core from neutral tool configuration
-	toolsCore := computeGeminiToolsCore(tools)
+	toolsCore := computeGeminiToolArguments(tools)
 	geminiToolsLog.Printf("tools.core entries: %d", len(toolsCore))
 
 	// Build the settings JSON object

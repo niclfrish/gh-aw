@@ -11,13 +11,17 @@ func engineFlagUsage(prefix string) string {
 // addEngineFlag adds the --engine/-e flag to a command.
 // This flag allows overriding the AI engine type.
 func addEngineFlag(cmd *cobra.Command) {
-	cmd.Flags().StringP("engine", "e", "", engineFlagUsage("Override AI engine"))
+	addEngineFlagWithUsagePrefix(cmd, "Override AI engine")
 }
 
 // addEngineFilterFlag adds the --engine/-e flag to a command for filtering.
 // This flag allows filtering results by AI engine type.
 func addEngineFilterFlag(cmd *cobra.Command) {
-	cmd.Flags().StringP("engine", "e", "", engineFlagUsage("Filter logs by AI engine"))
+	addEngineFlagWithUsagePrefix(cmd, "Filter logs by AI engine")
+}
+
+func addEngineFlagWithUsagePrefix(cmd *cobra.Command, usagePrefix string) {
+	cmd.Flags().StringP("engine", "e", "", engineFlagUsage(usagePrefix))
 }
 
 // addRepoFlag adds the --repo/-r flag to a command.

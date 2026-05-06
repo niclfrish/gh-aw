@@ -23,8 +23,13 @@ func (e *CodexEngine) RenderMCPConfig(yaml *strings.Builder, tools map[string]an
 		codexMCPLog.Printf("Rendering MCP config for Codex: mcp_tools=%v, tool_count=%d", mcpTools, len(tools))
 	}
 
-	// Create unified renderer with Codex-specific options
-	// Codex uses TOML format without Copilot-specific fields and multi-line args
+	// Codex intentionally diverges from the standard JSON-only MCP config rendering used by
+	// Claude/Gemini/Copilot: Codex CLI natively reads TOML (config.toml), so we must render
+	// TOML for Codex itself and also emit JSON for the MCP gateway sidecar.
+	//
+	// Keep this dual-render path unless Codex CLI gains first-class JSON config support.
+	// Create unified renderer with Codex-specific options.
+	// Codex uses TOML format without Copilot-specific fields and multi-line args.
 	createRenderer := func(isLast bool) *MCPConfigRendererUnified {
 		return NewMCPConfigRenderer(MCPRendererOptions{
 			IncludeCopilotFields:   false, // Codex doesn't use "type" and "tools" fields
@@ -48,7 +53,7 @@ func (e *CodexEngine) RenderMCPConfig(yaml *strings.Builder, tools map[string]an
 	e.renderShellEnvironmentPolicy(yaml, tools, mcpTools)
 
 	// Expand neutral tools (like playwright: null) to include the copilot agent tools
-	expandedTools := e.expandNeutralToolsToCodexToolsFromMap(tools)
+	expandedTools := e.computeCodexToolArgumentsFromMap(tools)
 
 	// Generate [mcp_servers] section
 	for _, toolName := range mcpTools {

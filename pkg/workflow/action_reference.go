@@ -164,13 +164,13 @@ func (c *Compiler) resolveActionReference(localActionPath string, data *Workflow
 			resolver = data.ActionResolver
 		}
 		if c.actionTag != "" {
-			return resolveSetupActionRef(c.actionMode, c.version, c.actionTag, resolver, c.effectiveActionsRepo())
+			return resolveSetupActionRef(c.actionMode, c.version, c.actionTag, resolver, c.EffectiveActionsRepo())
 		}
 		if !hasActionTag {
-			return resolveSetupActionRef(c.actionMode, c.version, "", resolver, c.effectiveActionsRepo())
+			return resolveSetupActionRef(c.actionMode, c.version, "", resolver, c.EffectiveActionsRepo())
 		}
 		// hasActionTag is true and no compiler actionTag: use action mode with the frontmatter tag
-		return resolveSetupActionRef(ActionModeAction, c.version, frontmatterActionTag, resolver, c.effectiveActionsRepo())
+		return resolveSetupActionRef(ActionModeAction, c.version, frontmatterActionTag, resolver, c.EffectiveActionsRepo())
 	}
 
 	// Action mode - use external gh-aw-actions repository
@@ -305,7 +305,7 @@ func (c *Compiler) convertToExternalActionsRef(localPath string, data *WorkflowD
 	}
 
 	// Construct the external actions reference: <actionsRepo>/action-name@tag
-	actionRepo := fmt.Sprintf("%s/%s", c.effectiveActionsRepo(), actionName)
+	actionRepo := fmt.Sprintf("%s/%s", c.EffectiveActionsRepo(), actionName)
 	remoteRef := fmt.Sprintf("%s@%s", actionRepo, tag)
 
 	// Try to resolve the SHA using action pins

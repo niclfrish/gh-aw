@@ -10,7 +10,11 @@ import (
 
 var logTypes = logger.New("workflow:compiler_types")
 
-// CompilerOption is a functional option for configuring a Compiler
+// CompilerOption is a functional option for configuring a Compiler.
+//
+// Design note:
+//   - Functional options configure construction-time defaults in NewCompiler.
+//   - Setter methods configure runtime-mutable state after construction (for command-specific flow).
 type CompilerOption func(*Compiler)
 
 // WithVerbose sets the verbose logging flag
@@ -232,19 +236,13 @@ func (c *Compiler) SetActionsRepo(repo string) {
 	c.actionsRepo = repo
 }
 
-// effectiveActionsRepo returns the actions repository to use for action mode references.
-// Returns the override if set, otherwise returns the default GitHubActionsOrgRepo constant.
-func (c *Compiler) effectiveActionsRepo() string {
+// EffectiveActionsRepo returns the actions repository used for action mode references.
+// Returns the override if set, otherwise returns the default GitHubActionsOrgRepo.
+func (c *Compiler) EffectiveActionsRepo() string {
 	if c.actionsRepo != "" {
 		return c.actionsRepo
 	}
 	return GitHubActionsOrgRepo
-}
-
-// EffectiveActionsRepo returns the actions repository used for action mode references.
-// Returns the override if set, otherwise returns the default GitHubActionsOrgRepo.
-func (c *Compiler) EffectiveActionsRepo() string {
-	return c.effectiveActionsRepo()
 }
 
 // GetVersion returns the version string used by the compiler

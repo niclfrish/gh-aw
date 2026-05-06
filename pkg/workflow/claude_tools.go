@@ -144,7 +144,7 @@ func (e *ClaudeEngine) expandNeutralToolsToClaudeTools(tools map[string]any) map
 	return result
 }
 
-// computeAllowedClaudeToolsString generates the tool specification string for Claude's --allowed-tools flag.
+// computeClaudeToolArguments generates the tool specification string for Claude's --allowed-tools flag.
 //
 // Why --allowed-tools instead of --tools (introduced in v2.0.31)?
 // While --tools is simpler (e.g., "Bash,Edit,Read"), it lacks the fine-grained control gh-aw requires:
@@ -162,7 +162,7 @@ func (e *ClaudeEngine) expandNeutralToolsToClaudeTools(tools map[string]any) map
 // user-visible tools map but must be explicitly added to --allowed-tools when
 // --permission-mode acceptEdits is in use, because acceptEdits actually enforces the
 // allowlist (unlike bypassPermissions which silently ignores it).
-func (e *ClaudeEngine) computeAllowedClaudeToolsString(tools map[string]any, safeOutputs *SafeOutputsConfig, cacheMemoryConfig *CacheMemoryConfig, mcpScripts *MCPScriptsConfig) string {
+func (e *ClaudeEngine) computeClaudeToolArguments(tools map[string]any, safeOutputs *SafeOutputsConfig, cacheMemoryConfig *CacheMemoryConfig, mcpScripts *MCPScriptsConfig) string {
 	claudeToolsLog.Print("Computing allowed Claude tools string")
 
 	// Initialize tools map if nil
@@ -173,7 +173,7 @@ func (e *ClaudeEngine) computeAllowedClaudeToolsString(tools map[string]any, saf
 	// Enforce that only neutral tools are provided - fail if claude section is present
 	if _, hasClaudeSection := tools["claude"]; hasClaudeSection {
 		claudeToolsLog.Print("ERROR: Claude section found in input tools, should only contain neutral tools")
-		panic("computeAllowedClaudeToolsString should only receive neutral tools, not claude section tools")
+		panic("computeClaudeToolArguments should only receive neutral tools, not claude section tools")
 	}
 
 	// Convert neutral tools to Claude-specific tools
@@ -470,6 +470,12 @@ func (e *ClaudeEngine) computeAllowedClaudeToolsString(tools map[string]any, saf
 	claudeToolsLog.Printf("Generated allowed tools string with %d tools", len(allowedTools))
 
 	return strings.Join(allowedTools, ",")
+}
+
+// computeAllowedClaudeToolsString is a backward-compatible wrapper around
+// computeClaudeToolArguments.
+func (e *ClaudeEngine) computeAllowedClaudeToolsString(tools map[string]any, safeOutputs *SafeOutputsConfig, cacheMemoryConfig *CacheMemoryConfig, mcpScripts *MCPScriptsConfig) string {
+	return e.computeClaudeToolArguments(tools, safeOutputs, cacheMemoryConfig, mcpScripts)
 }
 
 // generateAllowedToolsComment generates a multi-line comment showing each allowed tool

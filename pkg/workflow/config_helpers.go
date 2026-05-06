@@ -149,7 +149,8 @@ func parseTitlePrefixFromConfig(configMap map[string]any) string {
 // This function does not perform any special handling or validation for wildcard values ("*");
 // callers are responsible for validating the returned value as needed.
 func parseTargetRepoFromConfig(configMap map[string]any) string {
-	return extractStringFromMap(configMap, "target-repo", configHelpersLog)
+	targetRepoSlug, _ := parseTargetRepoFromConfigInternal(configMap, false)
+	return targetRepoSlug
 }
 
 // parseTargetRepoWithValidation extracts the target-repo value from a config map and validates it.
@@ -157,9 +158,13 @@ func parseTargetRepoFromConfig(configMap map[string]any) string {
 // Returns an error (indicated by the second return value being true) if the value is "*" (wildcard),
 // which is not allowed for safe output target repositories.
 func parseTargetRepoWithValidation(configMap map[string]any) (string, bool) {
-	targetRepoSlug := parseTargetRepoFromConfig(configMap)
-	// Validate that target-repo is not "*" - only definite strings are allowed
-	if targetRepoSlug == "*" {
+	return parseTargetRepoFromConfigInternal(configMap, true)
+}
+
+func parseTargetRepoFromConfigInternal(configMap map[string]any, validateWildcard bool) (string, bool) {
+	targetRepoSlug := extractStringFromMap(configMap, "target-repo", configHelpersLog)
+	// Validate that target-repo is not "*" when wildcard validation is enabled.
+	if validateWildcard && targetRepoSlug == "*" {
 		configHelpersLog.Print("Invalid target-repo: wildcard '*' is not allowed")
 		return "", true // Return true to indicate validation error
 	}

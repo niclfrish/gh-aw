@@ -607,22 +607,11 @@ func addCliProxyGHTokenToEnv(env map[string]string, workflowData *WorkflowData) 
 //   - Any semver string < AWFExcludeEnvMinVersion: returns false.
 //   - Non-semver string (e.g. a branch name): returns false (conservative).
 func awfSupportsExcludeEnv(firewallConfig *FirewallConfig) bool {
-	var versionStr string
-	if firewallConfig != nil && firewallConfig.Version != "" {
-		versionStr = firewallConfig.Version
-	} else {
-		// No override → use the default, which is always ≥ the minimum.
+	// No override → use the default, which is always ≥ the minimum.
+	if firewallConfig == nil || firewallConfig.Version == "" {
 		return true
 	}
-
-	// "latest" means the newest release — always supports the flag.
-	if strings.EqualFold(versionStr, "latest") {
-		return true
-	}
-
-	// Normalise the v-prefix for semverutil.Compare.
-	minVersion := string(constants.AWFExcludeEnvMinVersion)
-	return semverutil.Compare(versionStr, minVersion) >= 0
+	return awfSupportsFeature(firewallConfig, string(constants.AWFExcludeEnvMinVersion))
 }
 
 // awfSupportsCliProxy returns true when the effective AWF version supports --difc-proxy-host
@@ -640,22 +629,7 @@ func awfSupportsExcludeEnv(firewallConfig *FirewallConfig) bool {
 //   - Any semver string < AWFCliProxyMinVersion: returns false.
 //   - Non-semver string (e.g. a branch name): returns false (conservative).
 func awfSupportsCliProxy(firewallConfig *FirewallConfig) bool {
-	var versionStr string
-	if firewallConfig != nil && firewallConfig.Version != "" {
-		versionStr = firewallConfig.Version
-	} else {
-		// No override → use the default version for comparison.
-		versionStr = string(constants.DefaultFirewallVersion)
-	}
-
-	// "latest" means the newest release — always supports the flag.
-	if strings.EqualFold(versionStr, "latest") {
-		return true
-	}
-
-	// Normalise the v-prefix for semverutil.Compare.
-	minVersion := string(constants.AWFCliProxyMinVersion)
-	return semverutil.Compare(versionStr, minVersion) >= 0
+	return awfSupportsFeature(firewallConfig, string(constants.AWFCliProxyMinVersion))
 }
 
 // awfSupportsAllowHostPorts returns true when the effective AWF version supports
@@ -670,6 +644,19 @@ func awfSupportsCliProxy(firewallConfig *FirewallConfig) bool {
 //   - Any semver string < AWFAllowHostPortsMinVersion: returns false.
 //   - Non-semver string (e.g. a branch name): returns false (conservative).
 func awfSupportsAllowHostPorts(firewallConfig *FirewallConfig) bool {
+	return awfSupportsFeature(firewallConfig, string(constants.AWFAllowHostPortsMinVersion))
+}
+
+// awfSupportsFeature returns true when the effective AWF version supports a feature
+// introduced in minVersion.
+//
+// Special cases:
+//   - No version override (firewallConfig is nil or has no Version): use DefaultFirewallVersion.
+//   - "latest": always returns true (latest is always a new release).
+//   - Any semver string ≥ minVersion: returns true.
+//   - Any semver string < minVersion: returns false.
+//   - Non-semver string (e.g. a branch name): returns false (conservative).
+func awfSupportsFeature(firewallConfig *FirewallConfig, minVersion string) bool {
 	var versionStr string
 	if firewallConfig != nil && firewallConfig.Version != "" {
 		versionStr = firewallConfig.Version
@@ -681,6 +668,5 @@ func awfSupportsAllowHostPorts(firewallConfig *FirewallConfig) bool {
 		return true
 	}
 
-	minVersion := string(constants.AWFAllowHostPortsMinVersion)
 	return semverutil.Compare(versionStr, minVersion) >= 0
 }
