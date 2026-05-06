@@ -67,6 +67,9 @@ const MAX_SCHEDULED_EXIT2_RETRIES = 1;
 // If prompt files are larger than this threshold, avoid inlining into argv.
 const PROMPT_FILE_INLINE_THRESHOLD_BYTES = 100 * 1024;
 const PROMPT_FILE_INLINE_THRESHOLD_LABEL = "100KB";
+const STEERING_HOOK_CONFIG_FILENAME = "gh-aw-steering.json";
+const DEFAULT_STEERING_STATE_PATH = "/tmp/gh-aw/copilot-steering-state.json";
+const DEFAULT_MAX_AUTOPILOT_RUNS = 1;
 
 // Pattern to detect transient CAPIError 400 in copilot output
 const CAPI_ERROR_400_PATTERN = /CAPIError:\s*400/;
@@ -296,6 +299,100 @@ function resolvePromptFileArgs(args) {
 }
 
 /**
+ * Parse --max-autopilot-continues from copilot CLI args.
+ * @param {string[]} args
+ * @returns {number}
+ */
+function parseMaxAutopilotContinues(args) {
+  const index = args.indexOf("--max-autopilot-continues");
+  if (index < 0 || index + 1 >= args.length) {
+    return 0;
+  }
+  const parsed = parseInt(args[index + 1], 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+}
+
+/**
+ * Compute the maximum number of autonomous runs (initial run + autopilot continuations).
+ * @param {string[]} args
+ * @returns {number}
+ */
+function computeMaxAutopilotRuns(args) {
+  if (!args.includes("--autopilot")) {
+    return DEFAULT_MAX_AUTOPILOT_RUNS;
+  }
+  const maxContinues = parseMaxAutopilotContinues(args);
+  if (maxContinues <= 0) {
+    return DEFAULT_MAX_AUTOPILOT_RUNS;
+  }
+  return maxContinues + 1;
+}
+
+/**
+ * Build Copilot CLI hook config for gh-aw steering messages.
+ * @param {string} hookScriptPath
+ * @param {string} nodeExecPath
+ * @returns {{ version: number, hooks: Record<string, Array<{ type: string, bash: string, timeoutSec: number }>> }}
+ */
+function buildSteeringHookConfig(hookScriptPath, nodeExecPath) {
+  const quotedNode = JSON.stringify(nodeExecPath);
+  const quotedHookScript = JSON.stringify(hookScriptPath);
+  return {
+    version: 1,
+    hooks: {
+      sessionStart: [
+        {
+          type: "command",
+          bash: `${quotedNode} ${quotedHookScript} sessionStart`,
+          timeoutSec: 10,
+        },
+      ],
+      agentStop: [
+        {
+          type: "command",
+          bash: `${quotedNode} ${quotedHookScript} agentStop`,
+          timeoutSec: 10,
+        },
+      ],
+    },
+  };
+}
+
+/**
+ * Install Copilot CLI steering hooks in the workspace and export hook env vars.
+ * @param {string[]} resolvedArgs
+ */
+function installCopilotSteeringHooks(resolvedArgs) {
+  try {
+    const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
+    const hooksDir = path.join(workspace, ".github", "hooks");
+    const hookConfigPath = path.join(hooksDir, STEERING_HOOK_CONFIG_FILENAME);
+    const hookScriptPath = path.join(__dirname, "copilot_steering_hook.cjs");
+
+    if (!fs.existsSync(hookScriptPath)) {
+      log(`warning: steering hook script not found at ${hookScriptPath}; skipping hook installation`);
+      return;
+    }
+
+    const statePath = `${DEFAULT_STEERING_STATE_PATH}.${process.pid}`;
+    process.env.GH_AW_COPILOT_STEERING_STATE_PATH = statePath;
+    process.env.GH_AW_COPILOT_MAX_RUNS = String(computeMaxAutopilotRuns(resolvedArgs));
+    process.env.GH_AW_TIMEOUT_MINUTES = process.env.GH_AW_TIMEOUT_MINUTES || "30";
+    process.env.GH_AW_STEERING_TIME_WARNING_MINUTES = process.env.GH_AW_STEERING_TIME_WARNING_MINUTES || "5";
+    process.env.GH_AW_STEERING_TIME_CRITICAL_MINUTES = process.env.GH_AW_STEERING_TIME_CRITICAL_MINUTES || "2";
+    process.env.GH_AW_STEERING_RUN_WARNING_REMAINING = process.env.GH_AW_STEERING_RUN_WARNING_REMAINING || "2";
+    process.env.GH_AW_STEERING_RUN_CRITICAL_REMAINING = process.env.GH_AW_STEERING_RUN_CRITICAL_REMAINING || "1";
+
+    fs.mkdirSync(hooksDir, { recursive: true });
+    fs.writeFileSync(hookConfigPath, JSON.stringify(buildSteeringHookConfig(hookScriptPath, process.execPath), null, 2) + "\n", "utf8");
+    log(`installed steering hook config: ${hookConfigPath}`);
+  } catch (error) {
+    const err = /** @type {Error} */ error;
+    log(`warning: failed to install steering hook config: ${err.message}`);
+  }
+}
+
+/**
  * Main entry point: run copilot with retry logic for partially-executed sessions.
  */
 async function main() {
@@ -310,6 +407,7 @@ async function main() {
 
   await checkCommandAccessible(command);
   const resolvedArgs = resolvePromptFileArgs(args);
+  installCopilotSteeringHooks(resolvedArgs);
 
   // Fetch AWF API proxy reflection data before running the agent to capture initial proxy state.
   // This is best-effort: failures are logged but do not affect the agent run.
@@ -479,7 +577,10 @@ if (typeof module !== "undefined" && module.exports) {
     extractModelIds,
     fetchAWFReflect,
     fetchModelsFromUrl,
+    buildSteeringHookConfig,
+    computeMaxAutopilotRuns,
     resolvePromptFileArgs,
+    parseMaxAutopilotContinues,
   };
 }
 

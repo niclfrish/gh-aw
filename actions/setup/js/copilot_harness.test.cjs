@@ -7,14 +7,17 @@ import path from "path";
 const require = createRequire(import.meta.url);
 const {
   appendSafeOutputLine,
+  buildSteeringHookConfig,
   buildInfrastructureIncompletePayload,
   buildPromptFileFallbackInstruction,
+  computeMaxAutopilotRuns,
   emitInfrastructureIncomplete,
   enrichReflectModels,
   extractModelIds,
   fetchAWFReflect,
   fetchModelsFromUrl,
   GEMINI_MODEL_NAME_PREFIX,
+  parseMaxAutopilotContinues,
   PROMPT_FILE_INLINE_THRESHOLD_BYTES,
   resolvePromptFileArgs,
 } = require("./copilot_harness.cjs");
@@ -627,6 +630,35 @@ describe("copilot_harness.cjs", () => {
       const missingPath = path.join(os.tmpdir(), `copilot-driver-missing-${Date.now()}.txt`);
       const resolved = resolvePromptFileArgs(["--prompt-file", missingPath, "--allow-all-tools"]);
       expect(resolved).toEqual(["--prompt-file", missingPath, "--allow-all-tools"]);
+    });
+  });
+
+  describe("steering hook setup helpers", () => {
+    it("parses --max-autopilot-continues when present", () => {
+      const value = parseMaxAutopilotContinues(["--autopilot", "--max-autopilot-continues", "7"]);
+      expect(value).toBe(7);
+    });
+
+    it("returns zero when --max-autopilot-continues is missing or invalid", () => {
+      expect(parseMaxAutopilotContinues(["--autopilot"])).toBe(0);
+      expect(parseMaxAutopilotContinues(["--max-autopilot-continues", "invalid"])).toBe(0);
+    });
+
+    it("computes max autopilot runs as initial run plus continuations", () => {
+      expect(computeMaxAutopilotRuns(["--autopilot", "--max-autopilot-continues", "3"])).toBe(4);
+    });
+
+    it("falls back to single-run budget when autopilot is disabled", () => {
+      expect(computeMaxAutopilotRuns(["--add-dir", "/tmp"])).toBe(1);
+    });
+
+    it("builds hook config with sessionStart and agentStop command hooks", () => {
+      const config = buildSteeringHookConfig("/tmp/gh-aw/actions/copilot_steering_hook.cjs", "/usr/bin/node");
+      expect(config.version).toBe(1);
+      expect(config.hooks.sessionStart).toHaveLength(1);
+      expect(config.hooks.agentStop).toHaveLength(1);
+      expect(config.hooks.sessionStart[0].bash).toContain("sessionStart");
+      expect(config.hooks.agentStop[0].bash).toContain("agentStop");
     });
   });
 
