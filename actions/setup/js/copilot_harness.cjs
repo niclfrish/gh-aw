@@ -403,7 +403,7 @@ function installCopilotSteeringHooks(resolvedArgs) {
     const hookConfig = buildSteeringHookConfig(hookScriptPath, process.execPath);
     fs.writeFileSync(hookConfigPath, JSON.stringify(hookConfig, null, 2) + "\n", "utf8");
     log(`installed steering hook config: ${hookConfigPath}`);
-    log("steering hooks attached: " + `events=sessionStart,sessionEnd,agentStop ` + `statePath=${processStatePath} ` + `hookLogPath=${hookLogPath}`);
+    log(`steering hooks attached: events=sessionStart,sessionEnd,agentStop statePath=${processStatePath} hookLogPath=${hookLogPath}`);
   } catch (error) {
     const err = /** @type {Error} */ error;
     log(`warning: failed to install steering hook config: ${err.message}`);

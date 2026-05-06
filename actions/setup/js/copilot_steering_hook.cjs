@@ -279,7 +279,8 @@ function main() {
     const payload = readStdinJSON();
     const { decision, state } = handleSteeringEvent(eventName, payload, process.env);
     const config = loadSteeringConfig(process.env);
-    process.stderr.write(`[copilot-steering-hook] event=${eventName} decision=${decision ? decision.decision : "none"} statePath=${config.statePath} hookLogPath=${config.hookLogPath}\n`);
+    const decisionValue = decision ? decision.decision : "none";
+    process.stderr.write(`[copilot-steering-hook] event=${eventName} decision=${decisionValue} statePath=${config.statePath} hookLogPath=${config.hookLogPath}\n`);
     try {
       appendHookEventLog(config.hookLogPath, {
         event: eventName,
@@ -288,7 +289,7 @@ function main() {
         turns: state.turns,
         warningInjected: state.warningInjected,
         criticalInjected: state.criticalInjected,
-        decision: decision ? decision.decision : "none",
+        decision: decisionValue,
       });
     } catch (error) {
       const err = /** @type {Error} */ error;

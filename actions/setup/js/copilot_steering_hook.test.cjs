@@ -44,6 +44,14 @@ describe("copilot_steering_hook.cjs", () => {
     expect(config.hookLogPath).toBe("/tmp/gh-aw/sandbox/agent/logs/copilot-steering-hook.log");
   });
 
+  it("uses GH_AW_COPILOT_STEERING_LOG_PATH when provided", () => {
+    const config = loadSteeringConfig({
+      GH_AW_COPILOT_STEERING_STATE_PATH: "/tmp/state.json",
+      GH_AW_COPILOT_STEERING_LOG_PATH: "/tmp/custom-steering.log",
+    });
+    expect(config.hookLogPath).toBe("/tmp/custom-steering.log");
+  });
+
   it("appends hook event log entries as JSON lines", () => {
     makeTestEnv();
     const hookLogPath = path.join(tempDir, "hook.log");
