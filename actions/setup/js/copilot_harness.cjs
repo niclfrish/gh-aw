@@ -336,22 +336,22 @@ function computeMaxAutopilotRuns(args) {
  */
 function buildSteeringHookConfig(hookScriptPath, nodeExecPath) {
   // JSON-encode paths so they are safely quoted when embedded into bash hook command strings.
-  const jsonEncodedNode = JSON.stringify(nodeExecPath);
-  const jsonEncodedHookScript = JSON.stringify(hookScriptPath);
+  const quotedNodePath = JSON.stringify(nodeExecPath);
+  const quotedHookScriptPath = JSON.stringify(hookScriptPath);
   return {
     version: 1,
     hooks: {
       sessionStart: [
         {
           type: "command",
-          bash: `${jsonEncodedNode} ${jsonEncodedHookScript} sessionStart`,
+          bash: `${quotedNodePath} ${quotedHookScriptPath} sessionStart`,
           timeoutSec: 10,
         },
       ],
       agentStop: [
         {
           type: "command",
-          bash: `${jsonEncodedNode} ${jsonEncodedHookScript} agentStop`,
+          bash: `${quotedNodePath} ${quotedHookScriptPath} agentStop`,
           timeoutSec: 10,
         },
       ],
@@ -375,8 +375,9 @@ function installCopilotSteeringHooks(resolvedArgs) {
       return;
     }
 
-    // Append PID for per-process isolation when multiple harnesses run concurrently on the same runner.
-    const processStatePath = `${DEFAULT_STEERING_STATE_PATH}.${process.pid}`;
+    // Include run ID, PID, and timestamp to avoid collisions across concurrent/serial runner jobs.
+    const runID = process.env.GITHUB_RUN_ID || "local";
+    const processStatePath = `${DEFAULT_STEERING_STATE_PATH}.${runID}.${process.pid}.${Date.now()}`;
     process.env.GH_AW_COPILOT_STEERING_STATE_PATH = processStatePath;
     process.env.GH_AW_COPILOT_MAX_RUNS = String(computeMaxAutopilotRuns(resolvedArgs));
     process.env.GH_AW_TIMEOUT_MINUTES = process.env.GH_AW_TIMEOUT_MINUTES || "30";
