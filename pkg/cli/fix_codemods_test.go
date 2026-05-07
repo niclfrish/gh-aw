@@ -43,7 +43,7 @@ func TestGetAllCodemods_ReturnsAllCodemods(t *testing.T) {
 	codemods := GetAllCodemods()
 
 	// Verify we have the expected number of codemods
-	expectedCount := 42
+	expectedCount := len(expectedCodemodOrder())
 	assert.Len(t, codemods, expectedCount, "Should return all %d codemods", expectedCount)
 
 	// Verify all codemods have required fields
@@ -88,6 +88,7 @@ func TestGetAllCodemods_ContainsExpectedCodemods(t *testing.T) {
 		"pull-request-target-checkout-false",
 		"dependabot-toolset-permissions",
 		"features-byok-copilot-removal",
+		"features-inline-agents-removal",
 		"mount-as-clis-to-cli-proxy",
 	}
 
@@ -112,7 +113,16 @@ func TestGetAllCodemods_InExpectedOrder(t *testing.T) {
 
 	// Verify codemods are returned in the expected order
 	// This is important for consistent behavior
-	expectedOrder := []string{
+	expectedOrder := expectedCodemodOrder()
+	require.Len(t, codemods, len(expectedOrder), "Should have expected number of codemods")
+
+	for i, expectedID := range expectedOrder {
+		assert.Equal(t, expectedID, codemods[i].ID, "Codemod at position %d should have ID %s", i, expectedID)
+	}
+}
+
+func expectedCodemodOrder() []string {
+	return []string{
 		"timeout-minutes-migration",
 		"network-firewall-migration",
 		"command-to-slash-command-migration",
@@ -149,17 +159,12 @@ func TestGetAllCodemods_InExpectedOrder(t *testing.T) {
 		"dependabot-toolset-permissions",
 		"github-repos-to-allowed-repos",
 		"features-byok-copilot-removal",
+		"features-inline-agents-removal",
 		"features-cli-proxy-to-tools-github-mode",
 		"features-difc-proxy-to-tools-github",
 		"mount-as-clis-to-cli-proxy",
 		"sandbox-mcp-container-removal",
 		"sandbox-mcp-version-removal",
 		"sandbox-agent-false-removal",
-	}
-
-	require.Len(t, codemods, len(expectedOrder), "Should have expected number of codemods")
-
-	for i, expectedID := range expectedOrder {
-		assert.Equal(t, expectedID, codemods[i].ID, "Codemod at position %d should have ID %s", i, expectedID)
 	}
 }

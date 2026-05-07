@@ -114,7 +114,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Delight"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/delight.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.40"
+          GH_AW_INFO_VERSION: "1.0.43"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
       - name: Generate agentic run info
@@ -123,8 +123,8 @@ jobs:
           GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_ENGINE_NAME: "GitHub Copilot CLI"
           GH_AW_INFO_MODEL: ${{ vars.GH_AW_MODEL_AGENT_COPILOT || 'claude-sonnet-4.6' }}
-          GH_AW_INFO_VERSION: "1.0.40"
-          GH_AW_INFO_AGENT_VERSION: "1.0.40"
+          GH_AW_INFO_VERSION: "1.0.43"
+          GH_AW_INFO_AGENT_VERSION: "1.0.43"
           GH_AW_INFO_WORKFLOW_NAME: "Delight"
           GH_AW_INFO_EXPERIMENTAL: "false"
           GH_AW_INFO_SUPPORTS_TOOLS_ALLOWLIST: "true"
@@ -329,6 +329,7 @@ jobs:
             /tmp/gh-aw/aw-prompts/prompt-import-tree.json
             /tmp/gh-aw/github_rate_limits.jsonl
             /tmp/gh-aw/base
+            /tmp/gh-aw/.github/agents
           if-no-files-found: ignore
           retention-days: 1
 
@@ -380,7 +381,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Delight"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/delight.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.40"
+          GH_AW_INFO_VERSION: "1.0.43"
       - name: Set runtime paths
         id: set-runtime-paths
         run: |
@@ -439,7 +440,7 @@ jobs:
             const { main } = require('${{ runner.temp }}/gh-aw/actions/checkout_pr_branch.cjs');
             await main();
       - name: Install GitHub Copilot CLI
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/install_copilot_cli.sh" 1.0.40
+        run: bash "${RUNNER_TEMP}/gh-aw/actions/install_copilot_cli.sh" 1.0.43
         env:
           GH_HOST: github.com
       - name: Install AWF binary
@@ -465,6 +466,11 @@ jobs:
           GH_AW_AGENT_FOLDERS: ".agents .claude .codex .crush .gemini .github .opencode .pi"
           GH_AW_AGENT_FILES: ".crush.json AGENTS.md CLAUDE.md GEMINI.md PI.md opencode.jsonc"
         run: bash "${RUNNER_TEMP}/gh-aw/actions/restore_base_github_folders.sh"
+      - name: Restore inline sub-agents from activation artifact
+        env:
+          GH_AW_SUB_AGENT_DIR: ".github/agents"
+          GH_AW_SUB_AGENT_EXT: ".agent.md"
+        run: bash "${RUNNER_TEMP}/gh-aw/actions/restore_inline_sub_agents.sh"
       - name: Sample files and load memory
         run: "mkdir -p /tmp/gh-aw/agent\n# Sample documentation files (eliminates agent exploratory find turns)\nfind docs/src/content/docs \\( -name '*.md' -o -name '*.mdx' \\) | shuf -n 2 > /tmp/gh-aw/agent/doc-samples.txt\n# Sample workflows with messages (pre-compute instead of agent grep)\ngrep -rl \"messages:\" .github/workflows/ --include=\"*.md\" | shuf -n 2 > /tmp/gh-aw/agent/workflow-samples.txt\n# Sample validation files\nfind pkg -name '*validation*.go' | shuf -n 1 > /tmp/gh-aw/agent/validation-sample.txt || echo \"No validation files found\" > /tmp/gh-aw/agent/validation-sample.txt\n# Load historical memory (eliminates agent memory-read turns)\ncat memory/delight/previous-findings.json 2>/dev/null > /tmp/gh-aw/agent/previous-findings.json || echo \"[]\" > /tmp/gh-aw/agent/previous-findings.json\ncat memory/delight/improvement-themes.json 2>/dev/null > /tmp/gh-aw/agent/improvement-themes.json || echo \"[]\" > /tmp/gh-aw/agent/improvement-themes.json\n"
 
@@ -804,6 +810,7 @@ jobs:
           sudo -E awf --config "${RUNNER_TEMP}/gh-aw/awf-config.json" --container-workdir "${GITHUB_WORKSPACE}" --mount "${RUNNER_TEMP}/gh-aw:${RUNNER_TEMP}/gh-aw:ro" --mount "${RUNNER_TEMP}/gh-aw:/host${RUNNER_TEMP}/gh-aw:ro" --env-all --exclude-env COPILOT_GITHUB_TOKEN --exclude-env GH_TOKEN --exclude-env GITHUB_MCP_SERVER_TOKEN --exclude-env MCP_GATEWAY_API_KEY --log-level info --proxy-logs-dir /tmp/gh-aw/sandbox/firewall/logs --audit-dir /tmp/gh-aw/sandbox/firewall/audit --enable-host-access --allow-host-ports 80,443,8080 --skip-pull --difc-proxy-host host.docker.internal:18443 --difc-proxy-ca-cert /tmp/gh-aw/difc-proxy-tls/ca.crt \
             -- /bin/bash -c 'export PATH="${RUNNER_TEMP}/gh-aw/mcp-cli/bin:$PATH" && export PATH="$(find /opt/hostedtoolcache /home/runner/work/_tool -maxdepth 4 -type d -name bin 2>/dev/null | tr '\''\n'\'' '\'':'\'')$PATH"; [ -n "$GOROOT" ] && export PATH="$GOROOT/bin:$PATH" || true && GH_AW_NODE_EXEC="${GH_AW_NODE_BIN:-}"; if [ -z "$GH_AW_NODE_EXEC" ] || [ ! -x "$GH_AW_NODE_EXEC" ]; then GH_AW_NODE_EXEC="$(command -v node 2>/dev/null || echo node)"; fi; "$GH_AW_NODE_EXEC" ${RUNNER_TEMP}/gh-aw/actions/copilot_harness.cjs /usr/local/bin/copilot --add-dir /tmp/gh-aw/ --log-level all --log-dir /tmp/gh-aw/sandbox/agent/logs/ --disable-builtin-mcps --no-ask-user --allow-tool github --allow-tool safeoutputs --allow-tool '\''shell(./gh-aw * --help)'\'' --allow-tool '\''shell(./gh-aw --help)'\'' --allow-tool '\''shell(cat .github/workflows/*.md)'\'' --allow-tool '\''shell(cat /tmp/gh-aw/agent/*)'\'' --allow-tool '\''shell(cat docs/src/content/docs/*.md)'\'' --allow-tool '\''shell(cat docs/src/content/docs/*.mdx)'\'' --allow-tool '\''shell(cat pkg/*/*.go)'\'' --allow-tool '\''shell(cat)'\'' --allow-tool '\''shell(date)'\'' --allow-tool '\''shell(echo)'\'' --allow-tool '\''shell(find .github/workflows -name)'\'' --allow-tool '\''shell(find docs/src/content/docs -name)'\'' --allow-tool '\''shell(grep)'\'' --allow-tool '\''shell(head)'\'' --allow-tool '\''shell(ls)'\'' --allow-tool '\''shell(pwd)'\'' --allow-tool '\''shell(safeoutputs:*)'\'' --allow-tool '\''shell(sort)'\'' --allow-tool '\''shell(tail)'\'' --allow-tool '\''shell(uniq)'\'' --allow-tool '\''shell(wc)'\'' --allow-tool '\''shell(yq)'\'' --allow-tool write --allow-all-paths --add-dir "${GITHUB_WORKSPACE}" --prompt-file /tmp/gh-aw/aw-prompts/prompt.txt' 2>&1 | tee -a /tmp/gh-aw/agent-stdio.log
         env:
+          AWF_REFLECT_ENABLED: 1
           COPILOT_AGENT_RUNNER_TYPE: STANDALONE
           COPILOT_API_KEY: dummy-byok-key-for-offline-mode
           COPILOT_GITHUB_TOKEN: ${{ github.token }}
@@ -1058,7 +1065,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Delight"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/delight.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.40"
+          GH_AW_INFO_VERSION: "1.0.43"
       - name: Download agent output artifact
         id: download-agent-output
         continue-on-error: true
@@ -1211,7 +1218,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Delight"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/delight.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.40"
+          GH_AW_INFO_VERSION: "1.0.43"
       - name: Download agent output artifact
         id: download-agent-output
         continue-on-error: true
@@ -1296,7 +1303,7 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - name: Install GitHub Copilot CLI
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/install_copilot_cli.sh" 1.0.40
+        run: bash "${RUNNER_TEMP}/gh-aw/actions/install_copilot_cli.sh" 1.0.43
         env:
           GH_HOST: github.com
       - name: Install AWF binary
@@ -1318,6 +1325,7 @@ jobs:
           sudo -E awf --config "${RUNNER_TEMP}/gh-aw/awf-config.json" --container-workdir "${GITHUB_WORKSPACE}" --mount "${RUNNER_TEMP}/gh-aw:${RUNNER_TEMP}/gh-aw:ro" --mount "${RUNNER_TEMP}/gh-aw:/host${RUNNER_TEMP}/gh-aw:ro" --env-all --exclude-env COPILOT_GITHUB_TOKEN --log-level info --proxy-logs-dir /tmp/gh-aw/sandbox/firewall/logs --audit-dir /tmp/gh-aw/sandbox/firewall/audit --enable-host-access --allow-host-ports 80,443,8080 --skip-pull \
             -- /bin/bash -c 'export PATH="$(find /opt/hostedtoolcache /home/runner/work/_tool -maxdepth 4 -type d -name bin 2>/dev/null | tr '\''\n'\'' '\'':'\'')$PATH"; [ -n "$GOROOT" ] && export PATH="$GOROOT/bin:$PATH" || true && GH_AW_NODE_EXEC="${GH_AW_NODE_BIN:-}"; if [ -z "$GH_AW_NODE_EXEC" ] || [ ! -x "$GH_AW_NODE_EXEC" ]; then GH_AW_NODE_EXEC="$(command -v node 2>/dev/null || echo node)"; fi; "$GH_AW_NODE_EXEC" ${RUNNER_TEMP}/gh-aw/actions/copilot_harness.cjs /usr/local/bin/copilot --add-dir /tmp/gh-aw/ --log-level all --log-dir /tmp/gh-aw/sandbox/agent/logs/ --disable-builtin-mcps --no-ask-user --allow-all-tools --add-dir "${GITHUB_WORKSPACE}" --prompt-file /tmp/gh-aw/aw-prompts/prompt.txt' 2>&1 | tee -a /tmp/gh-aw/threat-detection/detection.log
         env:
+          AWF_REFLECT_ENABLED: 1
           COPILOT_AGENT_RUNNER_TYPE: STANDALONE
           COPILOT_API_KEY: dummy-byok-key-for-offline-mode
           COPILOT_GITHUB_TOKEN: ${{ github.token }}
@@ -1413,7 +1421,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Delight"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/delight.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.40"
+          GH_AW_INFO_VERSION: "1.0.43"
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -1490,7 +1498,7 @@ jobs:
       GH_AW_EFFECTIVE_TOKENS: ${{ needs.agent.outputs.effective_tokens }}
       GH_AW_ENGINE_ID: "copilot"
       GH_AW_ENGINE_MODEL: ${{ needs.agent.outputs.model }}
-      GH_AW_ENGINE_VERSION: "1.0.40"
+      GH_AW_ENGINE_VERSION: "1.0.43"
       GH_AW_SAFE_OUTPUT_MESSAGES: "{\"footer\":\"\\u003e 📊 *User experience analysis by [{workflow_name}]({run_url})*{effective_tokens_suffix}{history_link}\",\"runStarted\":\"📊 Delight Agent starting! [{workflow_name}]({run_url}) is analyzing user-facing aspects for improvement opportunities...\",\"runSuccess\":\"✅ Analysis complete! [{workflow_name}]({run_url}) has identified targeted improvements for user experience.\",\"runFailure\":\"⚠️ Analysis interrupted! [{workflow_name}]({run_url}) {status}. Please review the logs...\"}"
       GH_AW_TRACKER_ID: "delight-daily"
       GH_AW_WORKFLOW_ID: "delight"
@@ -1522,7 +1530,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Delight"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/delight.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.40"
+          GH_AW_INFO_VERSION: "1.0.43"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
       - name: Download agent output artifact

@@ -6266,8 +6266,8 @@
                     {
                       "type": "string",
                       "enum": ["am", "bundle"],
-                      "default": "am",
-                      "description": "Transport format for packaging changes. \"am\" (default) uses git format-patch/git am. \"bundle\" uses git bundle, which preserves merge commit topology, per-commit authorship, and merge-resolution-only content."
+                      "default": "bundle",
+                      "description": "Transport format for packaging changes. \"bundle\" (default) uses git bundle, which preserves merge commit topology, per-commit authorship, and merge-resolution-only content. \"am\" uses git format-patch/git am."
                     },
                     {
                       "type": "string",
@@ -6275,7 +6275,7 @@
                       "description": "GitHub Actions expression that resolves to 'am' or 'bundle' at runtime. Use in reusable workflow_call workflows to parameterise the transport format per caller."
                     }
                   ],
-                  "description": "Transport format for packaging changes. \"am\" (default) uses git format-patch/git am. \"bundle\" uses git bundle. Accepts a GitHub Actions expression for reusable workflows."
+                  "description": "Transport format for packaging changes. \"bundle\" (default) uses git bundle. \"am\" uses git format-patch/git am. Accepts a GitHub Actions expression for reusable workflows."
                 },
                 "staged": {
                   "type": "boolean",
@@ -7597,8 +7597,8 @@
                     {
                       "type": "string",
                       "enum": ["am", "bundle"],
-                      "default": "am",
-                      "description": "Transport format for packaging changes. \"am\" (default) uses git format-patch/git am. \"bundle\" uses git bundle, which preserves merge commit topology, per-commit authorship, and merge-resolution-only content."
+                      "default": "bundle",
+                      "description": "Transport format for packaging changes. \"bundle\" (default) uses git bundle, which preserves merge commit topology, per-commit authorship, and merge-resolution-only content. \"am\" uses git format-patch/git am."
                     },
                     {
                       "type": "string",
@@ -7606,7 +7606,7 @@
                       "description": "GitHub Actions expression that resolves to 'am' or 'bundle' at runtime. Use in reusable workflow_call workflows to parameterise the transport format per caller."
                     }
                   ],
-                  "description": "Transport format for packaging changes. \"am\" (default) uses git format-patch/git am. \"bundle\" uses git bundle. Accepts a GitHub Actions expression for reusable workflows."
+                  "description": "Transport format for packaging changes. \"bundle\" (default) uses git bundle. \"am\" uses git format-patch/git am. Accepts a GitHub Actions expression for reusable workflows."
                 },
                 "allow-workflows": {
                   "type": "boolean",
@@ -10373,6 +10373,31 @@
             }
           },
           "required": ["id", "display-name"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "description": "MCP gateway configuration for shared workflows. Declares engine.mcp settings (tool-timeout, session-timeout) that consumers inherit during import without specifying an engine identifier. The engine is always inherited from the importing workflow.",
+          "properties": {
+            "mcp": {
+              "type": "object",
+              "description": "Engine-level MCP gateway configuration. Settings here apply to the MCP gateway used by this engine.",
+              "properties": {
+                "session-timeout": {
+                  "type": "string",
+                  "description": "Session timeout for MCP gateway sessions as a Go duration string (e.g. \"30m\", \"4h\", \"24h\"). Must be at least 5m (no upper bound). Omitted or empty uses the effective gateway default (precedence: this field > MCP_GATEWAY_SESSION_TIMEOUT env var > built-in default 6h).",
+                  "examples": ["30m", "1h", "4h", "6h", "12h"]
+                },
+                "tool-timeout": {
+                  "type": "string",
+                  "description": "Timeout for individual MCP tool calls as a Go duration string (e.g. \"30s\", \"2m\", \"10m\"). Must be between 10s and 600s inclusive. Omitted or empty uses the gateway built-in default (60s). Use a higher value for slow MCP backends such as full-text search over large indexes.",
+                  "examples": ["30s", "2m", "5m", "10m"]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["mcp"],
           "additionalProperties": false
         }
       ]

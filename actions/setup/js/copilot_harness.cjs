@@ -467,7 +467,10 @@ async function main() {
 
   // Fetch AWF API proxy reflection data before running the agent to capture initial proxy state.
   // This is best-effort: failures are logged but do not affect the agent run.
-  await fetchAWFReflect({ logger: log });
+  // Skip when AWF_REFLECT_ENABLED is not "1" (e.g. sandbox.agent: false — no api-proxy running).
+  if (process.env.AWF_REFLECT_ENABLED === "1") {
+    await fetchAWFReflect({ logger: log });
+  }
 
   let delay = INITIAL_DELAY_MS;
   let lastExitCode = 1;
@@ -611,7 +614,10 @@ async function main() {
 
   // Fetch AWF API proxy reflection data and persist to disk for post-run step summary.
   // This is best-effort: failures are logged but do not affect the agent exit code.
-  await fetchAWFReflect({ logger: log });
+  // Skip when AWF_REFLECT_ENABLED is not "1" (e.g. sandbox.agent: false — no api-proxy running).
+  if (process.env.AWF_REFLECT_ENABLED === "1") {
+    await fetchAWFReflect({ logger: log });
+  }
   reportSteeringHookLoadStatus();
 
   cleanupCopilotSteeringState();
