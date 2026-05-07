@@ -1,6 +1,18 @@
 {
-  "last_updated": "2026-05-06",
+  "last_updated": "2026-05-07",
   "pending_tasks": [
+    {
+      "file": "docs/src/content/docs/blog/2026-01-27-operational-patterns.md",
+      "created": "2026-05-07",
+      "status": "pending",
+      "description": "Fix 9 broken 'Learn more' links: replace https://github.github.com/gh-aw/patterns/ with /gh-aw/patterns/ at lines 79, 127, 178, 227, 277, 340, 391, 430, 455"
+    },
+    {
+      "file": "docs/src/content/docs/blog/2026-01-27-operational-patterns.md",
+      "created": "2026-05-07",
+      "status": "pending",
+      "description": "Replace fictional narrative intro (lines 15-19) with professional context-setting paragraph; preserve author photo and previous-article link"
+    },
     {
       "file": "docs/src/content/docs/guides/self-hosted-runners.md",
       "created": "2026-05-03",
