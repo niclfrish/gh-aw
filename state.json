@@ -1,7 +1,8 @@
 {
   "counts": {
     "output_format": {
-      "executive_brief": 1
+      "executive_brief": 1,
+      "full_briefing": 1
     }
   },
   "runs": [
@@ -10,6 +11,13 @@
       "timestamp": "2026-05-06T15:24:54.674Z",
       "assignments": {
         "output_format": "executive_brief"
+      }
+    },
+    {
+      "run_id": "25505251838",
+      "timestamp": "2026-05-07T15:25:05.410Z",
+      "assignments": {
+        "output_format": "full_briefing"
       }
     }
   ]
