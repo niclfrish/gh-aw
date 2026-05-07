@@ -1,6 +1,6 @@
 {
   "date": "2026-05-07",
-  "period_days": 1,
+  "period_days": 30,
   "overall": {
     "total_runs": 0,
     "total_tokens": 0,

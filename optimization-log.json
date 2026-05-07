@@ -232,14 +232,5 @@
     "total_tokens_analyzed": 8532748,
     "estimated_savings_per_run": 1250000,
     "recommendations_count": 5
-  },
-  {
-    "date": "2026-05-07",
-    "workflow_name": "Smoke Copilot",
-    "workflow_file": "smoke-copilot",
-    "runs_audited": 42,
-    "total_tokens_analyzed": 39876100,
-    "estimated_savings_per_run": 310000,
-    "recommendations_count": 4
   }
 ]
