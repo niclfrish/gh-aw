@@ -154,13 +154,29 @@
         "/cloclo fired 7x across 2 branches - highest /cloclo frequency observed",
         "0% orphaned branches - 4th consecutive day at zero escalation threshold"
       ]
+    },
+    {
+      "date": "2026-05-07",
+      "sessions_analyzed": 50,
+      "completion_rate_pct": 0.0,
+      "copilot_coding_agents": 19,
+      "copilot_success_rate_pct": 57.9,
+      "avg_copilot_duration_min": 31.7,
+      "experimental_strategy": null,
+      "key_insights": [
+        "0% gate success rate (all action_required) - 4 copilot branches with persistent CI failures",
+        "57.9% copilot PR success rate (11/19 merged) - above 49.3% historical avg",
+        "0% orphan rate vs 40% baseline - excellent agent coverage today",
+        "Human-reviewed PRs: 85% merge rate vs 0% bot-only - review bottleneck for bot-assigned PRs",
+        "Avg merge duration 31.7min (highest since May 2) - complex tasks being tackled"
+      ]
     }
   ],
-  "last_updated": "2026-05-06",
+  "last_updated": "2026-05-07",
   "historical_summary": {
-    "avg_completion_rate_pct": 13.4,
-    "avg_copilot_success_rate_pct": 49.3,
-    "avg_copilot_duration_min": 15.8,
-    "note": "Averages computed across Apr 23 - May 6 (11 data days)"
+    "avg_completion_rate_pct": 12.2,
+    "avg_copilot_success_rate_pct": 50.1,
+    "avg_copilot_duration_min": 17.3,
+    "note": "Averages computed across Apr 23 - May 7 (12 data days)"
   }
 }
