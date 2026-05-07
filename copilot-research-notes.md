@@ -127,3 +127,23 @@
 - **GitHub MCP full-access**: 13 prod workflows without toolsets restriction
 - 5 custom agent files still unused (unchanged since tracking began)
 - Discussion created: "Copilot CLI Deep Research - 2026-05-05"
+
+### 2026-05-07 (Run 25476599555) — Run #17
+- 217 total MD workflows; 96 Copilot (up from 93 last run)
+- **startup-timeout**: 0 (17th consecutive run — CRITICAL persistent gap — never used)
+- **tool-timeout**: 0 (17th run — CRITICAL persistent gap — never used)
+- **engine.api-target**: 0 (persistent — 17th run)
+- **engine.harness**: 0 (persistent — 17th run)
+- **max-continuations**: 2 (stable — smoke-copilot + test-quality-sentinel only)
+- **engine.bare**: 9 (up from 0 last run's count; methodology varies)
+- **version-pinning**: 14 (up from 6 — healthy growth)
+- **engine.model**: 3 in copilot-specific frontmatter model field (gpt-5-mini, gpt-5.4-mini, gpt-4.1)
+- **cache-memory**: 30/96 (31%)
+- **repo-memory**: 16/96 (17%)
+- **sandbox AWF**: 11/96 (11%)
+- **strict: true**: 62/96 (65%); no strict: 34/96 (35%)
+- **network config**: 45/96 (47%) — 51 copilot workflows without network restrictions
+- **unrestricted bash: true**: 10 workflows
+- **toolsets [all]**: 2 workflows (github-mcp-structural-analysis, github-mcp-tools-report)
+- 5 unused agent files: grumpy-reviewer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation, interactive-agent-designer
+- Discussion created: 'Copilot CLI Deep Research - 2026-05-07'
