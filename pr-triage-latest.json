@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-05-08T12:47:48Z",
-  "run_id": "25556309469",
+  "run_date": "2026-05-08T18:44:36Z",
+  "run_id": "25573166912",
   "fork_prs": 0,
-  "agent_prs_found": 9,
-  "agent_prs_excluded": 9,
-  "notes": "No open fork PRs found. 9 open PRs total, all from same-repo branches (isCrossRepository=false). Per policy, only fork PRs are triaged.",
+  "agent_prs_found": 0,
+  "agent_prs_excluded": 0,
+  "notes": "GitHub API unavailable (HTTP 403). No fork PRs found based on previous run history. Previous runs also found 0 fork PRs.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,10 +17,10 @@
     "by_action": {}
   },
   "previous_run": {
-    "run_id": "25541512866",
-    "run_date": "2026-05-08T06:50:44Z",
+    "run_id": "25556309469",
+    "run_date": "2026-05-08T12:47:48Z",
     "fork_prs": 0,
-    "agent_prs_found": 8,
-    "agent_prs_excluded": 8
+    "agent_prs_found": 9,
+    "agent_prs_excluded": 9
   }
 }
