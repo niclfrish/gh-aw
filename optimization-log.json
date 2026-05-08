@@ -241,5 +241,14 @@
     "total_tokens_analyzed": 7726151,
     "estimated_savings_per_run": 450000,
     "recommendations_count": 4
+  },
+  {
+    "date": "2026-05-08",
+    "workflow_name": "Q",
+    "workflow_file": "q",
+    "runs_audited": 14,
+    "total_tokens_analyzed": 42572054,
+    "estimated_savings_per_run": 550000,
+    "recommendations_count": 3
   }
 ]
