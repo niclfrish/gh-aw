@@ -33,6 +33,51 @@ function parsePositiveIntegerString(value) {
 }
 
 /**
+ * Compare two integer strings using BigInt.
+ * Returns false when either value is missing or cannot be parsed as an integer.
+ *
+ * @param {string} left
+ * @param {string} right
+ * @returns {boolean}
+ */
+function isIntegerStringGreaterThanOrEqual(left, right) {
+  if (!left || !right) {
+    return false;
+  }
+
+  try {
+    return BigInt(left) >= BigInt(right);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Decide whether an ET rate-limit signal should be surfaced as budget exhaustion.
+ * A missing signal always means "no". When the signal is present but one of the
+ * token counts is unavailable, keep reporting the condition; otherwise require the
+ * effective-token count to meet or exceed the configured max.
+ *
+ * @param {boolean} hasRateLimitSignal
+ * @param {string} effectiveTokens
+ * @param {string} maxEffectiveTokens
+ * @returns {boolean}
+ */
+function shouldReportEffectiveTokensRateLimitError(hasRateLimitSignal, effectiveTokens, maxEffectiveTokens) {
+  if (!hasRateLimitSignal) {
+    return false;
+  }
+
+  if (!effectiveTokens || !maxEffectiveTokens) {
+    // Conservative fallback: when a rate-limit signal exists but the numeric budget
+    // values are unavailable, keep surfacing the ET failure instead of suppressing it.
+    return true;
+  }
+
+  return isIntegerStringGreaterThanOrEqual(effectiveTokens, maxEffectiveTokens);
+}
+
+/**
  * @param {unknown} value
  * @returns {boolean}
  */
@@ -223,10 +268,18 @@ function parseEffectiveTokensErrorInfoFromAuditLog(auditJsonlPathOverride) {
  */
 function resolveEffectiveTokensFailureState() {
   const parsedEffectiveTokensErrorInfo = parseEffectiveTokensErrorInfoFromAuditLog();
+  // Treat invalid env fallbacks as missing so they do not produce misleading ET math.
+  const envEffectiveTokens = parsePositiveIntegerString(process.env.GH_AW_EFFECTIVE_TOKENS);
+  const envMaxEffectiveTokens = parsePositiveIntegerString(process.env.GH_AW_MAX_EFFECTIVE_TOKENS);
+  const effectiveTokens = parsedEffectiveTokensErrorInfo.effectiveTokens || envEffectiveTokens || "";
+  const maxEffectiveTokens = parseMaxEffectiveTokensFromAuditLog() || envMaxEffectiveTokens || "";
+  const rawEffectiveTokensRateLimitError = parsedEffectiveTokensErrorInfo.rateLimitError || process.env.GH_AW_EFFECTIVE_TOKENS_RATE_LIMIT_ERROR === "true";
+  const effectiveTokensRateLimitError = shouldReportEffectiveTokensRateLimitError(rawEffectiveTokensRateLimitError, effectiveTokens, maxEffectiveTokens);
+
   return {
-    effectiveTokens: parsedEffectiveTokensErrorInfo.effectiveTokens || process.env.GH_AW_EFFECTIVE_TOKENS || "",
-    maxEffectiveTokens: parseMaxEffectiveTokensFromAuditLog() || process.env.GH_AW_MAX_EFFECTIVE_TOKENS || "",
-    effectiveTokensRateLimitError: parsedEffectiveTokensErrorInfo.rateLimitError || process.env.GH_AW_EFFECTIVE_TOKENS_RATE_LIMIT_ERROR === "true",
+    effectiveTokens,
+    maxEffectiveTokens,
+    effectiveTokensRateLimitError,
   };
 }
 
