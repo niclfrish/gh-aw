@@ -203,9 +203,7 @@ function generateTokenUsageSummary(summary) {
     lines.push("<details>");
     lines.push("<summary>How effective tokens are computed</summary>");
     lines.push("");
-    lines.push(
-      "Effective tokens are computed per request as `model multiplier × ((input × weight) + (cached input × weight) + (output × weight) + (reasoning × weight) + (cache write × weight))`, then summed for the run."
-    );
+    lines.push("Effective tokens are computed per request as `model multiplier × ((input × weight) + (cached input × weight) + (output × weight) + (reasoning × weight) + (cache write × weight))`, then summed for the run.");
     lines.push("");
     lines.push(`- Token class weights: input=${w.input}, cached_input=${w.cached_input}, output=${w.output}, reasoning=${w.reasoning}, cache_write=${w.cache_write}`);
     lines.push("- Reasoning tokens currently contribute `0` here because `token-usage.jsonl` does not record them.");
