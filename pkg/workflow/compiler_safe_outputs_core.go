@@ -1,3 +1,38 @@
+// This file is the entry point for the compiler-side safe-outputs subsystem.
+//
+// # File-naming convention for the safe-outputs subsystem
+//
+// There are two parallel file groups in this package that both deal with safe
+// outputs.  They are intentionally kept separate:
+//
+//   - compiler_safe_outputs_*.go — methods with a (*Compiler) receiver.
+//     These files orchestrate the workflow compilation pipeline: they call
+//     helpers, build YAML job/step/env strings, and write results into the
+//     compiled workflow.  Functions here are tightly coupled to Compiler
+//     state and the compilation lifecycle.
+//
+//   - safe_outputs_*.go — standalone (receiver-free) helper functions.
+//     These files contain pure or near-pure helpers: config structs,
+//     parsers, env-var builders, and validation logic that does not depend
+//     on Compiler internals.  They are reusable across compilation and
+//     non-compilation contexts (e.g. tests, validation-only paths).
+//
+// When adding new code:
+//   - If the function needs Compiler state or calls other Compiler methods,
+//     place it in the appropriate compiler_safe_outputs_*.go file.
+//   - If the function is self-contained and testable in isolation, place it
+//     in the matching safe_outputs_*.go file (env, config, jobs, steps …).
+//
+// # Module layout
+//
+// compiler_safe_outputs_core.go    — shared types (SafeOutputStepConfig)
+// compiler_safe_outputs_builder.go — top-level compilation entry points
+// compiler_safe_outputs_config.go  — addHandlerManagerConfigEnvVar
+// compiler_safe_outputs_env.go     — addAllSafeOutputConfigEnvVars
+// compiler_safe_outputs_handlers.go — per-handler compilation helpers
+// compiler_safe_outputs_job.go     — buildConsolidatedSafeOutputsJob
+// compiler_safe_outputs_steps.go   — buildConsolidatedSafeOutputStep
+
 package workflow
 
 import (

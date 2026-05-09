@@ -10,7 +10,6 @@ import (
 	"github.com/github/gh-aw/pkg/console"
 	"github.com/github/gh-aw/pkg/logger"
 	"github.com/github/gh-aw/pkg/parser"
-	"github.com/github/gh-aw/pkg/sliceutil"
 	"github.com/github/gh-aw/pkg/types"
 )
 
@@ -360,9 +359,7 @@ func renderSharedMCPConfig(yaml *strings.Builder, toolName string, toolConfig ma
 		case "env":
 			if renderer.Format == "toml" {
 				fmt.Fprintf(yaml, "%senv = { ", renderer.IndentLevel)
-				// Using functional helper to extract map keys
-				envKeys := sliceutil.MapToSlice(mcpConfig.Env)
-				sort.Strings(envKeys)
+				envKeys := sortedMapKeys(mcpConfig.Env)
 				for i, envKey := range envKeys {
 					if i > 0 {
 						yaml.WriteString(", ")
@@ -453,9 +450,7 @@ func renderSharedMCPConfig(yaml *strings.Builder, toolName string, toolConfig ma
 			// TOML format for HTTP headers (Codex style)
 			if len(mcpConfig.Headers) > 0 {
 				fmt.Fprintf(yaml, "%shttp_headers = { ", renderer.IndentLevel)
-				// Using functional helper to extract map keys
-				headerKeys := sliceutil.MapToSlice(mcpConfig.Headers)
-				sort.Strings(headerKeys)
+				headerKeys := sortedMapKeys(mcpConfig.Headers)
 				for i, headerKey := range headerKeys {
 					if i > 0 {
 						yaml.WriteString(", ")
@@ -470,9 +465,7 @@ func renderSharedMCPConfig(yaml *strings.Builder, toolName string, toolConfig ma
 				comma = ""
 			}
 			fmt.Fprintf(yaml, "%s\"headers\": {\n", renderer.IndentLevel)
-			// Using functional helper to extract map keys
-			headerKeys := sliceutil.MapToSlice(mcpConfig.Headers)
-			sort.Strings(headerKeys)
+			headerKeys := sortedMapKeys(mcpConfig.Headers)
 			for headerIndex, headerKey := range headerKeys {
 				headerComma := ","
 				if headerIndex == len(headerKeys)-1 {

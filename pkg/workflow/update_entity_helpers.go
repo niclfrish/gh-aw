@@ -13,11 +13,12 @@
 //   - Support two field parsing modes (key existence vs. bool value)
 //   - Enable DRY principles for update operations
 //
-// Domain-specific configuration types and parsers live in dedicated files:
-//   - update_issue_helpers.go       — UpdateIssuesConfig, parseUpdateIssuesConfig
-//   - update_discussion_helpers.go  — UpdateDiscussionsConfig, parseUpdateDiscussionsConfig
-//   - update_pull_request_helpers.go — UpdatePullRequestsConfig, parseUpdatePullRequestsConfig
-//   - update_release.go             — UpdateReleaseConfig, parseUpdateReleaseConfig
+// Domain-specific configuration types and parsers are also in this file:
+//   - UpdateIssuesConfig, parseUpdateIssuesConfig
+//   - UpdateDiscussionsConfig, parseUpdateDiscussionsConfig
+//   - UpdatePullRequestsConfig, parseUpdatePullRequestsConfig
+//   - update_release.go — UpdateReleaseConfig, parseUpdateReleaseConfig (separate
+//     because release updates share no field-spec pattern with the three above)
 //
 // This follows the helper file conventions documented in the developer instructions.
 // See skills/developer/SKILL.md#helper-file-conventions for details.
@@ -449,4 +450,128 @@ func parseUpdateEntityConfigTyped[T any](
 	}
 
 	return cfg
+}
+
+// ── Entity-specific configuration types and parsers ──────────────────────────
+//
+// These were previously split across three dedicated files
+// (update_issue_helpers.go, update_discussion_helpers.go,
+// update_pull_request_helpers.go).  They are consolidated here because:
+//   - Each config struct is small (≤6 fields) and the parser is a single call
+//     to parseUpdateEntityConfigTyped with inline field specs.
+//   - The shared infrastructure (parseUpdateEntityConfigTyped, UpdateEntityConfig,
+//     UpdateEntityFieldSpec) is already in this file, so keeping the consumers
+//     adjacent reduces the number of files a reader must open.
+//   - This mirrors the close_entity_helpers.go precedent of keeping all
+//     entity parsers together when the per-entity variation is expressed as
+//     data (field specs) rather than as separate functions.
+//
+// For release updates, see update_release.go — that entity has a distinct
+// workflow and does not follow the same field-spec pattern.
+
+// ── Issues ───────────────────────────────────────────────────────────────────
+
+var updateIssueLog = logger.New("workflow:update_issue")
+
+// UpdateIssuesConfig holds configuration for updating GitHub issues from agent output
+type UpdateIssuesConfig struct {
+UpdateEntityConfig `yaml:",inline"`
+Status             *bool   `yaml:"status,omitempty"`       // Allow updating issue status (open/closed) - presence indicates field can be updated
+Title              *bool   `yaml:"title,omitempty"`        // Allow updating issue title - presence indicates field can be updated
+Body               *bool   `yaml:"body,omitempty"`         // Allow updating issue body - boolean value controls permission (defaults to true)
+Footer             *string `yaml:"footer,omitempty"`       // Controls whether AI-generated footer is added. When false, visible footer is omitted but XML markers are kept.
+TitlePrefix        string  `yaml:"title-prefix,omitempty"` // Required title prefix for issue validation - only issues with this prefix can be updated
+}
+
+// parseUpdateIssuesConfig handles update-issue configuration
+func (c *Compiler) parseUpdateIssuesConfig(outputMap map[string]any) *UpdateIssuesConfig {
+updateIssueLog.Print("Parsing update-issue config")
+return parseUpdateEntityConfigTyped(c, outputMap,
+UpdateEntityIssue, "update-issue", updateIssueLog,
+func(cfg *UpdateIssuesConfig) []UpdateEntityFieldSpec {
+return []UpdateEntityFieldSpec{
+{Name: "status", Mode: FieldParsingKeyExistence, Dest: &cfg.Status},
+{Name: "title", Mode: FieldParsingKeyExistence, Dest: &cfg.Title},
+{Name: "body", Mode: FieldParsingBoolValue, Dest: &cfg.Body},
+{Name: "footer", Mode: FieldParsingTemplatableBool, StringDest: &cfg.Footer},
+}
+}, func(configMap map[string]any, cfg *UpdateIssuesConfig) {
+cfg.TitlePrefix = parseTitlePrefixFromConfig(configMap)
+})
+}
+
+// ── Pull Requests ─────────────────────────────────────────────────────────────
+
+var updatePullRequestLog = logger.New("workflow:update_pull_request")
+
+// UpdatePullRequestsConfig holds configuration for updating GitHub pull requests from agent output
+type UpdatePullRequestsConfig struct {
+UpdateEntityConfig `yaml:",inline"`
+Title              *bool   `yaml:"title,omitempty"`         // Allow updating PR title - defaults to true, set to false to disable
+Body               *bool   `yaml:"body,omitempty"`          // Allow updating PR body - defaults to true, set to false to disable
+UpdateBranch       *bool   `yaml:"update-branch,omitempty"` // When true, update PR branch with latest base branch changes before applying other updates. Defaults to false.
+Operation          *string `yaml:"operation,omitempty"`     // Default operation for body updates: "append", "prepend", or "replace" (defaults to "replace")
+Footer             *string `yaml:"footer,omitempty"`        // Controls whether AI-generated footer is added. When false, visible footer is omitted.
+}
+
+// parseUpdatePullRequestsConfig handles update-pull-request configuration
+func (c *Compiler) parseUpdatePullRequestsConfig(outputMap map[string]any) *UpdatePullRequestsConfig {
+updatePullRequestLog.Print("Parsing update pull request configuration")
+
+return parseUpdateEntityConfigTyped(c, outputMap,
+UpdateEntityPullRequest, "update-pull-request", updatePullRequestLog,
+func(cfg *UpdatePullRequestsConfig) []UpdateEntityFieldSpec {
+return []UpdateEntityFieldSpec{
+{Name: "title", Mode: FieldParsingBoolValue, Dest: &cfg.Title},
+{Name: "body", Mode: FieldParsingBoolValue, Dest: &cfg.Body},
+{Name: "update-branch", Mode: FieldParsingBoolValue, Dest: &cfg.UpdateBranch},
+{Name: "footer", Mode: FieldParsingTemplatableBool, StringDest: &cfg.Footer},
+}
+}, func(configMap map[string]any, cfg *UpdatePullRequestsConfig) {
+// Parse operation field
+if operationVal, exists := configMap["operation"]; exists {
+if operationStr, ok := operationVal.(string); ok {
+cfg.Operation = &operationStr
+}
+}
+})
+}
+
+// ── Discussions ───────────────────────────────────────────────────────────────
+
+var updateDiscussionLog = logger.New("workflow:update_discussion")
+
+// UpdateDiscussionsConfig holds configuration for updating GitHub discussions from agent output
+type UpdateDiscussionsConfig struct {
+UpdateEntityConfig `yaml:",inline"`
+Title              *bool    `yaml:"title,omitempty"`          // Allow updating discussion title - presence indicates field can be updated
+Body               *bool    `yaml:"body,omitempty"`           // Allow updating discussion body - presence indicates field can be updated
+Labels             *bool    `yaml:"labels,omitempty"`         // Allow updating discussion labels - presence indicates field can be updated
+AllowedLabels      []string `yaml:"allowed-labels,omitempty"` // Optional list of allowed labels. If omitted, any labels are allowed (including creating new ones).
+Footer             *string  `yaml:"footer,omitempty"`         // Controls whether AI-generated footer is added. When false, visible footer is omitted but XML markers are kept.
+}
+
+// parseUpdateDiscussionsConfig handles update-discussion configuration
+func (c *Compiler) parseUpdateDiscussionsConfig(outputMap map[string]any) *UpdateDiscussionsConfig {
+return parseUpdateEntityConfigTyped(c, outputMap,
+UpdateEntityDiscussion, "update-discussion", updateDiscussionLog,
+func(cfg *UpdateDiscussionsConfig) []UpdateEntityFieldSpec {
+return []UpdateEntityFieldSpec{
+{Name: "title", Mode: FieldParsingKeyExistence, Dest: &cfg.Title},
+{Name: "body", Mode: FieldParsingKeyExistence, Dest: &cfg.Body},
+{Name: "labels", Mode: FieldParsingKeyExistence, Dest: &cfg.Labels},
+{Name: "footer", Mode: FieldParsingTemplatableBool, StringDest: &cfg.Footer},
+}
+},
+func(cm map[string]any, cfg *UpdateDiscussionsConfig) {
+// Parse allowed-labels using shared helper
+cfg.AllowedLabels = parseAllowedLabelsFromConfig(cm)
+if len(cfg.AllowedLabels) > 0 {
+updateDiscussionLog.Printf("Allowed labels configured: %v", cfg.AllowedLabels)
+// If allowed-labels is specified, implicitly enable labels
+if cfg.Labels == nil {
+cfg.Labels = new(bool)
+}
+}
+})
 }

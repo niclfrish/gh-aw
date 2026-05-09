@@ -2,11 +2,9 @@ package workflow
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 
 	"github.com/github/gh-aw/pkg/logger"
-	"github.com/github/gh-aw/pkg/sliceutil"
 )
 
 var envLog = logger.New("workflow:env")
@@ -34,9 +32,8 @@ func writeHeadersToYAML(yaml *strings.Builder, headers map[string]string, indent
 
 	envLog.Printf("Writing %d headers to YAML", len(headers))
 
-	// Sort keys for deterministic output - using functional helper
-	keys := sliceutil.MapToSlice(headers)
-	sort.Strings(keys)
+	// Sort keys for deterministic output
+	keys := sortedMapKeys(headers)
 
 	// Write each header with proper comma placement
 	for i, key := range keys {
