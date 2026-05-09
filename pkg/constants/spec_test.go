@@ -257,9 +257,9 @@ func TestSpec_RuntimeConfiguration_Timeouts(t *testing.T) {
 // TestSpec_RuntimeConfiguration_RateLimits validates the documented rate limit constants.
 // Spec section: "// Rate limits"
 func TestSpec_RuntimeConfiguration_RateLimits(t *testing.T) {
-	// From spec: DefaultRateLimitMax // 5 — max runs per window
-	assert.Equal(t, 5, constants.DefaultRateLimitMax,
-		"DefaultRateLimitMax should be 5 as documented")
+	// From spec: DefaultRateLimitMax // 100 — max runs per window
+	assert.Equal(t, 100, constants.DefaultRateLimitMax,
+		"DefaultRateLimitMax should be 100 as documented")
 
 	// From spec: DefaultRateLimitWindow // 60 — window in minutes
 	assert.Equal(t, 60, constants.DefaultRateLimitWindow,

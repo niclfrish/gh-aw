@@ -98,7 +98,7 @@ The `rate-limit` frontmatter key caps how many times a workflow can run in a sli
 
 ```aw wrap
 rate-limit:
-  max-runs: 5
+  max-runs: 100
   window: 1h
 ```
 

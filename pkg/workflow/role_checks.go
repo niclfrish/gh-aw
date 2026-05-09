@@ -54,7 +54,7 @@ func (c *Compiler) generateRateLimitCheck(data *WorkflowData, steps []string) []
 	// Add environment variables for rate limit check
 	steps = append(steps, "        env:\n")
 
-	// Set max (default: 5)
+	// Set max (default: 100)
 	max := constants.DefaultRateLimitMax
 	if data.RateLimit.Max > 0 {
 		max = data.RateLimit.Max
@@ -219,7 +219,7 @@ func (c *Compiler) extractRateLimitConfig(frontmatter map[string]any) *RateLimit
 		case map[string]any:
 			config := &RateLimitConfig{}
 
-			// Extract max (default: 5)
+			// Extract max (default: 100)
 			if maxValue, ok := v["max"]; ok {
 				switch max := maxValue.(type) {
 				case int:

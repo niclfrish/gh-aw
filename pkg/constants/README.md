@@ -334,7 +334,7 @@ constants.DefaultToolTimeout            // 60 * time.Second
 constants.DefaultMCPStartupTimeout      // 120 * time.Second
 
 // Rate limits
-constants.DefaultRateLimitMax    // 5  — max runs per window
+constants.DefaultRateLimitMax    // 100  — max runs per window
 constants.DefaultRateLimitWindow // 60 — window in minutes
 
 // Runner image

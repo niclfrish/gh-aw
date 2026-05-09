@@ -217,5 +217,5 @@ const SkipIfCheckFailingOkOutput = "skip_if_check_failing_ok"
 const ActivatedOutput = "activated"
 
 // Rate limit defaults
-const DefaultRateLimitMax = 5     // Default maximum runs per time window
+const DefaultRateLimitMax = 100   // Default maximum runs per time window
 const DefaultRateLimitWindow = 60 // Default time window in minutes (1 hour)
