@@ -5,7 +5,7 @@ const fs = require("fs");
 const { getErrorMessage } = require("./error_helpers.cjs");
 const { displayDirectories } = require("./display_file_helpers.cjs");
 const { ERR_PARSE } = require("./error_codes.cjs");
-const { computeEffectiveTokens, getTokenClassWeights, formatET } = require("./effective_tokens.cjs");
+const { computeEffectiveTokens, computeBaseWeightedTokens, getTokenClassWeights, formatET } = require("./effective_tokens.cjs");
 
 /**
  * Parses MCP gateway logs and creates a step summary
@@ -50,7 +50,7 @@ function formatDurationMs(ms) {
  * Parses token-usage.jsonl content and returns an aggregated summary.
  * Computes effective tokens (ET) per model using the GH_AW_MODEL_MULTIPLIERS env var.
  * @param {string} jsonlContent - The token-usage.jsonl file content
- * @returns {{totalInputTokens: number, totalOutputTokens: number, totalCacheReadTokens: number, totalCacheWriteTokens: number, totalRequests: number, totalDurationMs: number, cacheEfficiency: number, totalEffectiveTokens: number, byModel: Object} | null}
+ * @returns {{totalInputTokens: number, totalOutputTokens: number, totalCacheReadTokens: number, totalCacheWriteTokens: number, totalRequests: number, totalDurationMs: number, cacheEfficiency: number, totalEffectiveTokens: number, byModel: Object, contributors: Array<Object>} | null}
  */
 function parseTokenUsageJsonl(jsonlContent) {
   const summary = {
@@ -63,7 +63,9 @@ function parseTokenUsageJsonl(jsonlContent) {
     cacheEfficiency: 0,
     totalEffectiveTokens: 0,
     byModel: {},
+    contributors: [],
   };
+  const contributorsByKey = new Map();
 
   const lines = jsonlContent.split("\n");
   for (const line of lines) {
@@ -77,6 +79,12 @@ function parseTokenUsageJsonl(jsonlContent) {
       const outputTokens = entry.output_tokens || 0;
       const cacheReadTokens = entry.cache_read_tokens || 0;
       const cacheWriteTokens = entry.cache_write_tokens || 0;
+      const model = entry.model || "unknown";
+      const sessionId = typeof entry.session_id === "string" ? entry.session_id.trim() : "";
+      const requestId = typeof entry.request_id === "string" ? entry.request_id.trim() : "";
+      const contributorKey = sessionId || requestId || `request-${summary.totalRequests + 1}`;
+      const requestBaseWeightedTokens = computeBaseWeightedTokens(inputTokens, outputTokens, cacheReadTokens, cacheWriteTokens);
+      const requestEffectiveTokens = computeEffectiveTokens(model, inputTokens, outputTokens, cacheReadTokens, cacheWriteTokens);
 
       summary.totalInputTokens += inputTokens;
       summary.totalOutputTokens += outputTokens;
@@ -85,7 +93,6 @@ function parseTokenUsageJsonl(jsonlContent) {
       summary.totalRequests++;
       summary.totalDurationMs += entry.duration_ms || 0;
 
-      const model = entry.model || "unknown";
       summary.byModel[model] ??= {
         provider: entry.provider || "",
         inputTokens: 0,
@@ -103,6 +110,21 @@ function parseTokenUsageJsonl(jsonlContent) {
       m.cacheWriteTokens += cacheWriteTokens;
       m.requests++;
       m.durationMs += entry.duration_ms || 0;
+
+      contributorsByKey.set(contributorKey, {
+        label: contributorKey,
+        sessionId,
+        requestId,
+        models: new Set([model]),
+        inputTokens: (contributorsByKey.get(contributorKey)?.inputTokens || 0) + inputTokens,
+        outputTokens: (contributorsByKey.get(contributorKey)?.outputTokens || 0) + outputTokens,
+        cacheReadTokens: (contributorsByKey.get(contributorKey)?.cacheReadTokens || 0) + cacheReadTokens,
+        cacheWriteTokens: (contributorsByKey.get(contributorKey)?.cacheWriteTokens || 0) + cacheWriteTokens,
+        requests: (contributorsByKey.get(contributorKey)?.requests || 0) + 1,
+        durationMs: (contributorsByKey.get(contributorKey)?.durationMs || 0) + (entry.duration_ms || 0),
+        effectiveTokens: (contributorsByKey.get(contributorKey)?.effectiveTokens || 0) + requestEffectiveTokens,
+        baseWeightedTokens: (contributorsByKey.get(contributorKey)?.baseWeightedTokens || 0) + requestBaseWeightedTokens,
+      });
     } catch {
       // skip malformed lines
     }
@@ -123,6 +145,9 @@ function parseTokenUsageJsonl(jsonlContent) {
     totalEffectiveTokens += et;
   }
   summary.totalEffectiveTokens = totalEffectiveTokens;
+  summary.contributors = [...contributorsByKey.values()]
+    .map(contributor => ({ ...contributor, models: [...contributor.models].sort() }))
+    .sort((a, b) => b.effectiveTokens - a.effectiveTokens || b.requests - a.requests || a.label.localeCompare(b.label));
 
   return summary;
 }
@@ -130,7 +155,7 @@ function parseTokenUsageJsonl(jsonlContent) {
 /**
  * Generates a markdown summary section for token usage data.
  * Includes an Effective Tokens (ET) column per model and a ● ET summary line.
- * @param {{totalInputTokens: number, totalOutputTokens: number, totalCacheReadTokens: number, totalCacheWriteTokens: number, totalRequests: number, totalDurationMs: number, cacheEfficiency: number, totalEffectiveTokens: number, byModel: Object} | null} summary
+ * @param {{totalInputTokens: number, totalOutputTokens: number, totalCacheReadTokens: number, totalCacheWriteTokens: number, totalRequests: number, totalDurationMs: number, cacheEfficiency: number, totalEffectiveTokens: number, byModel: Object, contributors?: Array<Object>} | null} summary
  * @returns {string} Markdown section, or empty string if no data
  */
 function generateTokenUsageSummary(summary) {
@@ -169,9 +194,39 @@ function generateTokenUsageSummary(summary) {
   }
   if (footerParts.length > 0) {
     lines.push(`\n_${footerParts.join(" · ")}_`);
-    // Disclose the token class weights used to compute ET (required by the ET spec)
-    const w = getTokenClassWeights();
-    lines.push(`<sub>ET weights: input=${w.input} · cached_input=${w.cached_input} · output=${w.output} · reasoning=${w.reasoning} · cache_write=${w.cache_write}</sub>`);
+  }
+
+  const w = getTokenClassWeights();
+  const contributors = Array.isArray(summary.contributors) ? summary.contributors : [];
+  if (summary.totalEffectiveTokens > 0 || contributors.length > 0) {
+    lines.push("");
+    lines.push("<details>");
+    lines.push("<summary>How effective tokens are computed</summary>");
+    lines.push("");
+    lines.push(
+      "Effective tokens are computed per request as `model multiplier × ((input × weight) + (cached input × weight) + (output × weight) + (reasoning × weight) + (cache write × weight))`, then summed for the run."
+    );
+    lines.push("");
+    lines.push(`- Token class weights: input=${w.input}, cached_input=${w.cached_input}, output=${w.output}, reasoning=${w.reasoning}, cache_write=${w.cache_write}`);
+    lines.push("- Reasoning tokens currently contribute `0` here because `token-usage.jsonl` does not record them.");
+    lines.push("- Rows below are grouped by `session_id` when present; otherwise they fall back to `request_id`.");
+    lines.push("");
+    if (contributors.length > 0) {
+      lines.push("| Session / Request | Models | Requests | Input | Output | Cache Read | Cache Write | ET | Duration |");
+      lines.push("|-------------------|--------|---------:|------:|-------:|-----------:|------------:|---:|---------:|");
+      for (const contributor of contributors) {
+        const label = contributor.label || "unknown";
+        const modelsUsed = Array.isArray(contributor.models) ? contributor.models.join(", ") : "unknown";
+        lines.push(
+          `| \`${label}\` | ${modelsUsed} | ${contributor.requests} | ${contributor.inputTokens.toLocaleString()} | ${contributor.outputTokens.toLocaleString()} | ${contributor.cacheReadTokens.toLocaleString()} | ${contributor.cacheWriteTokens.toLocaleString()} | ${formatET(Math.round(contributor.effectiveTokens || 0))} | ${formatDurationMs(contributor.durationMs || 0)} |`
+        );
+      }
+      lines.push(
+        `| **Total** |  | **${summary.totalRequests}** | **${summary.totalInputTokens.toLocaleString()}** | **${summary.totalOutputTokens.toLocaleString()}** | **${summary.totalCacheReadTokens.toLocaleString()}** | **${summary.totalCacheWriteTokens.toLocaleString()}** | **${formatET(Math.round(summary.totalEffectiveTokens || 0))}** | **${formatDurationMs(summary.totalDurationMs)}** |`
+      );
+    }
+    lines.push("");
+    lines.push("</details>");
   }
 
   lines.push("");

@@ -1099,6 +1099,21 @@ not-json
       // cache_read / (input + cache_read) = 900 / 1000 = 0.9
       expect(summary.cacheEfficiency).toBeCloseTo(0.9);
     });
+
+    test("aggregates effective-token contributors by session_id when present", () => {
+      const lines = [
+        JSON.stringify({ session_id: "session-a", request_id: "req-1", model: "m1", input_tokens: 10, output_tokens: 5, cache_read_tokens: 0, cache_write_tokens: 0, duration_ms: 100 }),
+        JSON.stringify({ session_id: "session-a", request_id: "req-2", model: "m1", input_tokens: 15, output_tokens: 10, cache_read_tokens: 5, cache_write_tokens: 0, duration_ms: 200 }),
+        JSON.stringify({ request_id: "req-3", model: "m2", input_tokens: 20, output_tokens: 10, cache_read_tokens: 0, cache_write_tokens: 0, duration_ms: 300 }),
+      ];
+      const summary = parseTokenUsageJsonl(lines.join("\n"));
+      expect(summary).not.toBeNull();
+      expect(summary.contributors).toHaveLength(2);
+      expect(summary.contributors[0].label).toBe("session-a");
+      expect(summary.contributors[0].requests).toBe(2);
+      expect(summary.contributors[0].models).toEqual(["m1"]);
+      expect(summary.contributors[1].label).toBe("req-3");
+    });
   });
 
   describe("generateTokenUsageSummary", () => {
@@ -1173,6 +1188,16 @@ not-json
       const etIdx = md.indexOf("●");
       const ceIdx = md.indexOf("Cache efficiency");
       expect(etIdx).toBeLessThan(ceIdx);
+    });
+
+    test("renders effective token explanation in a details section", () => {
+      const content = JSON.stringify({ session_id: "session-a", request_id: "req-1", model: "m", input_tokens: 100, output_tokens: 20, cache_read_tokens: 50, cache_write_tokens: 10, duration_ms: 1000 });
+      const summary = parseTokenUsageJsonl(content);
+      const md = generateTokenUsageSummary(summary);
+      expect(md).toContain("<summary>How effective tokens are computed</summary>");
+      expect(md).toContain("Rows below are grouped by `session_id` when present; otherwise they fall back to `request_id`.");
+      expect(md).toContain("| Session / Request | Models | Requests | Input | Output | Cache Read | Cache Write | ET | Duration |");
+      expect(md).toContain("`session-a`");
     });
   });
 

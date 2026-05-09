@@ -21,7 +21,7 @@ describe("generate_observability_summary.cjs", () => {
   });
 
   afterEach(() => {
-    for (const path of ["/tmp/gh-aw/aw_info.json", "/tmp/gh-aw/agent_output.json", "/tmp/gh-aw/mcp-logs/gateway.jsonl", "/tmp/gh-aw/mcp-logs/rpc-messages.jsonl"]) {
+    for (const path of ["/tmp/gh-aw/aw_info.json", "/tmp/gh-aw/agent_output.json", "/tmp/gh-aw/otel.jsonl", "/tmp/gh-aw/mcp-logs/gateway.jsonl", "/tmp/gh-aw/mcp-logs/rpc-messages.jsonl"]) {
       if (fs.existsSync(path)) {
         fs.unlinkSync(path);
       }
@@ -47,6 +47,24 @@ describe("generate_observability_summary.cjs", () => {
       })
     );
     fs.writeFileSync("/tmp/gh-aw/mcp-logs/gateway.jsonl", [JSON.stringify({ type: "DIFC_FILTERED" }), JSON.stringify({ type: "REQUEST" })].join("\n"));
+    fs.writeFileSync(
+      "/tmp/gh-aw/otel.jsonl",
+      JSON.stringify({
+        resourceSpans: [
+          {
+            resource: { attributes: [{ key: "service.name", value: { stringValue: "gh-aw-agent" } }] },
+            scopeSpans: [
+              {
+                spans: [
+                  { traceId: "a3f2c8d1e4b7091f6a5c2e3d8f401b72", name: "agent.run", kind: 1, status: { code: 1 } },
+                  { traceId: "a3f2c8d1e4b7091f6a5c2e3d8f401b72", name: "tool.github", kind: 3, status: { code: 2 } },
+                ],
+              },
+            ],
+          },
+        ],
+      }) + "\n"
+    );
 
     await module.main(mockCore);
 
@@ -63,6 +81,10 @@ describe("generate_observability_summary.cjs", () => {
     expect(summary).toContain("- **agent output errors**: 1");
     expect(summary).toContain("  - add_comment");
     expect(summary).toContain("  - create_issue");
+    expect(summary).toContain("<summary>Trace preview</summary>");
+    expect(summary).toContain("**Spans captured:** 2");
+    expect(summary).toContain("| agent.run | INTERNAL | OK | gh-aw-agent |");
+    expect(summary).toContain("| tool.github | CLIENT | ERROR | gh-aw-agent |");
     expect(mockCore.summary.write).toHaveBeenCalledTimes(1);
   });
 
