@@ -94,11 +94,16 @@ Use `gh aw logs --format markdown --count 20` to track token trends over time. T
 
 ### Rate Limiting
 
-The `rate-limit` frontmatter key caps how many times a workflow can run in a sliding window, preventing a flood of incoming issues from exhausting compute or inference budget:
+The `max-effective-tokens` frontmatter key sets a hard token budget per run, preventing runaway inference costs from a flood of incoming issues:
+
+```aw wrap
+max-effective-tokens: 5000000
+```
+
+For additional throttling, `rate-limit` caps how many times a workflow can run in a sliding window:
 
 ```aw wrap
 rate-limit:
-  max-runs: 5
   window: 1h
 ```
 
