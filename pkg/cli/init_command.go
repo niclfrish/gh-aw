@@ -22,7 +22,7 @@ engine selection or secret configuration.
 
 This command:
 - Configures .gitattributes to mark .lock.yml files as generated
-- Creates the dispatcher agent at .github/agents/agentic-workflows.agent.md
+- Creates the dispatcher agent at .agents/agents/agentic-workflows.md
 - Removes old prompt files from .github/prompts/ if they exist
 - Configures VSCode settings (.vscode/settings.json)
 - Generates/updates .github/workflows/agentics-maintenance.yml if any workflows use expires field for discussions or issues

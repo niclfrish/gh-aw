@@ -13,7 +13,7 @@ import (
 
 var copilotAgentsLog = logger.New("cli:copilot_agents")
 
-// ensureAgenticWorkflowsDispatcher ensures that .github/agents/agentic-workflows.agent.md contains the dispatcher agent
+// ensureAgenticWorkflowsDispatcher ensures that .agents/agents/agentic-workflows.md contains the dispatcher agent
 func ensureAgenticWorkflowsDispatcher(verbose bool, skipInstructions bool) error {
 	copilotAgentsLog.Print("Ensuring agentic workflows dispatcher agent")
 
@@ -27,12 +27,12 @@ func ensureAgenticWorkflowsDispatcher(verbose bool, skipInstructions bool) error
 		return err // Not in a git repository, skip
 	}
 
-	targetDir := filepath.Join(gitRoot, ".github", "agents")
-	targetPath := filepath.Join(targetDir, "agentic-workflows.agent.md")
+	targetDir := filepath.Join(gitRoot, ".agents", "agents")
+	targetPath := filepath.Join(targetDir, "agentic-workflows.md")
 
 	// Ensure the target directory exists
 	if err := os.MkdirAll(targetDir, 0755); err != nil {
-		return fmt.Errorf("failed to create .github/agents directory: %w", err)
+		return fmt.Errorf("failed to create .agents/agents directory: %w", err)
 	}
 
 	// Download the agent file from GitHub
@@ -193,6 +193,8 @@ func deleteOldAgentFiles(verbose bool) error {
 	// Map of subdirectory to list of files to delete
 	filesToDelete := map[string][]string{
 		"agents": {
+			"agentic-workflows.agent.md",
+			"agentic-workflows.agents.md",
 			"create-agentic-workflow.agent.md",
 			"debug-agentic-workflow.agent.md",
 			"create-shared-agentic-workflow.agent.md",

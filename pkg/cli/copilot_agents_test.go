@@ -21,11 +21,15 @@ func TestDeleteOldAgentFiles(t *testing.T) {
 		{
 			name: "deletes old agent files from .github/agents",
 			filesToCreate: []string{
+				".github/agents/agentic-workflows.agent.md",
+				".github/agents/agentic-workflows.agents.md",
 				".github/agents/create-agentic-workflow.agent.md",
 				".github/agents/debug-agentic-workflow.agent.md",
 				".github/agents/create-shared-agentic-workflow.agent.md",
 			},
 			expectedDeleted: []string{
+				".github/agents/agentic-workflows.agent.md",
+				".github/agents/agentic-workflows.agents.md",
 				".github/agents/create-agentic-workflow.agent.md",
 				".github/agents/debug-agentic-workflow.agent.md",
 				".github/agents/create-shared-agentic-workflow.agent.md",
@@ -71,6 +75,8 @@ func TestDeleteOldAgentFiles(t *testing.T) {
 		{
 			name: "deletes all old agent files together",
 			filesToCreate: []string{
+				".github/agents/agentic-workflows.agent.md",
+				".github/agents/agentic-workflows.agents.md",
 				".github/agents/create-agentic-workflow.agent.md",
 				".github/agents/debug-agentic-workflow.agent.md",
 				".github/agents/create-shared-agentic-workflow.agent.md",
@@ -82,6 +88,8 @@ func TestDeleteOldAgentFiles(t *testing.T) {
 				".github/aw/upgrade-agentic-workflow.md",
 			},
 			expectedDeleted: []string{
+				".github/agents/agentic-workflows.agent.md",
+				".github/agents/agentic-workflows.agents.md",
 				".github/agents/create-agentic-workflow.agent.md",
 				".github/agents/debug-agentic-workflow.agent.md",
 				".github/agents/create-shared-agentic-workflow.agent.md",
