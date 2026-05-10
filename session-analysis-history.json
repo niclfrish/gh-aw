@@ -1,33 +1,6 @@
 {
   "analyses": [
     {
-      "date": "2026-04-30",
-      "sessions_analyzed": 50,
-      "completion_rate_pct": 2.0,
-      "copilot_coding_agents": 2,
-      "copilot_success_rate_pct": 50.0,
-      "avg_copilot_duration_min": 20.85,
-      "experimental_strategy": null,
-      "key_insights": [
-        "Self-referential CI fix: aw-failures-fix-smoke-claude-crash SUCCESS in 18.2min",
-        "fix-session-not-found-error CANCELLED after 23.5min - new cancellation mode"
-      ]
-    },
-    {
-      "date": "2026-05-02",
-      "sessions_analyzed": 84,
-      "completion_rate_pct": 81.0,
-      "copilot_coding_agents": 3,
-      "copilot_success_rate_pct": 81.0,
-      "avg_copilot_duration_min": 65.6,
-      "experimental_strategy": "Temporal Analysis",
-      "key_insights": [
-        "PR completion rate 81% - highest observed (vs 50-72% prior days)",
-        "Duration improving: avg 107min Apr 28 -> 52min May 2 (51% faster)",
-        "No orphaned branches today"
-      ]
-    },
-    {
       "date": "2026-05-03",
       "sessions_analyzed": 50,
       "completion_rate_pct": 8.0,
@@ -121,13 +94,30 @@
         "0% orphaned branches - 11/11 open PRs have Copilot assigned",
         "Conversation log returned gh auth error - no internal monologue available"
       ]
+    },
+    {
+      "date": "2026-05-10",
+      "sessions_analyzed": 50,
+      "completion_rate_pct": 8.0,
+      "copilot_coding_agents": 4,
+      "copilot_success_rate_pct": 100.0,
+      "avg_copilot_duration_min": 12.47,
+      "experimental_strategy": "Gate Sweep Branch Concentration",
+      "key_insights": [
+        "100% Copilot agent success (4/4) - consecutive perfect-success day after May 8",
+        "copilot/update-community-contributions dominates: 23/50 sessions (46%) - largest single-branch gate concentration this period",
+        "Avg agent duration 12.47min - tight clustering (9.5-14.2 min range) suggests routine/templated tasks",
+        "Zero orphaned branches - 5th time at zero this period (vs 40% baseline)",
+        "Only 3 open PRs total - lowest backlog observed; high agent throughput drained queue",
+        "No conversation logs available (0 conversation.txt files) - infrastructure-only data"
+      ]
     }
   ],
-  "last_updated": "2026-05-08",
+  "last_updated": "2026-05-10",
   "historical_summary": {
-    "avg_completion_rate_pct": 11.5,
-    "avg_copilot_success_rate_pct": 51.7,
-    "avg_copilot_duration_min": 17.1,
-    "note": "Averages computed across Apr 23 - May 8 (13 data days)"
+    "avg_completion_rate_pct": 12.0,
+    "avg_copilot_success_rate_pct": 56.7,
+    "avg_copilot_duration_min": 16.6,
+    "note": "Averages computed across Apr 23 - May 10 (14 data days)"
   }
 }

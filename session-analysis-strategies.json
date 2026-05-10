@@ -1,19 +1,6 @@
 {
   "strategies": [
     {
-      "name": "Agent Role Performance Matrix",
-      "date_tested": "2026-04-04",
-      "effectiveness": "High",
-      "recommendation": "Keep and expand"
-    },
-    {
-      "name": "CI Iteration Depth Analysis",
-      "date_tested": "2026-04-15",
-      "effectiveness": "Medium",
-      "recommendation": "Keep and refine",
-      "finding": "5 CI rounds in 51.4min led to success; 4 rounds without agent = stalled"
-    },
-    {
       "name": "Gate Storm Detection",
       "date_tested": "2026-04-17",
       "effectiveness": "High",
@@ -54,7 +41,14 @@
       "effectiveness": "High",
       "recommendation": "Keep and automate",
       "finding": "Gate count = complexity proxy: 1 gate = trivial, 4-7 = moderate, 9+ = feature addition. Security Review Agent co-occurrence = high-risk signal. Haiku Printer only = auto-merge candidate."
+    },
+    {
+      "name": "Gate Sweep Branch Concentration",
+      "date_tested": "2026-05-10",
+      "effectiveness": "Medium",
+      "recommendation": "Keep and refine",
+      "finding": "When 1 branch dominates >40% of daily sessions (here 23/50=46%), it is a routine/templated workflow (community contributions update). Branch dominance correlates with low task complexity and tight duration variance."
     }
   ],
-  "last_updated": "2026-05-07"
+  "last_updated": "2026-05-10"
 }
