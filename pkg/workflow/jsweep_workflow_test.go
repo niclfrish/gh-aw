@@ -190,6 +190,19 @@ func TestJSweepWorkflowConfiguration(t *testing.T) {
 			t.Error("jsweep workflow should batch validation commands into a single chained command")
 		}
 	})
+
+	// Test 16: Verify Priority 2 uses git-based deterministic ordering
+	t.Run("GitBasedDeterministicOrdering", func(t *testing.T) {
+		if !strings.Contains(mdContent, "git log --format") {
+			t.Error("jsweep workflow Priority 2 should use git log for deterministic file ordering")
+		}
+		if strings.Contains(mdContent, "earliest modification timestamp") {
+			t.Error("jsweep workflow should not use filesystem modification timestamps for file ordering")
+		}
+		if !strings.Contains(mdContent, "deterministic") {
+			t.Error("jsweep workflow should describe the ordering as deterministic")
+		}
+	})
 }
 
 // TestJSweepWorkflowLockFile validates that the compiled jsweep.lock.yml file

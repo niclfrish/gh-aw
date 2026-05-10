@@ -90,7 +90,7 @@ fi
 - Exclude test files (`*.test.cjs`)
 - Exclude files already listed in `cleaned_files` in the loaded state
 - **Priority 1**: Pick files with `@ts-nocheck` or `// @ts-nocheck` comments (these need type checking enabled)
-- **Priority 2**: If no uncleaned files with `@ts-nocheck` remain, pick the **one file** with the earliest modification timestamp that hasn't been cleaned
+- **Priority 2**: If no uncleaned files with `@ts-nocheck` remain, determine the last-committed timestamp for each uncleaned file by running `git log --format="%at" --follow -- <file> | head -1` (empty output means the file has never been committed; treat it as timestamp `0`). Sort ascending by that timestamp and pick the **one file** with the earliest git commit timestamp. This ordering is deterministic across CI machines and fresh checkouts, and files never touched by git automatically bubble to the top.
 
 If no uncleaned files remain, start over with the oldest cleaned file (reset `cleaned_files` to only the one just chosen).
 
