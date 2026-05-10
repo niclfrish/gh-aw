@@ -1,27 +1,28 @@
-# Shared Alerts — 2026-05-09T13:00Z
+# Shared Alerts — 2026-05-10T13:00Z
 
 ## P0 (Critical)
-- **Smoke Gemini** (#29666 OPEN): 100% failure, proxy/API-key blocks. 35+ days. #30175 closed ineffective. Needs fresh investigation.
+- **Smoke Gemini** (#29666 OPEN): 100% failure, proxy/API-key blocks. 35+ days. #30175 closed ineffective. Needs fresh investigation or formal deprecation.
 - **Smoke CI** (#29666 OPEN): CGO/EROFS persistent, 100% action_required.
 - **Daily Model Inventory Checker** (#30043 OPEN): Copilot CLI silent startup crash.
 - **APM Unpack Systemic Failure** (#30252 OPEN): apm-default.tar.gz exits code 1.
 - **config.models** (#30307 OPEN): unsupported AWF config field, blocks smoke runs.
 
 ## P1 (High)
-- **Smoke macOS ARM64**: 100% failure since 2026-02-20 (78 days). Issue filed 2026-05-07 ✅
+- **Smoke macOS ARM64**: 100% failure since 2026-02-20 (79 days). Issue filed 2026-05-07 ✅
 - **CI regression on main**: TestStrictModePermissions failing. Issue filed 2026-05-06.
 - **MCP gateway session timeout** (#23153 OPEN): Long-running workflows at risk.
 - **Performance Regression in Validation** (#30180): 82.1% slower.
-- **CJS test**: Mixed results — monitor.
+- **Daily Fact About gh-aw**: 3+ consecutive failures — escalate to P1 if continues.
 
 ## P2 (Watch)
-- **Node.js 20 deprecation** in CI: deadline Sep 16, 2026. Migrate to Node.js 22.
-- **PR-review cluster** (Q, /cloclo, Archie, Scout): ~100+ action_required/day. Consolidation needed.
-- **Doc Build - Deploy**: action_required persistent (deployment stalled).
-- **Content Moderation + AI Moderator**: scope-creep on PR diff events (improving).
-- **Resource Summarizer Agent**: chronic skips, zero outputs.
+- **PR-review cluster** (Q, cloclo, Archie, Scout, Grumpy, Security Review, PR Nitpick, PR Code Quality): ~272 wasted run-attempts/day. Trigger gate fix or consolidation needed. HIGHEST WASTE item.
 - **Plan Command over-creation**: 5 [plan] issues in one batch (#31207-#31211) — dedup gap.
-- **Deployment Incident Monitor**: 4 runs, 0 conclusions (zombie pattern).
+- **Deployment Incident Monitor**: zombie pattern — 8x skipped today; consider deprecation.
+- **Resource Summarizer Agent**: chronic skips, zero outputs.
+- **Doc Build - Deploy**: action_required persistent (deployment stalled).
+- **Smoke Pi**: noop violation (no safe outputs called); needs compliance fix.
+- **Smoke Codex**: missing web-fetch MCP tool.
+- **Node.js 20 deprecation** in CI: deadline Sep 16, 2026.
 
 ## Resolved (Do Not Re-File)
 - #29863 Smoke Copilot regression → RECOVERED ✅
@@ -36,8 +37,9 @@
 - #30102 Schema Consistency Checker → CLOSED ✅
 - #29109 Dashboard issue (active, updated periodically)
 
-## Trends
-- 218 workflows (+1), 0 missing lock files
-- Quality: 74/100 (→ stable plateau, day 8)
-- Health: 61/100 (→ stable, day 3)
-- AI Moderator recovering (2/3 success May 9 vs prior failures)
+## Trends (May 10)
+- 218 workflows (stable), 0 missing lock files
+- Quality: 74/100 (→ stable plateau, day 9)
+- Health: 61/100 (→ stable, day 5)
+- AI Moderator recovering (2/3 success)
+- Under-creation dominant pattern (42% of profiled agents)
