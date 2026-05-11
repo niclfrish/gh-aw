@@ -52,6 +52,36 @@ function printTiming(startMs, label) {
   core.info(`⏱️  TIMING: ${label} took ${elapsed}ms`);
 }
 
+/**
+ * Remove invalid optional gateway config sections before passing config to MCP Gateway.
+ * Specifically handles empty OpenTelemetry endpoint values, which fail schema validation.
+ *
+ * @param {Record<string, unknown>} configObj
+ * @returns {{ config: Record<string, unknown>; removedEmptyOtelEndpoint: boolean }}
+ */
+function normalizeGatewayConfigForRuntime(configObj) {
+  const gw = configObj.gateway;
+  if (!gw || typeof gw !== "object") {
+    return { config: configObj, removedEmptyOtelEndpoint: false };
+  }
+
+  /** @type {{ opentelemetry?: unknown }} */
+  const gateway = /** @type {{ opentelemetry?: unknown }} */ gw;
+  const otel = gateway.opentelemetry;
+  if (!otel || typeof otel !== "object") {
+    return { config: configObj, removedEmptyOtelEndpoint: false };
+  }
+
+  /** @type {{ endpoint?: unknown }} */
+  const otelConfig = /** @type {{ endpoint?: unknown }} */ otel;
+  if (typeof otelConfig.endpoint !== "string" || otelConfig.endpoint.trim() !== "") {
+    return { config: configObj, removedEmptyOtelEndpoint: false };
+  }
+
+  delete gateway.opentelemetry;
+  return { config: configObj, removedEmptyOtelEndpoint: true };
+}
+
 // ---------------------------------------------------------------------------
 // Utility helpers
 // ---------------------------------------------------------------------------
@@ -237,6 +267,13 @@ async function main() {
     process.exit(1);
   }
 
+  const normalized = normalizeGatewayConfigForRuntime(configObj);
+  configObj = normalized.config;
+  if (normalized.removedEmptyOtelEndpoint) {
+    core.info("OTLP endpoint is empty; removing optional gateway.opentelemetry configuration");
+  }
+  const mcpConfigForGateway = JSON.stringify(configObj, null, 2);
+
   // Validate gateway section
   core.info("Validating gateway configuration...");
   const gw = configObj.gateway;
@@ -297,7 +334,7 @@ async function main() {
     core.error("ERROR: Gateway process stdin is not available");
     process.exit(1);
   }
-  child.stdin.write(mcpConfig);
+  child.stdin.write(mcpConfigForGateway);
   child.stdin.end();
 
   // Allow the child to run independently
@@ -740,11 +777,13 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  const message = err instanceof Error ? err.message : String(err);
-  const stack = err instanceof Error ? err.stack : undefined;
-  if (stack) core.error(stack);
-  core.setFailed(`FATAL: ${message}`);
-});
+if (require.main === module) {
+  main().catch(err => {
+    const message = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
+    if (stack) core.error(stack);
+    core.setFailed(`FATAL: ${message}`);
+  });
+}
 
-module.exports = {};
+module.exports = { normalizeGatewayConfigForRuntime };
