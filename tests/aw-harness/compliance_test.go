@@ -175,9 +175,12 @@ func TestT_AW_005_SessionTermination(t *testing.T) {
 	assert.Contains(t, string(output), `"event":"session_end"`,
 		"harness must emit session_end JSONL event")
 
-	// Validate context-provenance.jsonl was written
+	// Validate context-provenance.jsonl was written.
+	// The path is hard-coded per spec (§8.5.2): the harness MUST write to this well-known
+	// location so that downstream tools (e.g., `gh aw audit`) can reliably find it.
+	// See: specs/aw-harness.md §8.5.2 Context Provenance File.
 	provenancePath := "/tmp/gh-aw/context-provenance.jsonl"
-	assert.FileExists(t, provenancePath, "harness must write context-provenance.jsonl on session end")
+	assert.FileExists(t, provenancePath, "harness must write context-provenance.jsonl on session end per §8.5.2")
 
 	// Validate step summary was written
 	summaryContent, readErr := os.ReadFile(summaryFile)
