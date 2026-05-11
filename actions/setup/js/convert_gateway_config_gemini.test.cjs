@@ -10,7 +10,7 @@ const { transformGeminiEntry, main } = req("./convert_gateway_config_gemini.cjs"
 
 describe("convert_gateway_config_gemini", () => {
   describe("transformGeminiEntry", () => {
-    const urlPrefix = "http://localhost:8080";
+    const urlPrefix = "http://host.docker.internal:8080";
 
     it("removes the type field from the entry", () => {
       const entry = { type: "http", url: "http://old/mcp/github" };
@@ -21,7 +21,7 @@ describe("convert_gateway_config_gemini", () => {
     it("rewrites the url to use the configured domain and port", () => {
       const entry = { url: "http://host.docker.internal:80/mcp/github" };
       const result = transformGeminiEntry(entry, urlPrefix);
-      expect(result.url).toBe("http://localhost:8080/mcp/github");
+      expect(result.url).toBe("http://host.docker.internal:8080/mcp/github");
     });
 
     it("preserves all other fields from the entry", () => {
@@ -101,7 +101,6 @@ describe("convert_gateway_config_gemini", () => {
 
       process.env.MCP_GATEWAY_DOMAIN = "host.docker.internal";
       process.env.MCP_GATEWAY_PORT = "80";
-      process.env.MCP_GATEWAY_HOST_DOMAIN = "localhost";
       process.env.GITHUB_WORKSPACE = workspace;
       process.env.GH_AW_MCP_CLI_SERVERS = "[]";
     });
@@ -144,13 +143,13 @@ describe("convert_gateway_config_gemini", () => {
       expect(settings).toHaveProperty("context.includeDirectories");
     });
 
-    it("rewrites server URLs to use MCP_GATEWAY_HOST_DOMAIN", () => {
+    it("rewrites server URLs to use MCP_GATEWAY_DOMAIN", () => {
       writeGatewayOutput({ github: { type: "http", url: "http://host.docker.internal:80/mcp/github" } });
 
       main();
 
       const settings = JSON.parse(readFileSync(join(workspace, ".gemini", "settings.json"), "utf8"));
-      expect(settings.mcpServers.github.url).toBe("http://localhost:80/mcp/github");
+      expect(settings.mcpServers.github.url).toBe("http://host.docker.internal:80/mcp/github");
     });
 
     it("removes type field from all server entries", () => {
@@ -199,14 +198,14 @@ describe("convert_gateway_config_gemini", () => {
       expect(mode).toBe(0o600);
     });
 
-    it("uses localhost as default when MCP_GATEWAY_HOST_DOMAIN is not set", () => {
-      delete process.env.MCP_GATEWAY_HOST_DOMAIN;
+    it("ignores MCP_GATEWAY_HOST_DOMAIN when MCP_GATEWAY_DOMAIN is available", () => {
+      process.env.MCP_GATEWAY_HOST_DOMAIN = "localhost";
       writeGatewayOutput({ server: { url: "http://host.docker.internal:80/mcp/server" } });
 
       main();
 
       const settings = JSON.parse(readFileSync(join(workspace, ".gemini", "settings.json"), "utf8"));
-      expect(settings.mcpServers.server.url).toBe("http://localhost:80/mcp/server");
+      expect(settings.mcpServers.server.url).toBe("http://host.docker.internal:80/mcp/server");
     });
 
     it("handles empty mcpServers gracefully", () => {

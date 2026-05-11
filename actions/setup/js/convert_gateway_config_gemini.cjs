@@ -22,7 +22,6 @@ require("./shim.cjs");
  * Required environment variables:
  * - MCP_GATEWAY_OUTPUT: Path to gateway output configuration file
  * - MCP_GATEWAY_DOMAIN: Domain for MCP server URLs (required by loadGatewayContext)
- * - MCP_GATEWAY_HOST_DOMAIN: Host-side domain for Gemini MCP URLs (e.g., localhost)
  * - MCP_GATEWAY_PORT: Port for MCP gateway (e.g., 80)
  * - GITHUB_WORKSPACE: Workspace directory for project-level settings
  *
@@ -50,20 +49,16 @@ function transformGeminiEntry(entry, urlPrefix) {
 }
 
 function main() {
-  const { gatewayOutput, port, cliServers, servers, extraEnv } = loadGatewayContext({
+  const { gatewayOutput, domain, port, cliServers, servers, extraEnv } = loadGatewayContext({
     extraRequiredEnv: ["GITHUB_WORKSPACE"],
   });
   const workspace = extraEnv.GITHUB_WORKSPACE;
 
-  // Gemini runs directly on the host runner (not inside a Docker container), so use
-  // MCP_GATEWAY_HOST_DOMAIN (localhost) instead of MCP_GATEWAY_DOMAIN (host.docker.internal).
-  // host.docker.internal does not resolve on the host runner on Linux.
-  const hostDomain = process.env.MCP_GATEWAY_HOST_DOMAIN || "localhost";
-  const urlPrefix = `http://${hostDomain}:${port}`;
+  const urlPrefix = `http://${domain}:${port}`;
 
   core.info("Converting gateway configuration to Gemini format...");
   core.info(`Input: ${gatewayOutput}`);
-  core.info(`Target domain: ${hostDomain}:${port}`);
+  core.info(`Target domain: ${domain}:${port}`);
   logCLIFilters(cliServers);
   const result = filterAndTransformServers(servers, cliServers, (_name, entry) => transformGeminiEntry(entry, urlPrefix));
 
