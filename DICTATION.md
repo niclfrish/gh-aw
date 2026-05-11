@@ -312,6 +312,7 @@ When fixing dictated text, correct these common misrecognitions:
 - "cloud" → claude (when referring to the AI engine)
 - "gem ini" → gemini (when referring to the AI engine)
 - "serena" → serena (code intelligence MCP server)
+- "code graph" → codegraph (semantic code knowledge graph MCP server)
 
 ### Commands and Operations
 - "G.H. A.W." → gh-aw or `gh aw` (depending on context)

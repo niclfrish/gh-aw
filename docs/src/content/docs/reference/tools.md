@@ -214,6 +214,7 @@ mcp-servers:
 - [Cache Memory](/gh-aw/reference/cache-memory/) - Persistent memory across workflow runs
 - [Repo Memory](/gh-aw/reference/repo-memory/) - Repository-specific memory storage
 - [QMD Documentation Search](/gh-aw/reference/qmd/) - Vector similarity search over documentation files
+- [CodeGraph Code Search](/gh-aw/reference/codegraph/) - Semantic code knowledge graph for AI-powered code search
 - [MCP Scripts](/gh-aw/reference/mcp-scripts/) - Define custom inline tools with JavaScript or shell scripts
 - [Frontmatter](/gh-aw/reference/frontmatter/) - All frontmatter configuration options
 - [Network Permissions](/gh-aw/reference/network/) - Network access control for AI engines
