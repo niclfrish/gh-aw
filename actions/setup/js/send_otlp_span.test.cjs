@@ -1228,6 +1228,7 @@ describe("sendJobSetupSpan", () => {
     });
 
     await sendJobSetupSpan();
+    expect(readFileSpy).toHaveBeenCalledWith("/tmp/gh-aw/aw_info.json", "utf8");
     readFileSpy.mockRestore();
 
     const body = JSON.parse(mockFetch.mock.calls[0][1].body);
