@@ -15,9 +15,9 @@ describe("start_mcp_gateway normalizeGatewayConfigForRuntime", () => {
       },
     };
 
-    const result = normalizeGatewayConfigForRuntime(config);
+    const removed = normalizeGatewayConfigForRuntime(config);
 
-    expect(result.removedEmptyOtelEndpoint).toBe(true);
+    expect(removed).toBe(true);
     expect(config.gateway).not.toHaveProperty("opentelemetry");
   });
 
@@ -31,9 +31,9 @@ describe("start_mcp_gateway normalizeGatewayConfigForRuntime", () => {
       },
     };
 
-    const result = normalizeGatewayConfigForRuntime(config);
+    const removed = normalizeGatewayConfigForRuntime(config);
 
-    expect(result.removedEmptyOtelEndpoint).toBe(false);
+    expect(removed).toBe(false);
     expect(config.gateway).toHaveProperty("opentelemetry");
   });
 });

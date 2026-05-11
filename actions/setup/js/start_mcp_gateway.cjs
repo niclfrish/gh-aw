@@ -57,29 +57,29 @@ function printTiming(startMs, label) {
  * Specifically handles empty OpenTelemetry endpoint values, which fail schema validation.
  *
  * @param {Record<string, unknown>} configObj
- * @returns {{ config: Record<string, unknown>; removedEmptyOtelEndpoint: boolean }}
+ * @returns {boolean} true when an empty OTLP endpoint section is removed
  */
 function normalizeGatewayConfigForRuntime(configObj) {
   const gw = configObj.gateway;
   if (!gw || typeof gw !== "object") {
-    return { config: configObj, removedEmptyOtelEndpoint: false };
+    return false;
   }
 
   /** @type {{ opentelemetry?: unknown }} */
   const gateway = /** @type {{ opentelemetry?: unknown }} */ gw;
   const otel = gateway.opentelemetry;
   if (!otel || typeof otel !== "object") {
-    return { config: configObj, removedEmptyOtelEndpoint: false };
+    return false;
   }
 
   /** @type {{ endpoint?: unknown }} */
   const otelConfig = /** @type {{ endpoint?: unknown }} */ otel;
   if (typeof otelConfig.endpoint !== "string" || otelConfig.endpoint.trim() !== "") {
-    return { config: configObj, removedEmptyOtelEndpoint: false };
+    return false;
   }
 
   delete gateway.opentelemetry;
-  return { config: configObj, removedEmptyOtelEndpoint: true };
+  return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -267,9 +267,8 @@ async function main() {
     process.exit(1);
   }
 
-  const normalized = normalizeGatewayConfigForRuntime(configObj);
-  configObj = normalized.config;
-  if (normalized.removedEmptyOtelEndpoint) {
+  const removedEmptyOtelEndpoint = normalizeGatewayConfigForRuntime(configObj);
+  if (removedEmptyOtelEndpoint) {
     core.info("OTLP endpoint is empty; removing optional gateway.opentelemetry configuration");
   }
   const mcpConfigForGateway = JSON.stringify(configObj, null, 2);
