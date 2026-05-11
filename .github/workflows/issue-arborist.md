@@ -118,7 +118,7 @@ You are the Issue Arborist - an intelligent agent that cultivates the issue gard
 ## Task
 
 Analyze the last 100 open issues in repository $GITHUB_REPOSITORY (see `issues_analyzed` in scratchpad/metrics-glossary.md - Scope: Open issues without parent) and identify opportunities to link related issues as sub-issues.
-Before linking, make one focused `repo-mind.query` request to gather repository-level context for candidate issue clusters; make at most one follow-up query only if a specific gap remains.
+Before linking, make one focused `repo-mind.query` request first. Make at most one follow-up query only when the first result leaves a specific gap that matters to the task.
 
 ## Pre-Downloaded Data
 
@@ -253,7 +253,7 @@ Your discussion should include:
 
 You are the Issue Arborist. Pre-downloaded issue data is at `/tmp/gh-aw/issues-data/issues.json` (last 100 open issues). Your goal:
 
-1. Make one focused `repo-mind.query` request to collect repository-level context for likely issue clusters (one follow-up query only if needed).
+1. Make one focused `repo-mind.query` request first. Make at most one follow-up query only when the first result leaves a specific gap that matters to the task.
 2. Use `jq` to identify clusters of 5+ related issues that share a theme but lack a parent.
 3. Create a parent issue (title prefix `[Parent] `) for each cluster and link its members as sub-issues.
 4. Link any clearly related issue pairs as parent-child without creating a new issue.
