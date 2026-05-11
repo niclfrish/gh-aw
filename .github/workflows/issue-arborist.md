@@ -14,6 +14,21 @@ network:
     - defaults
     - github
 imports:
+  - uses: githubnext/repo-mind-light-aw/.github/workflows/shared/repo-mind-light.md@main
+    with:
+      config:
+        yaml: |
+          slug: ${{ github.repository }}
+          store_path: /var/lib/repo-mind-light/index
+          refresh_if_older_than: 1d
+          conversations:
+            keep_count: 1000
+            issue_state: open
+            pr_state: none
+            discussion_state: none
+            ignore_bot_authored: true
+          query:
+            preload_query_sources_on_startup: true
   - shared/github-guard-policy.md
   - ../skills/jqschema/SKILL.md
   - shared/reporting.md
