@@ -890,7 +890,7 @@ jobs:
         git config user.name "Test"
         echo "✅ Test workspace initialised at /tmp/test-update-workspace"
 
-    - name: Add a workflow from githubnext/agentics
+    - name: Add a workflow from github/gh-aw
       id: add-workflow
       env:
         GH_TOKEN: ${{ github.token }}
@@ -900,8 +900,8 @@ jobs:
         echo "## Integration Update Test: Preserve Local Imports" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
 
-        # Add daily-team-status which uses shared imports in githubnext/agentics
-        if /home/runner/work/gh-aw/gh-aw/gh-aw add githubnext/agentics/workflows/daily-team-status.md --force 2>&1; then
+        # Add daily-team-status which uses shared imports in github/gh-aw
+        if /home/runner/work/gh-aw/gh-aw/gh-aw add github/gh-aw/.github/workflows/daily-team-status.md --force 2>&1; then
           echo "✅ Added workflow successfully" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ Failed to add workflow" >> $GITHUB_STEP_SUMMARY
