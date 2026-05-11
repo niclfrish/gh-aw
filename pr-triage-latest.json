@@ -1,10 +1,15 @@
 {
-  "run_date": "2026-05-11T01:14:40Z",
-  "run_id": "25645178905",
+  "run_date": "2026-05-11T07:33:01Z",
+  "run_id": "25656563043",
   "fork_prs": 0,
-  "agent_prs_found": 0,
-  "agent_prs_excluded": 0,
-  "notes": "GitHub API returned 403 Forbidden - no PRs could be fetched. Previous runs (25636449835, 25628828046, 25622553318) also found 0 fork PRs.",
+  "agent_prs_found": 3,
+  "agent_prs_excluded": 3,
+  "notes": "3 open PRs found (app/copilot-swe-agent x2, app/github-actions x1), all from branches within the same org (github/gh-aw) — not fork PRs. No PRs from app/github-copilot. Consistent with previous runs.",
+  "open_prs_summary": [
+    {"number": 31422, "author": "app/copilot-swe-agent", "title": "Add forecast operation to generated agentic maintenance workflow"},
+    {"number": 31420, "author": "app/github-actions", "title": "[jsweep] Clean action_conclusion_otlp.cjs"},
+    {"number": 31411, "author": "app/copilot-swe-agent", "title": "Comment out top-level `on.labels` in compiled workflows to prevent push-time workflow parse failures"}
+  ],
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -18,8 +23,8 @@
   },
   "prs_seen": [],
   "previous_run": {
-    "run_id": "25636449835",
-    "run_date": "2026-05-10T18:32:07Z",
+    "run_id": "25645178905",
+    "run_date": "2026-05-11T01:14:40Z",
     "fork_prs": 0,
     "agent_prs_found": 0
   }
