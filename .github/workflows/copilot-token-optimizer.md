@@ -1,8 +1,8 @@
 ---
-description: Daily optimizer that identifies a high-token-usage Copilot workflow, audits its runs, and recommends efficiency improvements
+description: Weekly optimizer that identifies a high-token-usage Copilot workflow, audits its runs, and recommends efficiency improvements
 on:
   schedule:
-    - cron: "daily around 14:00 on weekdays"
+    - cron: "weekly on monday around 14:00"
   workflow_dispatch:
 permissions:
   contents: read
@@ -192,6 +192,8 @@ Use this compact analysis matrix:
 | Token efficiency | Evaluate token totals, effective tokens, cache efficiency, turns | Top token waste drivers |
 | Reliability | Repeated errors, warnings, retries, missing tools | Token waste from failures |
 | Prompt efficiency | Redundant instructions, overlong sections, avoidable iteration | Prompt reduction opportunities |
+| Trigger strategy | Check for reactive triggers (for example `issue.created`) and map viable migration to scheduled batch processing | Event strategy recommendation |
+| Observability coverage | Verify OpenTelemetry attributes and spans are sufficient to isolate token inefficiencies by workflow/run/tool | OTel instrumentation recommendation |
 
 ### Tool-Usage Efficiency Patterns
 
@@ -208,6 +210,9 @@ Rules:
 - Audit at least 5 runs when available before removal recommendations.
 - Never recommend removing a tool used in any successful run unless there is strong contrary evidence.
 - Prioritize highest expected savings first.
+- Prefer lowering cadence where data freshness allows (for example daily → weekly using fuzzy schedule scattering).
+- Prefer scheduled batch-processing over reactive per-event triggers when workflows can tolerate periodic execution.
+- Include concrete OpenTelemetry instrumentation improvements when telemetry is insufficient for root-cause analysis.
 
 ## Phase 3 — Read Workflow Source
 
