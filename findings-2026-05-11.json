@@ -1,0 +1,18 @@
+{
+  "date": "2026-05-11",
+  "files_analyzed": {
+    "documentation": ["docs/src/content/docs/reference/dependencies.md","docs/src/content/docs/reference/cache-memory.md"],
+    "cli": ["pkg/cli/add_command.go"],
+    "messages": [".github/workflows/archie.md"],
+    "validation": ["pkg/workflow/schema_validation_test.go"]
+  },
+  "overall_quality": "professional",
+  "quality_highlights": [
+    "dependencies.md: Well-structured with deprecation callout, package format table, and reference table",
+    "add_command.go: Excellent help text with 8 examples and clear workflow specification reference"
+  ],
+  "single_file_improvements": [
+    {"file":"docs/src/content/docs/reference/cache-memory.md","priority":"high","issue":"Best Practices section is a dense prose wall with no bullet formatting"},
+    {"file":".github/workflows/archie.md","priority":"medium","issue":"run-failure message reuses run-started emoji (📐) instead of a failure indicator"}
+  ]
+}
