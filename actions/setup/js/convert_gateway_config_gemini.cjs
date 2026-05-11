@@ -21,7 +21,7 @@ require("./shim.cjs");
  *
  * Required environment variables:
  * - MCP_GATEWAY_OUTPUT: Path to gateway output configuration file
- * - MCP_GATEWAY_DOMAIN: Domain for MCP server URLs (required by loadGatewayContext)
+ * - MCP_GATEWAY_DOMAIN: Gateway domain used by loadGatewayContext and for rewritten Gemini MCP URLs
  * - MCP_GATEWAY_PORT: Port for MCP gateway (e.g., 80)
  * - GITHUB_WORKSPACE: Workspace directory for project-level settings
  *
@@ -54,6 +54,8 @@ function main() {
   });
   const workspace = extraEnv.GITHUB_WORKSPACE;
 
+  // Gemini consumes the generated settings.json inside the firewalled agent path,
+  // so its MCP URLs must use the same container-reachable gateway domain.
   const urlPrefix = `http://${domain}:${port}`;
 
   core.info("Converting gateway configuration to Gemini format...");
