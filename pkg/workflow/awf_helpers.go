@@ -34,6 +34,15 @@ import (
 
 var awfHelpersLog = logger.New("workflow:awf_helpers")
 
+const (
+	awfArcDindPrefixArgsVarName = "GH_AW_DOCKER_HOST_PATH_PREFIX_ARGS"
+	// Bash regex used in [[ ... =~ ... ]] to detect localhost TCP Docker hosts.
+	// Keep this in bash-compatible syntax (escaped dots) because it is emitted directly
+	// into generated shell scripts.
+	awfArcDindDockerHostRegex    = `^tcp://(localhost|127\.0\.0\.1)(:[0-9]+)?$`
+	awfArcDindHostPathPrefixFlag = "--docker-host-path-prefix /tmp/gh-aw"
+)
+
 // AWFCommandConfig contains configuration for building AWF commands.
 // This struct centralizes all the parameters needed to construct an AWF-wrapped command.
 type AWFCommandConfig struct {
@@ -88,6 +97,24 @@ func BuildAWFCommand(config AWFCommandConfig) string {
 	// and --mount "${RUNNER_TEMP}/...") are appended raw below so that shell variable
 	// expansion is not suppressed by single-quoting.
 	awfArgs := BuildAWFArgs(config)
+	firewallConfig := getFirewallConfig(config.WorkflowData)
+
+	// Auto-detect ARC/DinD split daemon topology at runtime and emit
+	// --docker-host-path-prefix when supported by the selected AWF version.
+	// This avoids requiring workflow-authored sandbox.agent.args for standard ARC DinD setups.
+	arcDindPrefixProbe := ""
+	arcDindPrefixArgsRef := ""
+	if awfSupportsDockerHostPathPrefix(firewallConfig) {
+		arcDindPrefixProbe = fmt.Sprintf(`%s=""
+if [[ "${DOCKER_HOST:-}" =~ %s ]]; then
+  %s="%s"
+fi`,
+			awfArcDindPrefixArgsVarName,
+			awfArcDindDockerHostRegex,
+			awfArcDindPrefixArgsVarName,
+			awfArcDindHostPathPrefixFlag)
+		arcDindPrefixArgsRef = fmt.Sprintf("${%s}", awfArcDindPrefixArgsVarName)
+	}
 
 	// Build the expandable args string for args that need shell variable expansion.
 	// These MUST be appended as raw (unescaped) strings because single-quoting would
@@ -166,14 +193,17 @@ func BuildAWFCommand(config AWFCommandConfig) string {
 %s
 %s
 %s
+%s
 # shellcheck disable=SC1003
-%s %s %s \
+%s %s %s %s \
   -- %s 2>&1 | tee -a %s`,
 			config.PathSetup,
 			preCreateLog,
 			configFileSetup,
+			arcDindPrefixProbe,
 			awfCommand,
 			expandableArgs,
+			arcDindPrefixArgsRef,
 			shellJoinArgs(awfArgs),
 			shellWrappedCommand,
 			shellEscapeArg(config.LogFile))
@@ -182,13 +212,16 @@ func BuildAWFCommand(config AWFCommandConfig) string {
 		command = fmt.Sprintf(`set -o pipefail
 %s
 %s
+%s
 # shellcheck disable=SC1003
-%s %s %s \
+%s %s %s %s \
   -- %s 2>&1 | tee -a %s`,
 			config.PathSetup,
 			preCreateLog,
+			arcDindPrefixProbe,
 			awfCommand,
 			expandableArgs,
+			arcDindPrefixArgsRef,
 			shellJoinArgs(awfArgs),
 			shellWrappedCommand,
 			shellEscapeArg(config.LogFile))
@@ -196,25 +229,31 @@ func BuildAWFCommand(config AWFCommandConfig) string {
 		command = fmt.Sprintf(`set -o pipefail
 %s
 %s
+%s
 # shellcheck disable=SC1003
-%s %s %s \
+%s %s %s %s \
   -- %s 2>&1 | tee -a %s`,
 			preCreateLog,
 			configFileSetup,
+			arcDindPrefixProbe,
 			awfCommand,
 			expandableArgs,
+			arcDindPrefixArgsRef,
 			shellJoinArgs(awfArgs),
 			shellWrappedCommand,
 			shellEscapeArg(config.LogFile))
 	} else {
 		command = fmt.Sprintf(`set -o pipefail
 %s
+%s
 # shellcheck disable=SC1003
-%s %s %s \
+%s %s %s %s \
   -- %s 2>&1 | tee -a %s`,
 			preCreateLog,
+			arcDindPrefixProbe,
 			awfCommand,
 			expandableArgs,
+			arcDindPrefixArgsRef,
 			shellJoinArgs(awfArgs),
 			shellWrappedCommand,
 			shellEscapeArg(config.LogFile))
@@ -682,5 +721,23 @@ func awfSupportsAllowHostPorts(firewallConfig *FirewallConfig) bool {
 	}
 
 	minVersion := string(constants.AWFAllowHostPortsMinVersion)
+	return semverutil.Compare(versionStr, minVersion) >= 0
+}
+
+// awfSupportsDockerHostPathPrefix returns true when the effective AWF version supports
+// --docker-host-path-prefix.
+func awfSupportsDockerHostPathPrefix(firewallConfig *FirewallConfig) bool {
+	var versionStr string
+	if firewallConfig != nil && firewallConfig.Version != "" {
+		versionStr = firewallConfig.Version
+	} else {
+		versionStr = string(constants.DefaultFirewallVersion)
+	}
+
+	if strings.EqualFold(versionStr, "latest") {
+		return true
+	}
+
+	minVersion := string(constants.AWFDockerHostPathPrefixMinVersion)
 	return semverutil.Compare(versionStr, minVersion) >= 0
 }
