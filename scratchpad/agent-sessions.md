@@ -62,7 +62,7 @@ The terminology for starting an agent is changing from "New Agent Task" to "New 
 - `pkg/parser/schemas/main_workflow_schema.json` - Main schema definition
 
 **Documentation Files**:
-- `skills/gh-agent-task/SKILL.md` - Skill documentation
+- `.github/skills/gh-agent-task/SKILL.md` - Skill documentation
 - `docs/src/content/docs/reference/safe-outputs.md` - Safe outputs reference
 - `docs/src/content/docs/reference/frontmatter-full.md` - Frontmatter reference
 - `docs/src/content/docs/reference/auth.md` - Token reference
@@ -193,7 +193,7 @@ Since the configuration key `create-agent-session` is changing to `create-agent-
 ### Phase 4: Documentation Migration
 
 1. **Update Skills**
-   - Rename `skills/gh-agent-task/` to `skills/gh-agent-session/`
+   - Rename `.github/skills/gh-agent-task/` to `.github/skills/gh-agent-session/`
    - Update SKILL.md content throughout
 
 2. **Update Reference Docs**
@@ -324,7 +324,7 @@ During transition period:
 
 ### Documentation Changes
 - [ ] Update Skills
-  - [ ] Rename directory: `skills/gh-agent-task/` → `skills/gh-agent-session/`
+  - [ ] Rename directory: `.github/skills/gh-agent-task/` → `.github/skills/gh-agent-session/`
   - [ ] Update `SKILL.md` content throughout
   
 - [ ] Update Reference Documentation

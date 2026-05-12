@@ -773,8 +773,8 @@ See: **[scratchpad/cli-command-patterns.md](scratchpad/cli-command-patterns.md)*
 ### Related Guidelines
 
 - **Testing**: [scratchpad/testing.md](scratchpad/testing.md) - Comprehensive testing framework
-- **Console Output**: [skills/console-rendering/SKILL.md](skills/console-rendering/SKILL.md) - Output formatting
-- **Error Messages**: [skills/error-messages/SKILL.md](skills/error-messages/SKILL.md) - Error message style
+- **Console Output**: [.github/skills/console-rendering/SKILL.md](.github/skills/console-rendering/SKILL.md) - Output formatting
+- **Error Messages**: [.github/skills/error-messages/SKILL.md](.github/skills/error-messages/SKILL.md) - Error message style
 - **Code Organization**: [scratchpad/code-organization.md](scratchpad/code-organization.md) - File structure patterns
 
 ## Debugging and Troubleshooting

@@ -272,9 +272,9 @@ An `engine: aw` workflow document **MUST** include a YAML frontmatter block conf
 >
 > # All files and skills the agent may reference MUST be declared here.
 > # The compiler resolves each path and passes the contents to the harness.
-> # Skills are files under skills/ and must be listed explicitly.
+> # Skills are files under .github/skills/ and must be listed explicitly.
 > imports:
->   - skills/reporting/SKILL.md    # Skill: formatting guidelines for reports
+>   - .github/skills/reporting/SKILL.md    # Skill: formatting guidelines for reports
 >   - shared/review-criteria.md    # Shared context: review checklist
 >
 > # gh-proxy and cli-proxy are ALWAYS enabled for engine: aw.
@@ -405,7 +405,7 @@ The `imports:` key is **OPTIONAL**. It is a standard gh-aw frontmatter key that 
 
 Each entry is a repository-relative path (string). Entries **MAY** point to:
 
-- **Skill files** — files under `skills/` (e.g., `skills/reporting/SKILL.md`).
+- **Skill files** — files under `.github/skills/` (e.g., `.github/skills/reporting/SKILL.md`).
 - **Shared context files** — markdown or text files shared across workflows (e.g., `shared/review-criteria.md`).
 - **Agent files** — custom agent `.yml` files (resolved and embedded by the compiler).
 
@@ -415,8 +415,8 @@ A conforming implementation **MUST NOT** treat any skill, shared file, or agent 
 >
 > ```yaml
 > imports:
->   - skills/reporting/SKILL.md        # Skill: formatting guidelines
->   - skills/github-issue-query/SKILL.md  # Skill: querying GitHub issues
+>   - .github/skills/reporting/SKILL.md        # Skill: formatting guidelines
+>   - .github/skills/github-issue-query/SKILL.md  # Skill: querying GitHub issues
 >   - shared/review-criteria.md        # Shared review checklist
 > ```
 
@@ -462,8 +462,8 @@ Skills **MUST** be treated as ordinary imported files: they carry no special run
 > ```yaml
 > # All skills and files must be declared explicitly.
 > imports:
->   - skills/reporting/SKILL.md          # Skill: formatting guidelines
->   - skills/github-issue-query/SKILL.md # Skill: querying issues
+>   - .github/skills/reporting/SKILL.md          # Skill: formatting guidelines
+>   - .github/skills/github-issue-query/SKILL.md # Skill: querying issues
 >   - shared/pr-review-criteria.md       # Shared context: review checklist
 > ```
 
@@ -731,7 +731,7 @@ The following five extensions **MUST** be loaded into the `AgentSession` created
 >
 > **Context provenance record:**
 > ```json
-> {"timestamp":"2026-05-02T10:29:00.000Z","source":"import","path":"skills/reporting/SKILL.md","tokens":1240,"cumulative_tokens":1240,"role":"user"}
+> {"timestamp":"2026-05-02T10:29:00.000Z","source":"import","path":".github/skills/reporting/SKILL.md","tokens":1240,"cumulative_tokens":1240,"role":"user"}
 > {"timestamp":"2026-05-02T10:29:00.001Z","source":"prompt","tokens":520,"cumulative_tokens":1760,"role":"user"}
 > ```
 >
@@ -748,7 +748,7 @@ The following five extensions **MUST** be loaded into the `AgentSession` created
 > ### Context Provenance
 > | Source | Path | Tokens |
 > |--------|------|--------|
-> | import | skills/reporting/SKILL.md | 1,240 |
+> | import | .github/skills/reporting/SKILL.md | 1,240 |
 > | prompt | _(prompt.txt)_ | 520 |
 > ```
 >

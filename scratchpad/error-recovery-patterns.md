@@ -1128,7 +1128,7 @@ return fmt.Errorf(
 - Explain what's expected (format, valid values, type)
 - Provide concrete example of correct usage
 
-See `skills/error-messages/SKILL.md` for the style guide.
+See `.github/skills/error-messages/SKILL.md` for the style guide.
 
 ### Runtime Error Template
 

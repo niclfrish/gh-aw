@@ -145,7 +145,7 @@ All community contributions flow through **agentic plans in GitHub issues**. A c
 
 When a core team member implements your plan, the coding agent they use will:
 
-- **Read specifications** from `scratchpad/`, `skills/`, and `.github/instructions/`
+- **Read specifications** from `scratchpad/`, `.github/skills/`, and `.github/instructions/`
 - **Follow code organization patterns** (see [scratchpad/code-organization.md](scratchpad/code-organization.md))
 - **Implement validation** following the architecture in [scratchpad/validation-architecture.md](scratchpad/validation-architecture.md)
 - **Use console formatting** from `pkg/console` for CLI output
@@ -369,7 +369,7 @@ This structure is useful context when writing your agentic plan, so the core tea
 │   ├── parser/          # Markdown frontmatter parsing
 │   └── workflow/        # Workflow compilation and processing
 ├── scratchpad/               # Technical specifications the agent reads
-├── skills/              # Specialized knowledge for agents
+├── .github/skills/              # Specialized knowledge for agents
 ├── .github/             # Instructions and sample workflows
 │   ├── instructions/    # Agent instructions
 │   └── workflows/       # Sample workflows and CI

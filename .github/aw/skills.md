@@ -4,7 +4,7 @@ description: Guide for leveraging skills (SKILL.md files) in agentic workflows �
 
 # Skills in Agentic Workflows
 
-Consult this file when you want a workflow to take advantage of skills — domain-specific knowledge files (`SKILL.md`) that live in the repository under `skills/` or `.github/skills/`.
+Consult this file when you want a workflow to take advantage of skills — domain-specific knowledge files (`SKILL.md`) that live in the repository under `.github/skills/`.
 
 ---
 
@@ -29,7 +29,7 @@ The workflow prompt hints that skills exist and asks the agent to discover and a
 **Pattern**:
 
 ```markdown
-If the repository contains `SKILL.md` files under `skills/`, check which ones are
+If the repository contains `SKILL.md` files under `.github/skills/`, check which ones are
 relevant to this task. For each relevant skill, read its content and apply the
 guidance it provides.
 ```
@@ -45,7 +45,7 @@ Extract and inline **only the specific sections** of the skill content that the 
 **Pattern**:
 
 ```markdown
-<!-- gh-skill-fusion: skills/github-mcp-server/SKILL.md#authentication -->
+<!-- gh-skill-fusion: .github/skills/github-mcp-server/SKILL.md#authentication -->
 
 When calling GitHub MCP tools, use the pre-configured token already injected into the
 environment. Never prompt the user for credentials.
@@ -85,7 +85,7 @@ permissions:
 
 Triage the newly opened issue.
 
-If there are relevant skills under `skills/`, read them and apply their guidance.
+If there are relevant skills under `.github/skills/`, read them and apply their guidance.
 Focus on skills related to issue classification or project conventions.
 ```
 
@@ -108,7 +108,7 @@ permissions:
 
 Review the pull request for adherence to project conventions.
 
-<!-- Fused from skills/developer/SKILL.md#code-organization -->
+<!-- Fused from .github/skills/developer/SKILL.md#code-organization -->
 Prefer many smaller files grouped by functionality. Add new files for new features
 rather than extending existing ones. Keep validators under 300 lines; split when
 a single file covers more than one domain.

@@ -36,4 +36,4 @@ gh aw audit 24814681146
 ## Where to learn more in this repo
 
 - `/AGENTS.md` for development/agent workflow conventions
-- `/skills/*/SKILL.md` for focused domain guidance (GitHub MCP, docs, errors, etc.)
+- `.github/skills/*/SKILL.md` for focused domain guidance (GitHub MCP, docs, errors, etc.)

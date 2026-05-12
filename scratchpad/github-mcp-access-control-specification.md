@@ -74,7 +74,7 @@ This specification does NOT cover:
 
 - MCP Gateway core protocol (see [MCP Gateway Specification](/gh-aw/reference/mcp-gateway/))
 - MCP protocol semantics (see [Model Context Protocol Specification](https://spec.modelcontextprotocol.io/))
-- GitHub MCP server internal implementation (see [GitHub MCP Server Documentation](/gh-aw/skills/github-mcp-server/))
+- GitHub MCP server internal implementation (see [GitHub MCP Server Documentation](/gh-aw/.github/skills/github-mcp-server/))
 - GitHub API authentication mechanisms
 - General GitHub Actions workflow syntax
 
@@ -278,7 +278,7 @@ tools:
 
 ### 4.2 GitHub MCP Server Configuration Fields
 
-This specification extends the GitHub MCP server configuration, which includes the following existing fields defined in the [GitHub MCP Server Documentation](/gh-aw/skills/github-mcp-server/):
+This specification extends the GitHub MCP server configuration, which includes the following existing fields defined in the [GitHub MCP Server Documentation](/gh-aw/.github/skills/github-mcp-server/):
 
 #### 4.2.1 mode (Existing Feature)
 
@@ -331,7 +331,7 @@ Both modes support read-only operation to restrict write operations:
 - **Remote mode**: Set via `X-MCP-Readonly: true` HTTP header
 - **Local mode**: Set via `GITHUB_READ_ONLY=1` environment variable
 
-**See**: [GitHub MCP Server Documentation - Overview](/gh-aw/skills/github-mcp-server/#overview) for detailed mode descriptions.
+**See**: [GitHub MCP Server Documentation - Overview](/gh-aw/.github/skills/github-mcp-server/#overview) for detailed mode descriptions.
 
 #### 4.2.2 toolsets (Existing Feature)
 
@@ -355,7 +355,7 @@ toolsets: [repos, issues]     # Specific toolsets only
 toolsets: [all]               # All available toolsets
 ```
 
-**See**: [GitHub MCP Server Documentation - Available Toolsets](/gh-aw/skills/github-mcp-server/#available-toolsets) for complete toolset reference.
+**See**: [GitHub MCP Server Documentation - Available Toolsets](/gh-aw/.github/skills/github-mcp-server/#available-toolsets) for complete toolset reference.
 
 #### 4.2.3 tools (Existing Feature)
 
@@ -393,7 +393,7 @@ tools:
 
 **Note**: The `toolsets` approach is **strongly recommended** over individual `tools` configuration for new workflows. Tool names may change between GitHub MCP server versions, but toolsets provide a stable API.
 
-**See**: [GitHub MCP Server Documentation - Migration from Allowed to Toolsets](/gh-aw/skills/github-mcp-server/#migration-from-allowed-to-toolsets) for migration guidance.
+**See**: [GitHub MCP Server Documentation - Migration from Allowed to Toolsets](/gh-aw/.github/skills/github-mcp-server/#migration-from-allowed-to-toolsets) for migration guidance.
 
 #### 4.2.4 read-only (Existing Feature)
 
@@ -2234,7 +2234,7 @@ tools:
 
 **Use Case**: Highly restricted documentation analysis agent with minimal tool access
 
-**Note**: Using `toolsets` is recommended over individual `tools` for most workflows. See [GitHub MCP Server Documentation](/gh-aw/skills/github-mcp-server/) for details.
+**Note**: Using `toolsets` is recommended over individual `tools` for most workflows. See [GitHub MCP Server Documentation](/gh-aw/.github/skills/github-mcp-server/) for details.
 
 #### A.8 Local Mode with Specific Version
 
@@ -2262,7 +2262,7 @@ tools:
 - Uses `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable
 - Suitable for environments without internet access
 
-**See**: [GitHub MCP Server Documentation - Remote vs Local Mode](/gh-aw/skills/github-mcp-server/#overview) for mode selection guidance.
+**See**: [GitHub MCP Server Documentation - Remote vs Local Mode](/gh-aw/.github/skills/github-mcp-server/#overview) for mode selection guidance.
 
 #### A.9 Read-Only Mode with Access Control
 
@@ -2624,7 +2624,7 @@ GitHub API rate limits apply to:
 
 - **[Safe Outputs Spec]** Safe Outputs System Specification, GitHub Agentic Workflows. [/gh-aw/scratchpad/safe-outputs-specification/](/gh-aw/scratchpad/safe-outputs-specification/)
 
-- **[GitHub MCP Server]** GitHub MCP Server Documentation. [/gh-aw/skills/github-mcp-server/](/gh-aw/skills/github-mcp-server/)
+- **[GitHub MCP Server]** GitHub MCP Server Documentation. [/gh-aw/.github/skills/github-mcp-server/](/gh-aw/.github/skills/github-mcp-server/)
 
 - **[GitHub Roles]** Repository roles for an organization, GitHub Docs. https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-roles-for-an-organization
 
