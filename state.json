@@ -1,0 +1,16 @@
+{
+  "counts": {
+    "reasoning_depth": {
+      "iterative": 1
+    }
+  },
+  "runs": [
+    {
+      "run_id": "25768919052",
+      "timestamp": "2026-05-12T23:46:01.723Z",
+      "assignments": {
+        "reasoning_depth": "iterative"
+      }
+    }
+  ]
+}
