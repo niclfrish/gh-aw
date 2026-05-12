@@ -1,7 +1,7 @@
 {
   "counts": {
     "caveman": {
-      "no": 7,
+      "no": 8,
       "yes": 8
     }
   },
@@ -109,6 +109,13 @@
       "timestamp": "2026-05-12T19:49:53.541Z",
       "assignments": {
         "caveman": "yes"
+      }
+    },
+    {
+      "run_id": "25768552835",
+      "timestamp": "2026-05-12T23:41:09.531Z",
+      "assignments": {
+        "caveman": "no"
       }
     }
   ]
