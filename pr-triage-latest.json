@@ -1,19 +1,16 @@
 {
-  "run_date": "2026-05-12T01:07:47Z",
-  "run_id": "25706856725",
+  "run_date": "2026-05-12T07:17:37Z",
+  "run_id": "25719462201",
   "fork_prs": 0,
-  "agent_prs_found": 7,
-  "agent_prs_excluded": 7,
-  "notes": "7 open PRs found (authors: Copilot, github-actions[bot], dependabot[bot]), all from branches within github/gh-aw — not fork PRs. No fork PRs to triage.",
+  "agent_prs_found": 5,
+  "agent_prs_excluded": 5,
+  "notes": "5 open agent PRs found (all from app/copilot-swe-agent), all from branches within github/gh-aw — not fork PRs (isCrossRepository=false). No fork PRs to triage.",
   "open_prs_summary": [
-    {"number": 31605, "author": "Copilot", "title": "Add centralized slash-command trigger strategy with compiler-generated router workflow", "draft": true, "isFork": false, "createdAt": "2026-05-12T00:10:52Z"},
-    {"number": 31604, "author": "github-actions[bot]", "title": "[docs] Self-healing documentation fixes from issue analysis - 2026-05-12", "draft": true, "isFork": false, "createdAt": "2026-05-12T00:10:08Z"},
-    {"number": 31603, "author": "Copilot", "title": "Fix bundle transport in shallow checkouts", "draft": true, "isFork": false, "createdAt": "2026-05-11T23:47:36Z"},
-    {"number": 31602, "author": "Copilot", "title": "Add CodeGraph shared MCP workflow for code search", "draft": true, "isFork": false, "createdAt": "2026-05-11T23:43:24Z"},
-    {"number": 31601, "author": "dependabot[bot]", "title": "build(deps): bump the npm_and_yarn group across 1 directories", "draft": false, "isFork": false},
-    {"number": 31599, "author": "Copilot", "title": "fix(release): add missing bash tools to unblock jq, awk, sed, bash in agent", "draft": true, "isFork": false, "createdAt": "2026-05-11T23:28:50Z"},
-    {"number": 31598, "author": "Copilot", "title": "Reduce ExtractWorkflowNameFromFile overhead in the title-scan path", "draft": false, "isFork": false, "createdAt": "2026-05-11T22:59:49Z"},
-    {"number": 31597, "author": "Copilot", "title": "Align audit/trial help text and update docs for update --cool-down", "draft": false, "isFork": false, "createdAt": "2026-05-11T22:59:37Z"}
+    {"number": 31647, "author": "app/copilot-swe-agent", "title": "Enable OTLP export for Agentic Portfolio Yield", "isFork": false},
+    {"number": 31642, "author": "app/copilot-swe-agent", "title": "Refactor workflow feature gates to use a shared version-threshold helper", "isFork": false},
+    {"number": 31629, "author": "app/copilot-swe-agent", "title": "Classify repeated permission-denied failures as missing tool", "isFork": false},
+    {"number": 31622, "author": "app/copilot-swe-agent", "title": "Treat gh aw as a first-class runtime with release setup-copilot", "isFork": false},
+    {"number": 31605, "author": "app/copilot-swe-agent", "title": "Add centralized slash-command trigger strategy with compiler-generated router workflow", "isFork": false}
   ],
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
@@ -28,10 +25,10 @@
   },
   "prs_seen": [],
   "previous_run": {
-    "run_id": "25690398739",
-    "run_date": "2026-05-11T18:51:09Z",
+    "run_id": "25706856725",
+    "run_date": "2026-05-12T01:07:47Z",
     "fork_prs": 0,
-    "agent_prs_found": 3,
-    "agent_prs_excluded": 3
+    "agent_prs_found": 7,
+    "agent_prs_excluded": 7
   }
 }
