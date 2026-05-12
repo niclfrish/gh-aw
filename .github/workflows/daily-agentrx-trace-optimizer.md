@@ -78,6 +78,12 @@ Use the last 24h of data and prioritize runs with failures or high latency.
 
 Run the pipeline in stages and preserve outputs under `/tmp/agentrx/runs/<run_name>/`:
 
+- `ir`: normalize raw spans into trajectory IR
+- `static` / `dynamic`: generate invariants used for diagnosis
+- `check`: evaluate invariants and capture violations
+- `judge`: classify root-cause category for the critical step
+- `report`: generate aggregate diagnostic artifacts
+
 ```bash
 python run.py /tmp/agentrx/trajectory.json --run-name gh-aw-daily --stage ir
 python run.py /tmp/agentrx/trajectory.json --run-dir /tmp/agentrx/runs/gh-aw-daily --stage static
@@ -87,7 +93,7 @@ python run.py /tmp/agentrx/trajectory.json --run-dir /tmp/agentrx/runs/gh-aw-dai
 python run.py /tmp/agentrx/trajectory.json --run-dir /tmp/agentrx/runs/gh-aw-daily --stage report
 ```
 
-If a later stage fails (for example due endpoint/auth constraints), continue with completed artifacts and still produce a grounded recommendation.
+If a later stage fails (for example due to endpoint/auth constraints), continue with completed artifacts and still produce a grounded recommendation.
 
 ### 3) Derive one optimization recommendation
 
