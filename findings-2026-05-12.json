@@ -1,0 +1,26 @@
+{
+  "date": "2026-05-12",
+  "files_analyzed": {
+    "documentation": ["docs/src/content/docs/examples/project-tracking.md", "docs/src/content/docs/troubleshooting/errors.md"],
+    "cli": ["pkg/cli/logs_command.go", "pkg/cli/audit.go"],
+    "messages": [".github/workflows/smoke-update-cross-repo-pr.md", ".github/workflows/smoke-copilot-arm.md"],
+    "validation": ["pkg/workflow/name_validation.go"]
+  },
+  "overall_quality": "professional",
+  "quality_highlights": [
+    "project-tracking.md: Comprehensive with Quick Start, config sections, troubleshooting table, and cross-links",
+    "smoke-update-cross-repo-pr.md: Distinct status emojis, run URL traceability, standard footer pattern"
+  ],
+  "single_file_improvements": [
+    {
+      "file": "pkg/workflow/name_validation.go",
+      "priority": "high",
+      "issue": "Lines 44 and 55: error messages state invalid value but omit naming rules; users must consult external docs to understand the fix"
+    },
+    {
+      "file": "docs/src/content/docs/troubleshooting/errors.md",
+      "priority": "medium",
+      "issue": "Line 362: Getting Help section is a run-on sentence; should be a numbered list with --verbose as first step"
+    }
+  ]
+}
