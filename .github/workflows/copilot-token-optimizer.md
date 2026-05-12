@@ -39,15 +39,9 @@ safe-outputs:
 timeout-minutes: 30
 steps:
   - name: Install gh-aw CLI
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    run: |
-      if gh extension list | grep -q "github/gh-aw"; then
-        gh extension upgrade gh-aw || true
-      else
-        gh extension install github/gh-aw
-      fi
-      gh aw --version
+    uses: github/gh-aw-actions/setup-cli@v0.74.0
+    with:
+      version: v0.74.0
   - name: Download recent Copilot workflow logs
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
