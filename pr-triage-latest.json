@@ -1,14 +1,19 @@
 {
-  "run_date": "2026-05-11T18:51:09Z",
-  "run_id": "25690398739",
+  "run_date": "2026-05-12T01:07:47Z",
+  "run_id": "25706856725",
   "fork_prs": 0,
-  "agent_prs_found": 3,
-  "agent_prs_excluded": 3,
-  "notes": "3 open PRs found (all app/copilot-swe-agent), all from branches within github/gh-aw — not fork PRs. No fork PRs to triage.",
+  "agent_prs_found": 7,
+  "agent_prs_excluded": 7,
+  "notes": "7 open PRs found (authors: Copilot, github-actions[bot], dependabot[bot]), all from branches within github/gh-aw — not fork PRs. No fork PRs to triage.",
   "open_prs_summary": [
-    {"number": 31561, "author": "app/copilot-swe-agent", "title": "fix: use github/gh-aw instead of githubnext/agentics in integration-update test", "headRef": "copilot/fix-tests", "isFork": false, "createdAt": "2026-05-11T18:46:42Z"},
-    {"number": 31553, "author": "app/copilot-swe-agent", "title": "Fix Codex engine: replace -c model= TOML override with --model flag for Codex CLI v0.128+", "headRef": "copilot/fix-codex-model-issue", "isFork": false, "createdAt": "2026-05-11T18:05:51Z"},
-    {"number": 31510, "author": "app/copilot-swe-agent", "title": "Integrate Repo Mind Light into Issue Arborist workflow", "headRef": "copilot/integrate-repo-mind-light", "isFork": false, "isDraft": true, "createdAt": "2026-05-11T13:54:19Z"}
+    {"number": 31605, "author": "Copilot", "title": "Add centralized slash-command trigger strategy with compiler-generated router workflow", "draft": true, "isFork": false, "createdAt": "2026-05-12T00:10:52Z"},
+    {"number": 31604, "author": "github-actions[bot]", "title": "[docs] Self-healing documentation fixes from issue analysis - 2026-05-12", "draft": true, "isFork": false, "createdAt": "2026-05-12T00:10:08Z"},
+    {"number": 31603, "author": "Copilot", "title": "Fix bundle transport in shallow checkouts", "draft": true, "isFork": false, "createdAt": "2026-05-11T23:47:36Z"},
+    {"number": 31602, "author": "Copilot", "title": "Add CodeGraph shared MCP workflow for code search", "draft": true, "isFork": false, "createdAt": "2026-05-11T23:43:24Z"},
+    {"number": 31601, "author": "dependabot[bot]", "title": "build(deps): bump the npm_and_yarn group across 1 directories", "draft": false, "isFork": false},
+    {"number": 31599, "author": "Copilot", "title": "fix(release): add missing bash tools to unblock jq, awk, sed, bash in agent", "draft": true, "isFork": false, "createdAt": "2026-05-11T23:28:50Z"},
+    {"number": 31598, "author": "Copilot", "title": "Reduce ExtractWorkflowNameFromFile overhead in the title-scan path", "draft": false, "isFork": false, "createdAt": "2026-05-11T22:59:49Z"},
+    {"number": 31597, "author": "Copilot", "title": "Align audit/trial help text and update docs for update --cool-down", "draft": false, "isFork": false, "createdAt": "2026-05-11T22:59:37Z"}
   ],
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
@@ -23,8 +28,8 @@
   },
   "prs_seen": [],
   "previous_run": {
-    "run_id": "25672582628",
-    "run_date": "2026-05-11T13:19:23Z",
+    "run_id": "25690398739",
+    "run_date": "2026-05-11T18:51:09Z",
     "fork_prs": 0,
     "agent_prs_found": 3,
     "agent_prs_excluded": 3
