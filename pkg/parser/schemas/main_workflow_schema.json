@@ -3736,6 +3736,20 @@
       "default": 100,
       "description": "AWF invocation cap (`apiProxy.maxRuns`) applied consistently across all engines. Defaults to 100 when omitted."
     },
+    "model-multipliers": {
+      "type": "object",
+      "description": "Per-model effective-token multipliers passed to AWF via --max-model-multiplier. Keys are model names and values are positive numeric multipliers.",
+      "additionalProperties": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "examples": [
+        {
+          "claude-opus-4-1m": 10,
+          "claude-opus-4-200k": 2.5
+        }
+      ]
+    },
     "mcp-servers": {
       "type": "object",
       "description": "MCP server definitions",

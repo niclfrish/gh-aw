@@ -361,6 +361,39 @@ func TestValidateMainWorkflowFrontmatterWithSchemaAndLocation_MaxLimitsAllowExpr
 	}
 }
 
+func TestValidateMainWorkflowFrontmatterWithSchemaAndLocation_ModelMultipliers(t *testing.T) {
+	t.Parallel()
+
+	validFrontmatter := map[string]any{
+		"on": "push",
+		"model-multipliers": map[string]any{
+			"claude-opus-4-1m":   10,
+			"claude-opus-4-200k": 2.5,
+		},
+	}
+
+	err := ValidateMainWorkflowFrontmatterWithSchemaAndLocation(validFrontmatter, "/tmp/gh-aw/model-multipliers-valid-test.md")
+	if err != nil {
+		t.Fatalf("expected model-multipliers to pass schema validation, got: %v", err)
+	}
+}
+
+func TestValidateMainWorkflowFrontmatterWithSchemaAndLocation_ModelMultipliersRejectsNonPositive(t *testing.T) {
+	t.Parallel()
+
+	invalidFrontmatter := map[string]any{
+		"on": "push",
+		"model-multipliers": map[string]any{
+			"claude-opus-4-1m": 0,
+		},
+	}
+
+	err := ValidateMainWorkflowFrontmatterWithSchemaAndLocation(invalidFrontmatter, "/tmp/gh-aw/model-multipliers-invalid-test.md")
+	if err == nil {
+		t.Fatal("expected model-multipliers values <= 0 to fail schema validation")
+	}
+}
+
 func TestMainWorkflowSchema_WorkflowDispatchNumberTypeDocumentation(t *testing.T) {
 	t.Parallel()
 

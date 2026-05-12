@@ -49,6 +49,16 @@ const (
 	//	features:
 	//	  awf-diagnostic-logs: true
 	AwfDiagnosticLogsFeatureFlag FeatureFlag = "awf-diagnostic-logs"
+	// EffectiveTokenSteeringFeatureFlag enables AWF effective-token steering.
+	// When enabled, the compiler adds --enable-token-steering to AWF invocations,
+	// allowing AWF to inject budget-warning system messages as token usage approaches
+	// max-effective-tokens thresholds.
+	//
+	// Workflow frontmatter usage:
+	//
+	//	features:
+	//	  effective-token-steering: true
+	EffectiveTokenSteeringFeatureFlag FeatureFlag = "effective-token-steering"
 	// ByokCopilotFeatureFlag is a deprecated legacy feature flag for Copilot BYOK mode.
 	// Deprecated: Copilot now enables BYOK behavior by default, so this flag has no effect.
 	//

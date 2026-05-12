@@ -595,6 +595,96 @@ func TestBuildAWFArgsDiagnosticLogs(t *testing.T) {
 	})
 }
 
+func TestBuildAWFArgsEffectiveTokenSteering(t *testing.T) {
+	t.Run("includes --enable-token-steering when feature is enabled", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName: "copilot",
+			WorkflowData: &WorkflowData{
+				Name:         "test-workflow",
+				EngineConfig: &EngineConfig{ID: "copilot"},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{Enabled: true, Version: "v0.25.44"},
+				},
+				Features: map[string]any{
+					string(constants.EffectiveTokenSteeringFeatureFlag): true,
+				},
+			},
+			AllowedDomains: "github.com",
+		}
+
+		argsStr := strings.Join(BuildAWFArgs(config), " ")
+		assert.Contains(t, argsStr, "--enable-token-steering")
+	})
+
+	t.Run("skips --enable-token-steering when AWF version is too old", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName: "copilot",
+			WorkflowData: &WorkflowData{
+				Name:         "test-workflow",
+				EngineConfig: &EngineConfig{ID: "copilot"},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{Enabled: true, Version: "v0.25.43"},
+				},
+				Features: map[string]any{
+					string(constants.EffectiveTokenSteeringFeatureFlag): true,
+				},
+			},
+			AllowedDomains: "github.com",
+		}
+
+		argsStr := strings.Join(BuildAWFArgs(config), " ")
+		assert.NotContains(t, argsStr, "--enable-token-steering")
+	})
+}
+
+func TestBuildAWFArgsMaxModelMultiplier(t *testing.T) {
+	t.Run("includes --max-model-multiplier from top-level model-multipliers", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName: "copilot",
+			WorkflowData: &WorkflowData{
+				Name:         "test-workflow",
+				EngineConfig: &EngineConfig{ID: "copilot"},
+				RawFrontmatter: map[string]any{
+					"model-multipliers": map[string]any{
+						"claude-opus-4-1m":   10,
+						"claude-opus-4-200k": 2.5,
+					},
+				},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{Enabled: true, Version: "v0.25.44"},
+				},
+			},
+			AllowedDomains: "github.com",
+		}
+
+		argsStr := strings.Join(BuildAWFArgs(config), " ")
+		assert.Contains(t, argsStr, "--max-model-multiplier")
+		assert.Contains(t, argsStr, "claude-opus-4-1m:10,claude-opus-4-200k:2.5")
+	})
+
+	t.Run("skips --max-model-multiplier when AWF version is too old", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName: "copilot",
+			WorkflowData: &WorkflowData{
+				Name:         "test-workflow",
+				EngineConfig: &EngineConfig{ID: "copilot"},
+				RawFrontmatter: map[string]any{
+					"model-multipliers": map[string]any{
+						"claude-opus-4-1m": 10,
+					},
+				},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{Enabled: true, Version: "v0.25.43"},
+				},
+			},
+			AllowedDomains: "github.com",
+		}
+
+		argsStr := strings.Join(BuildAWFArgs(config), " ")
+		assert.NotContains(t, argsStr, "--max-model-multiplier")
+	})
+}
+
 // TestBuildAWFArgsMemoryLimit tests that BuildAWFArgs passes --memory-limit
 // when sandbox.agent.memory is configured in the workflow frontmatter
 func TestBuildAWFArgsMemoryLimit(t *testing.T) {
@@ -1211,6 +1301,68 @@ func TestAWFSupportsDockerHostPathPrefix(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := awfSupportsDockerHostPathPrefix(tt.firewallConfig)
 			assert.Equal(t, tt.want, got, "awfSupportsDockerHostPathPrefix result")
+		})
+	}
+}
+
+func TestAWFSupportsEnableTokenSteering(t *testing.T) {
+	tests := []struct {
+		name           string
+		firewallConfig *FirewallConfig
+		want           bool
+	}{
+		{
+			name:           "nil firewall config returns true (uses default version)",
+			firewallConfig: nil,
+			want:           true,
+		},
+		{
+			name:           "v0.25.44 supports --enable-token-steering",
+			firewallConfig: &FirewallConfig{Version: "v0.25.44"},
+			want:           true,
+		},
+		{
+			name:           "v0.25.43 does not support --enable-token-steering",
+			firewallConfig: &FirewallConfig{Version: "v0.25.43"},
+			want:           false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := awfSupportsEnableTokenSteering(tt.firewallConfig)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestAWFSupportsMaxModelMultiplier(t *testing.T) {
+	tests := []struct {
+		name           string
+		firewallConfig *FirewallConfig
+		want           bool
+	}{
+		{
+			name:           "nil firewall config returns true (uses default version)",
+			firewallConfig: nil,
+			want:           true,
+		},
+		{
+			name:           "v0.25.44 supports --max-model-multiplier",
+			firewallConfig: &FirewallConfig{Version: "v0.25.44"},
+			want:           true,
+		},
+		{
+			name:           "v0.25.43 does not support --max-model-multiplier",
+			firewallConfig: &FirewallConfig{Version: "v0.25.43"},
+			want:           false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := awfSupportsMaxModelMultiplier(tt.firewallConfig)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

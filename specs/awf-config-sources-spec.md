@@ -56,8 +56,9 @@ The following fields previously existed in schema but were missed in spec CLI ma
 |---|---|
 | `apiProxy.anthropicAutoCache` | `--anthropic-auto-cache` |
 | `apiProxy.anthropicCacheTailTtl` | `--anthropic-cache-tail-ttl` |
+| `apiProxy.enableTokenSteering` | `--enable-token-steering` |
 | `apiProxy.models` | config-only (model alias rewriting) |
-| `apiProxy.modelMultipliers` | config-only (effective-token accounting) |
+| `apiProxy.modelMultipliers` | `--max-model-multiplier` |
 | `apiProxy.maxRuns` | config-only (LLM invocation hard cap) |
 | `apiProxy.auth.*` | config-only (maps to `AWF_AUTH_*` env vars) |
 | `container.dockerHostPathPrefix` | `--docker-host-path-prefix` |

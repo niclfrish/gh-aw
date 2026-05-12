@@ -25,6 +25,7 @@ package workflow
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/github/gh-aw/pkg/constants"
@@ -345,6 +346,14 @@ func BuildAWFArgs(config AWFCommandConfig) []string {
 		awfArgs = append(awfArgs, "--diagnostic-logs")
 		awfHelpersLog.Print("Added --diagnostic-logs because awf-diagnostic-logs feature flag is enabled")
 	}
+	if isFeatureEnabled(constants.EffectiveTokenSteeringFeatureFlag, config.WorkflowData) {
+		if awfSupportsEnableTokenSteering(firewallConfig) {
+			awfArgs = append(awfArgs, "--enable-token-steering")
+			awfHelpersLog.Print("Added --enable-token-steering because effective-token-steering feature flag is enabled")
+		} else {
+			awfHelpersLog.Printf("Skipping --enable-token-steering: AWF version %q requires at least %s", getAWFImageTag(firewallConfig), constants.AWFEnableTokenSteeringMinVersion)
+		}
+	}
 
 	// Always add --enable-host-access: needed for the API proxy sidecar
 	// (to reach host.docker.internal:<port>) and for MCP gateway communication
@@ -404,6 +413,16 @@ func BuildAWFArgs(config AWFCommandConfig) []string {
 	if geminiBasePath != "" {
 		awfArgs = append(awfArgs, "--gemini-api-base-path", geminiBasePath)
 		awfHelpersLog.Printf("Added --gemini-api-base-path=%s", geminiBasePath)
+	}
+
+	// Pass top-level model multipliers using the AWF CLI flag.
+	if modelMultipliersArg := formatMaxModelMultiplierArg(extractTopLevelModelMultipliers(config.WorkflowData)); modelMultipliersArg != "" {
+		if awfSupportsMaxModelMultiplier(firewallConfig) {
+			awfArgs = append(awfArgs, "--max-model-multiplier", modelMultipliersArg)
+			awfHelpersLog.Printf("Added --max-model-multiplier=%s", modelMultipliersArg)
+		} else {
+			awfHelpersLog.Printf("Skipping --max-model-multiplier: AWF version %q requires at least %s", getAWFImageTag(firewallConfig), constants.AWFMaxModelMultiplierMinVersion)
+		}
 	}
 
 	// Add SSL Bump support for HTTPS content inspection (v0.9.0+)
@@ -632,6 +651,73 @@ func addCliProxyGHTokenToEnv(env map[string]string, workflowData *WorkflowData) 
 	}
 }
 
+func extractTopLevelModelMultipliers(workflowData *WorkflowData) map[string]float64 {
+	if workflowData == nil || workflowData.RawFrontmatter == nil {
+		return nil
+	}
+	raw, ok := workflowData.RawFrontmatter["model-multipliers"]
+	if !ok {
+		return nil
+	}
+
+	switch multipliers := raw.(type) {
+	case map[string]float64:
+		if len(multipliers) == 0 {
+			return nil
+		}
+		return multipliers
+	case map[string]any:
+		parsed := make(map[string]float64, len(multipliers))
+		for model, value := range multipliers {
+			switch v := value.(type) {
+			case float64:
+				if v > 0 {
+					parsed[model] = v
+				}
+			case int:
+				if v > 0 {
+					parsed[model] = float64(v)
+				}
+			case uint64:
+				if v > 0 {
+					parsed[model] = float64(v)
+				}
+			}
+		}
+		if len(parsed) == 0 {
+			return nil
+		}
+		return parsed
+	default:
+		return nil
+	}
+}
+
+func formatMaxModelMultiplierArg(modelMultipliers map[string]float64) string {
+	if len(modelMultipliers) == 0 {
+		return ""
+	}
+
+	keys := make([]string, 0, len(modelMultipliers))
+	for model, multiplier := range modelMultipliers {
+		if model == "" || multiplier <= 0 {
+			continue
+		}
+		keys = append(keys, model)
+	}
+	if len(keys) == 0 {
+		return ""
+	}
+	sort.Strings(keys)
+
+	pairs := make([]string, 0, len(keys))
+	for _, model := range keys {
+		multiplier := modelMultipliers[model]
+		pairs = append(pairs, fmt.Sprintf("%s:%s", model, strconv.FormatFloat(multiplier, 'f', -1, 64)))
+	}
+	return strings.Join(pairs, ",")
+}
+
 // awfSupportsExcludeEnv returns true when the effective AWF version supports --exclude-env
 // (introduced in AWF v0.25.3).
 func awfSupportsExcludeEnv(firewallConfig *FirewallConfig) bool {
@@ -666,4 +752,16 @@ func awfSupportsAllowHostPorts(firewallConfig *FirewallConfig) bool {
 // --docker-host-path-prefix.
 func awfSupportsDockerHostPathPrefix(firewallConfig *FirewallConfig) bool {
 	return awfVersionAtLeast(firewallConfig, constants.AWFDockerHostPathPrefixMinVersion)
+}
+
+// awfSupportsEnableTokenSteering returns true when the effective AWF version supports
+// --enable-token-steering.
+func awfSupportsEnableTokenSteering(firewallConfig *FirewallConfig) bool {
+	return awfVersionAtLeast(firewallConfig, constants.AWFEnableTokenSteeringMinVersion)
+}
+
+// awfSupportsMaxModelMultiplier returns true when the effective AWF version supports
+// --max-model-multiplier.
+func awfSupportsMaxModelMultiplier(firewallConfig *FirewallConfig) bool {
+	return awfVersionAtLeast(firewallConfig, constants.AWFMaxModelMultiplierMinVersion)
 }
