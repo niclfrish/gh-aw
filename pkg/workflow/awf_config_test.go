@@ -207,6 +207,112 @@ func TestBuildAWFConfigJSON(t *testing.T) {
 		assert.NotContains(t, jsonStr, `"modelMultipliers"`, "apiProxy should omit modelMultipliers when empty")
 	})
 
+	t.Run("top-level firewall model-multipliers are emitted in apiProxy modelMultipliers", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName:     "copilot",
+			AllowedDomains: "github.com",
+			WorkflowData: &WorkflowData{
+				EngineConfig: &EngineConfig{ID: "copilot"},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{Enabled: true},
+				},
+				RawFrontmatter: map[string]any{
+					"firewall": map[string]any{
+						"model-multipliers": map[string]any{
+							"claude-opus-4-1m":   10.0,
+							"claude-opus-4-200k": 2.5,
+						},
+					},
+				},
+			},
+		}
+
+		jsonStr, err := BuildAWFConfigJSON(config)
+		require.NoError(t, err)
+		assert.Contains(t, jsonStr, `"modelMultipliers"`, "apiProxy should emit modelMultipliers from firewall frontmatter")
+		assert.Contains(t, jsonStr, `"claude-opus-4-1m":10`, "apiProxy should include configured firewall model multiplier")
+		assert.Contains(t, jsonStr, `"claude-opus-4-200k":2.5`, "apiProxy should include configured firewall model multiplier")
+	})
+
+	t.Run("top-level firewall model-multipliers takes precedence over engine token-weights multipliers", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName:     "copilot",
+			AllowedDomains: "github.com",
+			WorkflowData: &WorkflowData{
+				EngineConfig: &EngineConfig{
+					ID: "copilot",
+					TokenWeights: &types.TokenWeights{
+						Multipliers: map[string]float64{
+							"gpt-5": 99,
+						},
+					},
+				},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{Enabled: true},
+				},
+				RawFrontmatter: map[string]any{
+					"firewall": map[string]any{
+						"model-multipliers": map[string]any{
+							"gpt-5": 3.5,
+						},
+					},
+				},
+			},
+		}
+
+		jsonStr, err := BuildAWFConfigJSON(config)
+		require.NoError(t, err)
+		assert.Contains(t, jsonStr, `"gpt-5":3.5`, "firewall model-multipliers should take precedence")
+		assert.NotContains(t, jsonStr, `"gpt-5":99`, "engine token-weights should not override firewall model-multipliers")
+	})
+
+	t.Run("top-level firewall effective-token-steering emits apiProxy enableTokenSteering", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName:     "copilot",
+			AllowedDomains: "github.com",
+			WorkflowData: &WorkflowData{
+				EngineConfig: &EngineConfig{ID: "copilot"},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{Enabled: true},
+				},
+				RawFrontmatter: map[string]any{
+					"firewall": map[string]any{
+						"effective-token-steering": true,
+					},
+				},
+			},
+		}
+
+		jsonStr, err := BuildAWFConfigJSON(config)
+		require.NoError(t, err)
+		assert.Contains(t, jsonStr, `"enableTokenSteering":true`, "apiProxy should emit enableTokenSteering when requested")
+	})
+
+	t.Run("top-level firewall effective-token-steering is gated by AWF version", func(t *testing.T) {
+		config := AWFCommandConfig{
+			EngineName:     "copilot",
+			AllowedDomains: "github.com",
+			WorkflowData: &WorkflowData{
+				EngineConfig: &EngineConfig{ID: "copilot"},
+				NetworkPermissions: &NetworkPermissions{
+					Firewall: &FirewallConfig{
+						Enabled: true,
+						Version: "v0.25.43",
+					},
+				},
+				RawFrontmatter: map[string]any{
+					"firewall": map[string]any{
+						"effective-token-steering": true,
+					},
+				},
+			},
+		}
+
+		jsonStr, err := BuildAWFConfigJSON(config)
+		require.NoError(t, err)
+		assert.NotContains(t, jsonStr, `"enableTokenSteering"`, "apiProxy should omit enableTokenSteering for older pinned AWF versions")
+	})
+
 	t.Run("anthropic API target is included in apiProxy targets", func(t *testing.T) {
 		config := AWFCommandConfig{
 			EngineName:     "claude",

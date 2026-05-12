@@ -159,6 +159,9 @@ type AWFAPIProxyConfig struct {
 	// MaxEffectiveTokens is the explicit ET budget enforced by the API proxy.
 	MaxEffectiveTokens int64 `json:"maxEffectiveTokens,omitempty"`
 
+	// EnableTokenSteering enables ET budget warning message injection.
+	EnableTokenSteering bool `json:"enableTokenSteering,omitempty"`
+
 	// ModelMultipliers configures per-model ET accounting multipliers in AWF.
 	ModelMultipliers map[string]float64 `json:"modelMultipliers,omitempty"`
 
@@ -267,6 +270,14 @@ func BuildAWFConfigJSON(config AWFCommandConfig) (string, error) {
 		apiProxy.ModelMultipliers = modelMultipliers
 		awfConfigLog.Printf("API proxy: %d model multipliers configured", len(apiProxy.ModelMultipliers))
 	}
+	if extractTokenSteeringEnabled(config.WorkflowData) {
+		if awfSupportsTokenSteering(firewallConfig) {
+			apiProxy.EnableTokenSteering = true
+			awfConfigLog.Print("API proxy: token steering enabled")
+		} else {
+			awfConfigLog.Printf("Skipping apiProxy.enableTokenSteering: AWF version %q requires at least %s", getAWFImageTag(firewallConfig), constants.AWFTokenSteeringMinVersion)
+		}
+	}
 
 	targets := map[string]*AWFAPITargetConfig{}
 
@@ -340,6 +351,10 @@ func splitDomainList(domains string) []string {
 }
 
 func extractModelMultipliers(workflowData *WorkflowData) map[string]float64 {
+	if fromFirewall := extractFirewallModelMultipliers(workflowData); len(fromFirewall) > 0 {
+		return fromFirewall
+	}
+
 	if workflowData == nil || workflowData.EngineConfig == nil || workflowData.EngineConfig.TokenWeights == nil {
 		return nil
 	}
@@ -347,4 +362,53 @@ func extractModelMultipliers(workflowData *WorkflowData) map[string]float64 {
 		return nil
 	}
 	return workflowData.EngineConfig.TokenWeights.Multipliers
+}
+
+func extractTokenSteeringEnabled(workflowData *WorkflowData) bool {
+	firewallConfig := extractTopLevelFirewallConfig(workflowData)
+	if len(firewallConfig) == 0 {
+		return false
+	}
+	enabled, _ := firewallConfig["effective-token-steering"].(bool)
+	return enabled
+}
+
+func extractFirewallModelMultipliers(workflowData *WorkflowData) map[string]float64 {
+	firewallConfig := extractTopLevelFirewallConfig(workflowData)
+	if len(firewallConfig) == 0 {
+		return nil
+	}
+
+	rawMultipliers, ok := firewallConfig["model-multipliers"].(map[string]any)
+	if !ok || len(rawMultipliers) == 0 {
+		return nil
+	}
+
+	parsed := make(map[string]float64, len(rawMultipliers))
+	for model, rawValue := range rawMultipliers {
+		switch v := rawValue.(type) {
+		case float64:
+			parsed[model] = v
+		case float32:
+			parsed[model] = float64(v)
+		case int:
+			parsed[model] = float64(v)
+		case int32:
+			parsed[model] = float64(v)
+		case int64:
+			parsed[model] = float64(v)
+		}
+	}
+	if len(parsed) == 0 {
+		return nil
+	}
+	return parsed
+}
+
+func extractTopLevelFirewallConfig(workflowData *WorkflowData) map[string]any {
+	if workflowData == nil || workflowData.RawFrontmatter == nil {
+		return nil
+	}
+	firewallConfig, _ := workflowData.RawFrontmatter["firewall"].(map[string]any)
+	return firewallConfig
 }

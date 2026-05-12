@@ -3736,6 +3736,25 @@
       "default": 100,
       "description": "AWF invocation cap (`apiProxy.maxRuns`) applied consistently across all engines. Defaults to 100 when omitted."
     },
+    "firewall": {
+      "type": "object",
+      "description": "AWF API proxy budget controls that map to AWF config fields and CLI flags.",
+      "additionalProperties": false,
+      "properties": {
+        "effective-token-steering": {
+          "type": "boolean",
+          "description": "Enable effective-token steering warnings (`apiProxy.enableTokenSteering`, `--enable-token-steering`)."
+        },
+        "model-multipliers": {
+          "type": "object",
+          "description": "Per-model effective-token multipliers (`apiProxy.modelMultipliers`, `--max-model-multiplier`).",
+          "additionalProperties": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        }
+      }
+    },
     "mcp-servers": {
       "type": "object",
       "description": "MCP server definitions",
