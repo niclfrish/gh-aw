@@ -2,7 +2,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import fs from "fs";
-import { loadConfig, loadHandlers, processMessages, buildCommentMemoryMessagesFromFiles } from "./safe_output_handler_manager.cjs";
+import { main, loadConfig, loadHandlers, processMessages, buildCommentMemoryMessagesFromFiles } from "./safe_output_handler_manager.cjs";
 
 describe("Safe Output Handler Manager", () => {
   beforeEach(() => {
@@ -23,7 +23,60 @@ describe("Safe Output Handler Manager", () => {
     delete process.env.GH_AW_TRACKER_LABEL;
     delete process.env.GH_AW_SAFE_OUTPUT_JOBS;
     delete process.env.GH_AW_SAFE_OUTPUT_SCRIPTS;
+    delete process.env.GH_AW_DETECTION_CONCLUSION;
     fs.rmSync("/tmp/gh-aw/comment-memory", { recursive: true, force: true });
+  });
+
+  describe("main - threat detection gate (defense-in-depth)", () => {
+    // These tests verify that main() blocks safe-output processing when the
+    // detection job flagged a threat, even if the job-condition gate was bypassed.
+
+    it("should call setFailed and return early when GH_AW_DETECTION_CONCLUSION is 'warning'", async () => {
+      process.env.GH_AW_DETECTION_CONCLUSION = "warning";
+      // GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG is intentionally not set — if main() continued
+      // past the detection check it would throw, making the test fail for the wrong reason.
+
+      await main();
+
+      expect(global.core.setFailed).toHaveBeenCalledWith(
+        expect.stringContaining("threat detection concluded with 'warning'")
+      );
+    });
+
+    it("should call setFailed and return early when GH_AW_DETECTION_CONCLUSION is 'failure'", async () => {
+      process.env.GH_AW_DETECTION_CONCLUSION = "failure";
+
+      await main();
+
+      expect(global.core.setFailed).toHaveBeenCalledWith(
+        expect.stringContaining("threat detection concluded with 'failure'")
+      );
+    });
+
+    it("should NOT block when GH_AW_DETECTION_CONCLUSION is 'success'", async () => {
+      process.env.GH_AW_DETECTION_CONCLUSION = "success";
+      // main() will proceed past the detection gate and fail at loadConfig() since
+      // GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG is not set — that is expected.
+      process.env.GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG = JSON.stringify({});
+
+      await main();
+
+      expect(global.core.setFailed).not.toHaveBeenCalledWith(
+        expect.stringContaining("threat detection concluded with")
+      );
+    });
+
+    it("should NOT block when GH_AW_DETECTION_CONCLUSION is absent (threat detection disabled)", async () => {
+      // GH_AW_DETECTION_CONCLUSION is not set when threat detection is disabled.
+      delete process.env.GH_AW_DETECTION_CONCLUSION;
+      process.env.GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG = JSON.stringify({});
+
+      await main();
+
+      expect(global.core.setFailed).not.toHaveBeenCalledWith(
+        expect.stringContaining("threat detection concluded with")
+      );
+    });
   });
 
   describe("loadConfig", () => {

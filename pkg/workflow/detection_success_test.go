@@ -142,10 +142,13 @@ Create outputs.
 		t.Fatal("safe_outputs job not found")
 	}
 
-	// Detection is now in a separate detection job - check uses detection job result
-	// (detection job fails with exit 1 when threats are found, so downstream jobs check job result)
+	// The job condition must check BOTH the job-level result (catches strict-mode exit 1 failures)
+	// AND the semantic detection_success output (catches warn-mode exit 0 threats).
 	if !strings.Contains(yaml, "needs.detection.result == 'success'") {
 		t.Error("Safe output jobs don't check detection result via detection job result")
+	}
+	if !strings.Contains(yaml, "needs.detection.outputs.detection_success == 'true'") {
+		t.Error("Safe output jobs don't check detection_success semantic output — warn-mode threats would not be blocked")
 	}
 }
 

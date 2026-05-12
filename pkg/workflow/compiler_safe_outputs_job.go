@@ -702,14 +702,25 @@ func resolveSafeOutputsEnvironment(data *WorkflowData) string {
 }
 
 // buildDetectionSuccessCondition builds the condition to check if detection passed.
-// Detection runs in a separate detection job that only succeeds (result == 'success') when
-// the analysis worked, the output was parsed, and no threats were found. When threats are
-// detected the detection job exits with a non-zero code, giving it a 'failure' result.
+// It checks BOTH the job-level result AND the semantic detection_success output so that
+// safe_outputs is blocked regardless of whether detection runs in warn mode
+// (continue-on-error: true, the default) or strict mode (continue-on-error: false).
+//
+// In warn mode the detection job always exits 0 (result == 'success') even when a threat is
+// found, because core.warning() is used instead of core.setFailed(). Checking only the
+// job result would therefore never block safe_outputs in the default configuration.
+// The detection_success output is always set to "true" (no threat) or "false" (threat found /
+// parse error), so it provides the authoritative semantic verdict independent of exit code.
 func buildDetectionSuccessCondition() ConditionNode {
-	return BuildEquals(
+	jobSucceeded := BuildEquals(
 		BuildPropertyAccess(fmt.Sprintf("needs.%s.result", constants.DetectionJobName)),
 		BuildStringLiteral("success"),
 	)
+	detectionPassed := BuildEquals(
+		BuildPropertyAccess(fmt.Sprintf("needs.%s.outputs.detection_success", constants.DetectionJobName)),
+		BuildStringLiteral("true"),
+	)
+	return BuildAnd(jobSucceeded, detectionPassed)
 }
 
 // buildDetectionPassedCondition builds the condition to check if the detection job either

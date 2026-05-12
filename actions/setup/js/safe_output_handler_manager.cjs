@@ -1116,6 +1116,21 @@ async function main() {
   try {
     core.info("Safe Output Handler Manager starting...");
 
+    // Defense-in-depth: block safe-output processing when threat detection flagged a problem.
+    // The safe_outputs job condition already gates on needs.detection.outputs.detection_success == 'true',
+    // but this second check prevents any output from being processed if that gate is bypassed
+    // (e.g. due to a misconfigured workflow or a bug in the condition evaluation).
+    // GH_AW_DETECTION_CONCLUSION is only set when threat detection is enabled; when it is absent
+    // (detection disabled) or 'success'/'skipped' we proceed normally.
+    const detectionConclusion = process.env.GH_AW_DETECTION_CONCLUSION;
+    if (detectionConclusion === "warning" || detectionConclusion === "failure") {
+      core.setFailed(
+        `❌ Safe outputs blocked: threat detection concluded with '${detectionConclusion}'. ` +
+          `Check the detection job for details on detected threats or errors.`
+      );
+      return;
+    }
+
     // Load configuration
     const config = loadConfig();
     core.debug(`Configuration: ${JSON.stringify(Object.keys(config))}`);

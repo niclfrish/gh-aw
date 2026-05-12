@@ -474,12 +474,15 @@ func TestBuildDetectionSuccessCondition(t *testing.T) {
 
 	rendered := condition.Render()
 
-	// Should check detection job's result (not output variable)
-	// The detection job fails (exit 1) when threats are found, so downstream jobs
-	// check needs.detection.result == 'success' rather than output variables.
+	// Must check the job-level result so that strict-mode (exit 1) failures are caught.
 	assert.Contains(t, rendered, "needs."+string(constants.DetectionJobName))
 	assert.Contains(t, rendered, ".result")
 	assert.Contains(t, rendered, "'success'")
+
+	// Must ALSO check the semantic detection_success output so that warn-mode (exit 0)
+	// threat detections are caught regardless of the detection job's exit code.
+	assert.Contains(t, rendered, "detection_success")
+	assert.Contains(t, rendered, "outputs.")
 }
 
 // TestJobConditionWithThreatDetection tests job condition building with threat detection
@@ -502,10 +505,14 @@ func TestJobConditionWithThreatDetection(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, job)
 
-	// Job condition should include detection check referencing detection job result
+	// Job condition must check both the job-level result AND the semantic output.
+	// The job-level result catches strict-mode failures (exit 1).
+	// The semantic output (detection_success == 'true') catches warn-mode threats (exit 0).
 	assert.Contains(t, job.If, "needs."+string(constants.DetectionJobName))
 	assert.Contains(t, job.If, ".result")
 	assert.Contains(t, job.If, "'success'")
+	assert.Contains(t, job.If, "detection_success")
+	assert.Contains(t, job.If, "outputs.")
 
 	// Job should depend on detection job (detection is in a separate job)
 	assert.Contains(t, job.Needs, string(constants.DetectionJobName), "safe_outputs job should depend on detection job when threat detection enabled")

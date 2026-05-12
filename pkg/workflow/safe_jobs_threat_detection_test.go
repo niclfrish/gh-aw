@@ -981,6 +981,11 @@ func TestSafeOutputsJobConditionWithConditionalDetection(t *testing.T) {
 	if !strings.Contains(job.If, "'success'") {
 		t.Errorf("safe_outputs job if: %q should check for 'success' detection result", job.If)
 	}
+	// When detection succeeded (not skipped), the condition must also check the semantic output
+	// so that warn-mode threats (exit 0) are caught.
+	if !strings.Contains(job.If, "detection_success") {
+		t.Errorf("safe_outputs job if: %q should check detection_success semantic output to block warn-mode threats", job.If)
+	}
 
 	// Job must still depend on detection job
 	if !slices.Contains(job.Needs, string(constants.DetectionJobName)) {
@@ -1064,5 +1069,9 @@ Test workflow content
 	}
 	if !strings.Contains(safeOutputsSection, "'skipped'") {
 		t.Errorf("safe_outputs condition should handle 'skipped' detection result, got:\n%s", safeOutputsSection)
+	}
+	// When detection ran (not skipped), the condition must also check the semantic output
+	if !strings.Contains(safeOutputsSection, "detection_success") {
+		t.Errorf("safe_outputs condition should check detection_success output for warn-mode threat blocking, got:\n%s", safeOutputsSection)
 	}
 }
