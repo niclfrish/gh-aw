@@ -418,6 +418,11 @@ OpenAI, Google). The `vendor` field identifies the underlying provider.
 If a provider's API key was not configured, the entry will have `"error": "... not set"` and an
 empty `models` array. Skip providers with errors or empty model lists.
 
+If the Copilot provider returns an HTTP error (for example HTTP 400) or an empty model list, use
+GitHub Actions artifacts from a recent successful run that used `engine: copilot` as a fallback
+source for Copilot model IDs. Mine model IDs from the run artifacts, then include those IDs in your
+analysis as artifact-derived Copilot inventory (and call out that source explicitly in the issue).
+
 ## Built-in Alias Reference
 
 Read `pkg/workflow/data/model_aliases.json` to understand the current alias definitions. The current
@@ -464,6 +469,9 @@ fields. Specifically look for:
 
 Summarize which fields are present and which carry useful data worth including in future cached
 inventories.
+
+If Copilot API data is unavailable, inspect artifacts from a recent successful Copilot-engine AW run
+and extract model IDs from those artifacts as a best-effort fallback.
 
 ### Step 3: Infer Token Multipliers
 
