@@ -200,7 +200,17 @@ func TestJSweepWorkflowConfiguration(t *testing.T) {
 		}
 	})
 
-	// Test 16: Verify validation instructions are batched into one command
+	// Test 16: Verify the workflow timeout leaves headroom for PR creation tail work
+	t.Run("IncreasedTimeoutBudget", func(t *testing.T) {
+		if !strings.Contains(mdContent, "timeout-minutes: 30") {
+			t.Error("jsweep workflow should set timeout-minutes to 30 for the Copilot step budget")
+		}
+		if strings.Contains(mdContent, "timeout-minutes: 20") {
+			t.Error("jsweep workflow should not keep timeout-minutes at 20")
+		}
+	})
+
+	// Test 17: Verify validation instructions are batched into one command
 	t.Run("BatchedValidationCommand", func(t *testing.T) {
 		if !strings.Contains(mdContent, expectedJSweepBatchedValidationCommand) {
 			t.Error("jsweep workflow should batch validation commands into a single chained command")

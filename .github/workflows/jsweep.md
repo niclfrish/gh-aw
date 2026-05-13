@@ -35,7 +35,7 @@ safe-outputs:
 network:
   allowed:
     - go
-timeout-minutes: 20
+timeout-minutes: 30
 strict: true
 
 
