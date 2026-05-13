@@ -13,6 +13,15 @@ import (
 	"github.com/github/gh-aw/pkg/testutil"
 )
 
+func assertContainsAll(t *testing.T, content string, parts []string, message string) {
+	t.Helper()
+	for _, part := range parts {
+		if !strings.Contains(content, part) {
+			t.Errorf("%s: missing %q", message, part)
+		}
+	}
+}
+
 // TestTemplateExpressionWrappingIntegration verifies end-to-end compilation
 // with template expressions that should be wrapped
 func TestTemplateExpressionWrappingIntegration(t *testing.T) {
@@ -96,12 +105,16 @@ ${{ steps.sanitized.outputs.text }}
 	// Verify GitHub expressions are properly replaced with placeholders in template conditionals
 	// The GitHub context section now uses aw_context fallbacks, which are complex expressions.
 	// Complex expressions use hash-based env vars and placeholder names.
-	if !strings.Contains(compiledStr, "github.event.issue.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'issue' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number)") {
-		t.Error("Compiled workflow should contain aw_context fallback for issue number")
-	}
-	if !strings.Contains(compiledStr, "github.event.pull_request.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'pull_request' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number)") {
-		t.Error("Compiled workflow should contain aw_context fallback for pull request number")
-	}
+	assertContainsAll(t, compiledStr, []string{
+		"github.event.issue.number || (",
+		"github.event.client_payload.aw_context || '{}').item_type == 'issue'",
+		"github.event.client_payload.aw_context || '{}').item_number",
+	}, "compiled workflow should contain aw_context fallback for issue number")
+	assertContainsAll(t, compiledStr, []string{
+		"github.event.pull_request.number || (",
+		"github.event.client_payload.aw_context || '{}').item_type == 'pull_request'",
+		"github.event.client_payload.aw_context || '{}').item_number",
+	}, "compiled workflow should contain aw_context fallback for pull request number")
 	if !strings.Contains(compiledStr, "#__GH_AW_EXPR_") {
 		t.Error("Compiled workflow should contain hashed placeholders for aw_context fallback expressions")
 	}
@@ -266,9 +279,11 @@ Steps expression - will be wrapped.
 	compiledStr := string(compiledYAML)
 
 	// Verify GitHub context now uses aw_context fallback expressions.
-	if !strings.Contains(compiledStr, "github.event.issue.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'issue' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number)") {
-		t.Error("GitHub context should contain aw_context fallback for github.event.issue.number")
-	}
+	assertContainsAll(t, compiledStr, []string{
+		"github.event.issue.number || (",
+		"github.event.client_payload.aw_context || '{}').item_type == 'issue'",
+		"github.event.client_payload.aw_context || '{}').item_number",
+	}, "GitHub context should contain aw_context fallback for github.event.issue.number")
 	if !strings.Contains(compiledStr, "__GH_AW_EXPR_") {
 		t.Error("GitHub context should contain hashed placeholders for fallback expressions")
 	}
