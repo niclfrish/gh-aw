@@ -16,7 +16,7 @@ permissions:
 tracker-id: daily-multi-device-docs-tester
 engine:
   id: claude
-  max-turns: 30  # Keep runs bounded when workflows encounter looping/tooling failures
+  max-turns: 30  # ~5 devices × ~4-5 turns + report budget, while failing faster on loops
 strict: true
 timeout-minutes: 30
 runtimes:
@@ -143,7 +143,7 @@ Run one quick health check and proceed:
 curl -sS -o /dev/null -w "%{http_code}\n" --connect-timeout 5 --max-time 5 http://localhost:4321/gh-aw/
 ```
 
-If this does not return `200`, inspect `/tmp/gh-aw/preview.log` once, report that testing was blocked, and call `noop`.
+If this does not return `200`, inspect `/tmp/gh-aw/preview.log` once, report that testing was blocked via safe outputs, and call `noop`.
 
 ## Step 2: Device Configuration
 

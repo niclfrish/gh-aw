@@ -68,7 +68,7 @@ const OVERLOADED_ERROR_PATTERN = /overloaded_error|"overloaded"/i;
 const RATE_LIMIT_ERROR_PATTERN = /rate_limit_error|429 Too Many Requests|"api_error_status"\s*:\s*429|request rejected \(429\)|rate limit/i;
 // Pattern to detect Anthropic account-level invocation cap exhaustion.
 // This is not transient inside the same run (e.g. "Maximum LLM invocations exceeded (100 / 100)").
-const MAX_LLM_INVOCATIONS_EXCEEDED_PATTERN = /maximum llm invocations exceeded/i;
+const MAX_LLM_INVOCATIONS_EXCEEDED_PATTERN = /maximum\s+llm\s+invocations?\s+exceeded/i;
 
 // Pattern to detect a clean max-turns exit from Claude Code.
 // Claude Code emits a JSON result object with "subtype":"error_max_turns" when the
