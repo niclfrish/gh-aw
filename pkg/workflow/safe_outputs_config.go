@@ -51,6 +51,263 @@ var safeOutputsConfigLog = logger.New("workflow:safe_outputs_config")
 // 3. Automated validation in CI (regression prevention)
 //
 
+// safeOutputExtractHandler encapsulates the full parse+assign logic for one safe-output
+// handler type. Using a single run function avoids the typed-nil-pointer-in-interface
+// pitfall that arises when returning *T through any.
+//
+// Scalar settings (staged, env, github-token, max-patch-size, max-patch-files,
+// runs-on, messages, steps, etc.) are handled inline in extractSafeOutputsConfig
+// and do not appear in this table.
+type safeOutputExtractHandler struct {
+	run func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any)
+}
+
+// safeOutputExtractHandlers is the registry that drives extractSafeOutputsConfig.
+// Each Shape A entry assigns a parsed config when the key is present and non-false.
+// Each Shape B entry additionally falls back to a default when the key is absent.
+var safeOutputExtractHandlers = []safeOutputExtractHandler{
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseIssuesConfig(m); v != nil {
+			cfg.CreateIssues = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseAgentSessionConfig(m); v != nil {
+			cfg.CreateAgentSessions = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUpdateProjectConfig(m); v != nil {
+			cfg.UpdateProjects = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseCreateProjectsConfig(m); v != nil {
+			cfg.CreateProjects = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseCreateProjectStatusUpdateConfig(m); v != nil {
+			cfg.CreateProjectStatusUpdates = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseDiscussionsConfig(m); v != nil {
+			cfg.CreateDiscussions = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseCloseDiscussionsConfig(m); v != nil {
+			cfg.CloseDiscussions = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseCloseIssuesConfig(m); v != nil {
+			cfg.CloseIssues = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseClosePullRequestsConfig(m); v != nil {
+			cfg.ClosePullRequests = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseMarkPullRequestAsReadyForReviewConfig(m); v != nil {
+			cfg.MarkPullRequestAsReadyForReview = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseCommentsConfig(m); v != nil {
+			cfg.AddComments = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parsePullRequestsConfig(m); v != nil {
+			cfg.CreatePullRequests = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parsePullRequestReviewCommentsConfig(m); v != nil {
+			cfg.CreatePullRequestReviewComments = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseSubmitPullRequestReviewConfig(m); v != nil {
+			cfg.SubmitPullRequestReview = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseReplyToPullRequestReviewCommentConfig(m); v != nil {
+			cfg.ReplyToPullRequestReviewComment = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseResolvePullRequestReviewThreadConfig(m); v != nil {
+			cfg.ResolvePullRequestReviewThread = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseCodeScanningAlertsConfig(m); v != nil {
+			cfg.CreateCodeScanningAlerts = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseAutofixCodeScanningAlertConfig(m); v != nil {
+			cfg.AutofixCodeScanningAlert = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseAddLabelsConfig(m); v != nil {
+			cfg.AddLabels = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseRemoveLabelsConfig(m); v != nil {
+			cfg.RemoveLabels = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseAddReviewerConfig(m); v != nil {
+			cfg.AddReviewer = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseAssignMilestoneConfig(m); v != nil {
+			cfg.AssignMilestone = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseAssignToAgentConfig(m); v != nil {
+			cfg.AssignToAgent = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseAssignToUserConfig(m); v != nil {
+			cfg.AssignToUser = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUnassignFromUserConfig(m); v != nil {
+			cfg.UnassignFromUser = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUpdateIssuesConfig(m); v != nil {
+			cfg.UpdateIssues = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUpdateDiscussionsConfig(m); v != nil {
+			cfg.UpdateDiscussions = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUpdatePullRequestsConfig(m); v != nil {
+			cfg.UpdatePullRequests = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseMergePullRequestConfig(m); v != nil {
+			cfg.MergePullRequest = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parsePushToPullRequestBranchConfig(m); v != nil {
+			cfg.PushToPullRequestBranch = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUploadAssetConfig(m); v != nil {
+			cfg.UploadAssets = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUploadArtifactConfig(m); v != nil {
+			cfg.UploadArtifact = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseUpdateReleaseConfig(m); v != nil {
+			cfg.UpdateRelease = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseLinkSubIssueConfig(m); v != nil {
+			cfg.LinkSubIssue = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseHideCommentConfig(m); v != nil {
+			cfg.HideComment = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseSetIssueTypeConfig(m); v != nil {
+			cfg.SetIssueType = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseSetIssueFieldConfig(m); v != nil {
+			cfg.SetIssueField = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseDispatchWorkflowConfig(m); v != nil {
+			cfg.DispatchWorkflow = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseDispatchRepositoryConfig(m); v != nil {
+			cfg.DispatchRepository = v
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseCallWorkflowConfig(m); v != nil {
+			cfg.CallWorkflow = v
+		}
+	}},
+	// Shape B: "default-on" handlers — enabled automatically when the key is absent.
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseMissingToolConfig(m); v != nil {
+			cfg.MissingTool = v
+		} else if _, exists := m["missing-tool"]; !exists {
+			trueVal := "true"
+			cfg.MissingTool = &MissingToolConfig{CreateIssue: &trueVal, TitlePrefix: "", Labels: nil}
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseMissingDataConfig(m); v != nil {
+			cfg.MissingData = v
+		} else if _, exists := m["missing-data"]; !exists {
+			trueVal := "true"
+			cfg.MissingData = &MissingDataConfig{CreateIssue: &trueVal, TitlePrefix: "", Labels: nil}
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseNoOpConfig(m); v != nil {
+			cfg.NoOp = v
+		} else if _, exists := m["noop"]; !exists {
+			trueVal := "true"
+			cfg.NoOp = &NoOpConfig{}
+			cfg.NoOp.Max = defaultIntStr(1)
+			cfg.NoOp.ReportAsIssue = &trueVal
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseReportIncompleteConfig(m); v != nil {
+			cfg.ReportIncomplete = v
+		} else if _, exists := m["report-incomplete"]; !exists {
+			trueVal := "true"
+			cfg.ReportIncomplete = &ReportIncompleteConfig{CreateIssue: &trueVal, TitlePrefix: "", Labels: nil}
+		}
+	}},
+	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
+		if v := c.parseThreatDetectionConfig(m); v != nil {
+			cfg.ThreatDetection = v
+		}
+	}},
+}
+
 // extractSafeOutputsConfig extracts output configuration from frontmatter
 func (c *Compiler) extractSafeOutputsConfig(frontmatter map[string]any) *SafeOutputsConfig {
 	safeOutputsConfigLog.Print("Extracting safe-outputs configuration from frontmatter")
@@ -62,114 +319,9 @@ func (c *Compiler) extractSafeOutputsConfig(frontmatter map[string]any) *SafeOut
 			safeOutputsConfigLog.Printf("Processing safe-outputs configuration with %d top-level keys", len(outputMap))
 			config = &SafeOutputsConfig{}
 
-			// Handle create-issue
-			issuesConfig := c.parseIssuesConfig(outputMap)
-			if issuesConfig != nil {
-				safeOutputsConfigLog.Print("Configured create-issue output handler")
-				config.CreateIssues = issuesConfig
-			}
-
-			// Handle create-agent-session
-			agentSessionConfig := c.parseAgentSessionConfig(outputMap)
-			if agentSessionConfig != nil {
-				config.CreateAgentSessions = agentSessionConfig
-			}
-
-			// Handle update-project (smart project board management)
-			updateProjectConfig := c.parseUpdateProjectConfig(outputMap)
-			if updateProjectConfig != nil {
-				config.UpdateProjects = updateProjectConfig
-			}
-
-			// Handle create-project
-			createProjectConfig := c.parseCreateProjectsConfig(outputMap)
-			if createProjectConfig != nil {
-				config.CreateProjects = createProjectConfig
-			}
-
-			// Handle create-project-status-update (project status updates)
-			createProjectStatusUpdateConfig := c.parseCreateProjectStatusUpdateConfig(outputMap)
-			if createProjectStatusUpdateConfig != nil {
-				config.CreateProjectStatusUpdates = createProjectStatusUpdateConfig
-			}
-
-			// Handle create-discussion
-			discussionsConfig := c.parseDiscussionsConfig(outputMap)
-			if discussionsConfig != nil {
-				config.CreateDiscussions = discussionsConfig
-			}
-
-			// Handle close-discussion
-			closeDiscussionsConfig := c.parseCloseDiscussionsConfig(outputMap)
-			if closeDiscussionsConfig != nil {
-				config.CloseDiscussions = closeDiscussionsConfig
-			}
-
-			// Handle close-issue
-			closeIssuesConfig := c.parseCloseIssuesConfig(outputMap)
-			if closeIssuesConfig != nil {
-				config.CloseIssues = closeIssuesConfig
-			}
-
-			// Handle close-pull-request
-			closePullRequestsConfig := c.parseClosePullRequestsConfig(outputMap)
-			if closePullRequestsConfig != nil {
-				config.ClosePullRequests = closePullRequestsConfig
-			}
-
-			// Handle mark-pull-request-as-ready-for-review
-			markPRReadyConfig := c.parseMarkPullRequestAsReadyForReviewConfig(outputMap)
-			if markPRReadyConfig != nil {
-				config.MarkPullRequestAsReadyForReview = markPRReadyConfig
-			}
-
-			// Handle add-comment
-			commentsConfig := c.parseCommentsConfig(outputMap)
-			if commentsConfig != nil {
-				config.AddComments = commentsConfig
-			}
-
-			// Handle create-pull-request
-			pullRequestsConfig := c.parsePullRequestsConfig(outputMap)
-			if pullRequestsConfig != nil {
-				safeOutputsConfigLog.Print("Configured create-pull-request output handler")
-				config.CreatePullRequests = pullRequestsConfig
-			}
-
-			// Handle create-pull-request-review-comment
-			prReviewCommentsConfig := c.parsePullRequestReviewCommentsConfig(outputMap)
-			if prReviewCommentsConfig != nil {
-				config.CreatePullRequestReviewComments = prReviewCommentsConfig
-			}
-
-			// Handle submit-pull-request-review
-			submitPRReviewConfig := c.parseSubmitPullRequestReviewConfig(outputMap)
-			if submitPRReviewConfig != nil {
-				config.SubmitPullRequestReview = submitPRReviewConfig
-			}
-
-			// Handle reply-to-pull-request-review-comment
-			replyToPRReviewCommentConfig := c.parseReplyToPullRequestReviewCommentConfig(outputMap)
-			if replyToPRReviewCommentConfig != nil {
-				config.ReplyToPullRequestReviewComment = replyToPRReviewCommentConfig
-			}
-
-			// Handle resolve-pull-request-review-thread
-			resolvePRReviewThreadConfig := c.parseResolvePullRequestReviewThreadConfig(outputMap)
-			if resolvePRReviewThreadConfig != nil {
-				config.ResolvePullRequestReviewThread = resolvePRReviewThreadConfig
-			}
-
-			// Handle create-code-scanning-alert
-			securityReportsConfig := c.parseCodeScanningAlertsConfig(outputMap)
-			if securityReportsConfig != nil {
-				config.CreateCodeScanningAlerts = securityReportsConfig
-			}
-
-			// Handle autofix-code-scanning-alert
-			autofixCodeScanningAlertConfig := c.parseAutofixCodeScanningAlertConfig(outputMap)
-			if autofixCodeScanningAlertConfig != nil {
-				config.AutofixCodeScanningAlert = autofixCodeScanningAlertConfig
+			// Apply all handler-shaped entries (Shape A + Shape B) from the registry table.
+			for _, h := range safeOutputExtractHandlers {
+				h.run(c, config, outputMap)
 			}
 
 			// Parse allowed-domains configuration (additional domains, unioned with network.allowed; supports ecosystem identifiers)
@@ -196,202 +348,6 @@ func (c *Compiler) extractSafeOutputsConfig(frontmatter map[string]any) *SafeOut
 						}
 					}
 					config.AllowGitHubReferences = refStrings
-				}
-			}
-
-			// Parse add-labels configuration
-			addLabelsConfig := c.parseAddLabelsConfig(outputMap)
-			if addLabelsConfig != nil {
-				config.AddLabels = addLabelsConfig
-			}
-
-			// Parse remove-labels configuration
-			removeLabelsConfig := c.parseRemoveLabelsConfig(outputMap)
-			if removeLabelsConfig != nil {
-				config.RemoveLabels = removeLabelsConfig
-			}
-
-			// Parse add-reviewer configuration
-			addReviewerConfig := c.parseAddReviewerConfig(outputMap)
-			if addReviewerConfig != nil {
-				config.AddReviewer = addReviewerConfig
-			}
-
-			// Parse assign-milestone configuration
-			assignMilestoneConfig := c.parseAssignMilestoneConfig(outputMap)
-			if assignMilestoneConfig != nil {
-				config.AssignMilestone = assignMilestoneConfig
-			}
-
-			// Handle assign-to-agent
-			assignToAgentConfig := c.parseAssignToAgentConfig(outputMap)
-			if assignToAgentConfig != nil {
-				config.AssignToAgent = assignToAgentConfig
-			}
-
-			// Handle assign-to-user
-			assignToUserConfig := c.parseAssignToUserConfig(outputMap)
-			if assignToUserConfig != nil {
-				config.AssignToUser = assignToUserConfig
-			}
-
-			// Handle unassign-from-user
-			unassignFromUserConfig := c.parseUnassignFromUserConfig(outputMap)
-			if unassignFromUserConfig != nil {
-				config.UnassignFromUser = unassignFromUserConfig
-			}
-
-			// Handle update-issue
-			updateIssuesConfig := c.parseUpdateIssuesConfig(outputMap)
-			if updateIssuesConfig != nil {
-				config.UpdateIssues = updateIssuesConfig
-			}
-
-			// Handle update-discussion
-			updateDiscussionsConfig := c.parseUpdateDiscussionsConfig(outputMap)
-			if updateDiscussionsConfig != nil {
-				config.UpdateDiscussions = updateDiscussionsConfig
-			}
-
-			// Handle update-pull-request
-			updatePullRequestsConfig := c.parseUpdatePullRequestsConfig(outputMap)
-			if updatePullRequestsConfig != nil {
-				config.UpdatePullRequests = updatePullRequestsConfig
-			}
-
-			// Handle merge-pull-request
-			mergePullRequestConfig := c.parseMergePullRequestConfig(outputMap)
-			if mergePullRequestConfig != nil {
-				config.MergePullRequest = mergePullRequestConfig
-			}
-
-			// Handle push-to-pull-request-branch
-			pushToBranchConfig := c.parsePushToPullRequestBranchConfig(outputMap)
-			if pushToBranchConfig != nil {
-				config.PushToPullRequestBranch = pushToBranchConfig
-			}
-
-			// Handle upload-asset
-			uploadAssetsConfig := c.parseUploadAssetConfig(outputMap)
-			if uploadAssetsConfig != nil {
-				config.UploadAssets = uploadAssetsConfig
-			}
-
-			// Handle upload-artifact
-			uploadArtifactConfig := c.parseUploadArtifactConfig(outputMap)
-			if uploadArtifactConfig != nil {
-				config.UploadArtifact = uploadArtifactConfig
-			}
-
-			// Handle update-release
-			updateReleaseConfig := c.parseUpdateReleaseConfig(outputMap)
-			if updateReleaseConfig != nil {
-				config.UpdateRelease = updateReleaseConfig
-			}
-
-			// Handle link-sub-issue
-			linkSubIssueConfig := c.parseLinkSubIssueConfig(outputMap)
-			if linkSubIssueConfig != nil {
-				config.LinkSubIssue = linkSubIssueConfig
-			}
-
-			// Handle hide-comment
-			hideCommentConfig := c.parseHideCommentConfig(outputMap)
-			if hideCommentConfig != nil {
-				config.HideComment = hideCommentConfig
-			}
-
-			// Handle set-issue-type
-			setIssueTypeConfig := c.parseSetIssueTypeConfig(outputMap)
-			if setIssueTypeConfig != nil {
-				config.SetIssueType = setIssueTypeConfig
-			}
-
-			// Handle set-issue-field
-			setIssueFieldConfig := c.parseSetIssueFieldConfig(outputMap)
-			if setIssueFieldConfig != nil {
-				config.SetIssueField = setIssueFieldConfig
-			}
-
-			// Handle dispatch-workflow
-			dispatchWorkflowConfig := c.parseDispatchWorkflowConfig(outputMap)
-			if dispatchWorkflowConfig != nil {
-				config.DispatchWorkflow = dispatchWorkflowConfig
-			}
-
-			// Handle dispatch_repository
-			dispatchRepositoryConfig := c.parseDispatchRepositoryConfig(outputMap)
-			if dispatchRepositoryConfig != nil {
-				config.DispatchRepository = dispatchRepositoryConfig
-			}
-
-			// Handle call-workflow
-			callWorkflowConfig := c.parseCallWorkflowConfig(outputMap)
-			if callWorkflowConfig != nil {
-				config.CallWorkflow = callWorkflowConfig
-			}
-
-			// Handle missing-tool (parse configuration if present, or enable by default)
-			missingToolConfig := c.parseMissingToolConfig(outputMap)
-			if missingToolConfig != nil {
-				config.MissingTool = missingToolConfig
-			} else {
-				// Enable missing-tool by default if safe-outputs exists and it wasn't explicitly disabled
-				if _, exists := outputMap["missing-tool"]; !exists {
-					trueVal := "true"
-					config.MissingTool = &MissingToolConfig{
-						CreateIssue: &trueVal,
-						TitlePrefix: "",
-						Labels:      nil,
-					}
-				}
-			}
-
-			// Handle missing-data (parse configuration if present, or enable by default)
-			missingDataConfig := c.parseMissingDataConfig(outputMap)
-			if missingDataConfig != nil {
-				config.MissingData = missingDataConfig
-			} else {
-				// Enable missing-data by default if safe-outputs exists and it wasn't explicitly disabled
-				if _, exists := outputMap["missing-data"]; !exists {
-					trueVal := "true"
-					config.MissingData = &MissingDataConfig{
-						CreateIssue: &trueVal,
-						TitlePrefix: "",
-						Labels:      nil,
-					}
-				}
-			}
-
-			// Handle noop (parse configuration if present, or enable by default as fallback)
-			noopConfig := c.parseNoOpConfig(outputMap)
-			if noopConfig != nil {
-				config.NoOp = noopConfig
-			} else {
-				// Enable noop by default if safe-outputs exists and it wasn't explicitly disabled
-				// This ensures there's always a fallback for transparency
-				if _, exists := outputMap["noop"]; !exists {
-					config.NoOp = &NoOpConfig{}
-					config.NoOp.Max = defaultIntStr(1) // Default max
-					trueVal := "true"
-					config.NoOp.ReportAsIssue = &trueVal // Default to reporting to issue
-				}
-			}
-
-			// Handle report-incomplete (parse configuration if present, or enable by default)
-			reportIncompleteConfig := c.parseReportIncompleteConfig(outputMap)
-			if reportIncompleteConfig != nil {
-				config.ReportIncomplete = reportIncompleteConfig
-			} else {
-				// Enable report-incomplete by default if safe-outputs exists and it wasn't explicitly disabled.
-				// This ensures agents always have a first-class channel to signal task incompletion.
-				if _, exists := outputMap["report-incomplete"]; !exists {
-					trueVal := "true"
-					config.ReportIncomplete = &ReportIncompleteConfig{
-						CreateIssue: &trueVal,
-						TitlePrefix: "",
-						Labels:      nil,
-					}
 				}
 			}
 
@@ -505,12 +461,6 @@ func (c *Compiler) extractSafeOutputsConfig(frontmatter map[string]any) *SafeOut
 			// Set default value if not specified or invalid
 			if config.MaximumPatchFiles == 0 {
 				config.MaximumPatchFiles = 100 // Default to 100 unique files
-			}
-
-			// Handle threat-detection
-			threatDetectionConfig := c.parseThreatDetectionConfig(outputMap)
-			if threatDetectionConfig != nil {
-				config.ThreatDetection = threatDetectionConfig
 			}
 
 			// Handle runs-on configuration
