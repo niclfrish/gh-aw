@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-05-12T18:51:03Z",
-  "run_id": "25755261075",
+  "run_date": "2026-05-13T01:12:34Z",
+  "run_id": "25771886383",
   "fork_prs": 0,
-  "agent_prs_found": 0,
-  "agent_prs_excluded": 0,
-  "notes": "GitHub API returned 403 Forbidden (localhost:18443). Consistent with runs 25735873317, 25719462201, 25706856725. All open copilot-swe-agent PRs are from branches within github/gh-aw (not forks) — no fork PRs to triage.",
+  "agent_prs_found": 2,
+  "agent_prs_excluded": 2,
+  "notes": "2 open copilot-swe-agent PRs found (#31820, #31709), both isCrossRepository=false (same-repo branch PRs, not forks). Per triage rules, only fork PRs are triaged. No action taken.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,8 +17,8 @@
     "by_action": {}
   },
   "previous_run": {
-    "run_id": "25735873317",
-    "run_date": "2026-05-12T12:58:56Z",
+    "run_id": "25755261075",
+    "run_date": "2026-05-12T18:51:03Z",
     "fork_prs": 0,
     "agent_prs_found": 0,
     "agent_prs_excluded": 0
