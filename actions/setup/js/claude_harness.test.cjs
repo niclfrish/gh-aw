@@ -10,6 +10,7 @@ const {
   resolveClaudePromptFileArgs,
   stripPromptFileArgs,
   isRateLimitError,
+  isMaxLLMInvocationsExceededError,
   isMaxTurnsExit,
   isNoDeferredMarkerError,
   isSignalTerminationExitCode,
@@ -161,6 +162,16 @@ describe("claude_harness.cjs", () => {
 
     it("returns false for non-rate-limit output", () => {
       expect(isRateLimitError('{"type":"result","subtype":"success","is_error":false}')).toBe(false);
+    });
+  });
+
+  describe("isMaxLLMInvocationsExceededError", () => {
+    it("returns true for maximum LLM invocations exceeded output", () => {
+      expect(isMaxLLMInvocationsExceededError("API Error: Request rejected (429) · Maximum LLM invocations exceeded (100 / 100).")).toBe(true);
+    });
+
+    it("returns false for non-invocation-cap output", () => {
+      expect(isMaxLLMInvocationsExceededError('{"type":"result","subtype":"success","is_error":false}')).toBe(false);
     });
   });
 
@@ -346,6 +357,22 @@ process.exit(0);
       expect(calls.map(call => call.args.includes("--continue"))).toEqual([false, false]);
       expect(calls[1].args).toContain("fix the bug");
       expect(result.stderr).toContain("failure_reason=cancelled_or_timed_out");
+    }, 30000);
+
+    it("does not retry when max LLM invocations are exceeded", () => {
+      const stubScript = `
+const fs = require("fs");
+const callsPath = process.env.CLAUDE_HARNESS_STUB_CALLS;
+const args = process.argv.slice(2);
+fs.appendFileSync(callsPath, JSON.stringify({ args }) + "\\n", "utf8");
+process.stderr.write("API Error: Request rejected (429) · Maximum LLM invocations exceeded (100 / 100).\\n");
+process.exit(1);
+`;
+      const { result, calls } = runHarnessWithStub({ stubScript });
+
+      expect(result.status, result.stderr).toBe(1);
+      expect(calls).toHaveLength(1);
+      expect(result.stderr).toContain("maximum LLM invocations exceeded — not retriable in this run");
     }, 30000);
 
     it("returns true for normal partial-execution retry", () => {

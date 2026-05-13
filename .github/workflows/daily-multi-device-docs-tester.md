@@ -16,7 +16,7 @@ permissions:
 tracker-id: daily-multi-device-docs-tester
 engine:
   id: claude
-  max-turns: 80  # 10 devices × ~5 turns each + setup/report overhead
+  max-turns: 30  # Keep runs bounded when workflows encounter looping/tooling failures
 strict: true
 timeout-minutes: 30
 runtimes:
@@ -63,13 +63,47 @@ network:
     - chrome
 
 imports:
-  - shared/docs-server-lifecycle.md
   - uses: shared/daily-audit-base.md
     with:
       title-prefix: "[multi-device-docs] "
       expires: 3d
 
   - shared/observability-otlp.md
+steps:
+  - name: Setup Node.js
+    uses: actions/setup-node@v6
+    with:
+      node-version: "24"
+      cache: "npm"
+      cache-dependency-path: "docs/package-lock.json"
+
+  - name: Install docs dependencies
+    working-directory: ./docs
+    run: npm ci
+
+  - name: Start Astro docs dev server
+    working-directory: ./docs
+    run: |
+      mkdir -p /tmp/gh-aw
+      nohup npm run dev -- --host 0.0.0.0 --port 4321 > /tmp/gh-aw/preview.log 2>&1 &
+      PID=$!
+      echo "$PID" > /tmp/gh-aw/server.pid
+      echo "Docs server PID: $PID"
+
+  - name: Wait for docs server readiness
+    run: |
+      URL="http://localhost:4321/gh-aw/"
+      for i in $(seq 1 45); do
+        if curl -sS -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 5 "$URL" | grep -q '^200$'; then
+          echo "Docs server is ready: $URL"
+          exit 0
+        fi
+        echo "Waiting for docs server... ($i/45)"
+        sleep 3
+      done
+      echo "Docs server did not become ready in time"
+      cat /tmp/gh-aw/preview.log || true
+      exit 1
 ---
 
 {{#runtime-import? .github/shared-instructions.md}}
@@ -99,18 +133,17 @@ This workflow has `strict: true` — it will fail if no safe output is produced.
 
 Start the documentation development server and perform comprehensive multi-device testing. Test layout responsiveness, accessibility, interactive elements, and visual rendering across all device types. Use a single Playwright browser instance for efficiency.
 
-## Step 1: Install Dependencies and Start Server
+## Step 1: Verify Pre-Started Server
 
-Navigate to the docs folder and install dependencies:
+Dependencies are already installed and the docs dev server is already started by deterministic workflow steps before this agent begins.
+
+Run one quick health check and proceed:
 
 ```bash
-cd ${{ github.workspace }}/docs
-npm install
+curl -sS -o /dev/null -w "%{http_code}\n" --connect-timeout 5 --max-time 5 http://localhost:4321/gh-aw/
 ```
 
-Follow the shared **Documentation Server Lifecycle Management** instructions:
-1. Start the dev server (section "Starting the Documentation Preview Server")
-2. Wait for server readiness (section "Waiting for Server Readiness")
+If this does not return `200`, inspect `/tmp/gh-aw/preview.log` once, report that testing was blocked, and call `noop`.
 
 ## Step 2: Device Configuration
 
@@ -146,11 +179,37 @@ playwright-cli browser_run_code --code "async (page) => {
 - ✅ **Use `localhost` directly** — playwright-cli runs on the runner, so `localhost` reaches the dev server
 - ❌ **Do NOT use bridge IP detection** — that is only needed in the deprecated MCP mode
 
-For each device viewport, use playwright-cli to:
-- Set viewport size and navigate to `http://localhost:4321/gh-aw/`
-- Take screenshots and run accessibility audits
-- Test interactions (navigation, search, buttons)
-- Check for layout issues (overflow, truncation, broken layouts)
+Run a single scripted sweep (one command) instead of many manual per-device loops:
+
+```bash
+playwright-cli browser_run_code --code "async ({ playwright }) => {
+  const browser = await playwright.chromium.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const devices = [
+    { name: 'iPhone 12', width: 390, height: 844 },
+    { name: 'Galaxy S21', width: 360, height: 800 },
+    { name: 'iPad', width: 768, height: 1024 },
+    { name: 'FHD Desktop', width: 1920, height: 1080 },
+    { name: 'HD Desktop', width: 1366, height: 768 }
+  ];
+  const pages = ['/', '/quick-start/'];
+  const results = [];
+  for (const device of devices) {
+    await page.setViewportSize({ width: device.width, height: device.height });
+    for (const route of pages) {
+      const url = 'http://localhost:4321/gh-aw' + route;
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      const a11y = await page.accessibility.snapshot();
+      results.push({ device: device.name, route, title: await page.title(), a11yPresent: !!a11y });
+    }
+  }
+  await browser.close();
+  return results;
+}"
+```
+
+Then review results and run targeted follow-up commands only for failures you need to verify.
 
 ## Step 4: Analyze Results
 
@@ -223,10 +282,6 @@ Create a GitHub issue titled "🔍 Multi-Device Docs Testing Report - [Date]" wi
 ```
 
 Label with: `documentation`, `testing`, `automated`
-
-## Step 6: Cleanup
-
-Follow the shared **Documentation Server Lifecycle Management** instructions for cleanup (section "Stopping the Documentation Server").
 
 ## Summary
 

@@ -66,6 +66,9 @@ const OVERLOADED_ERROR_PATTERN = /overloaded_error|"overloaded"/i;
 //   - embedded stream-json result fields (e.g. "api_error_status":429)
 //   - human-readable message text ("rate limit")
 const RATE_LIMIT_ERROR_PATTERN = /rate_limit_error|429 Too Many Requests|"api_error_status"\s*:\s*429|request rejected \(429\)|rate limit/i;
+// Pattern to detect Anthropic account-level invocation cap exhaustion.
+// This is not transient inside the same run (e.g. "Maximum LLM invocations exceeded (100 / 100)").
+const MAX_LLM_INVOCATIONS_EXCEEDED_PATTERN = /maximum llm invocations exceeded/i;
 
 // Pattern to detect a clean max-turns exit from Claude Code.
 // Claude Code emits a JSON result object with "subtype":"error_max_turns" when the
@@ -110,6 +113,15 @@ function isOverloadedError(output) {
  */
 function isRateLimitError(output) {
   return RATE_LIMIT_ERROR_PATTERN.test(output);
+}
+
+/**
+ * Determines if the collected output contains an account-level invocation-cap error.
+ * @param {string} output - Collected stdout+stderr from the process
+ * @returns {boolean}
+ */
+function isMaxLLMInvocationsExceededError(output) {
+  return MAX_LLM_INVOCATIONS_EXCEEDED_PATTERN.test(output);
 }
 
 /**
@@ -396,6 +408,7 @@ async function main() {
 
     const isOverloaded = isOverloadedError(result.output);
     const isRateLimit = isRateLimitError(result.output);
+    const isMaxLLMInvocationsExceeded = isMaxLLMInvocationsExceededError(result.output);
     const isMaxTurns = isMaxTurnsExit(result.output);
     const isNoDeferredMarker = isNoDeferredMarkerError(result.output);
     const permissionDeniedCount = countPermissionDeniedIssues(result.output);
@@ -405,6 +418,7 @@ async function main() {
         ` exitCode=${result.exitCode}` +
         ` isOverloadedError=${isOverloaded}` +
         ` isRateLimitError=${isRateLimit}` +
+        ` isMaxLLMInvocationsExceededError=${isMaxLLMInvocationsExceeded}` +
         ` isMaxTurnsExit=${isMaxTurns}` +
         ` isNoDeferredMarkerError=${isNoDeferredMarker}` +
         ` permissionDeniedCount=${permissionDeniedCount}` +
@@ -416,6 +430,13 @@ async function main() {
     if (hasNumerousPermissionDenied) {
       emitMissingToolPermissionIssue();
       log(`attempt ${attempt + 1}: detected numerous permission-denied issues — not retrying (classified as missing tool/permission issue)`);
+      break;
+    }
+
+    // Account-level invocation cap exhaustion is terminal for this run.
+    // Retrying the same workflow attempt only burns additional invocations.
+    if (isMaxLLMInvocationsExceeded) {
+      log(`attempt ${attempt + 1}: maximum LLM invocations exceeded — not retriable in this run`);
       break;
     }
 
@@ -492,6 +513,7 @@ if (typeof module !== "undefined" && module.exports) {
     resolveClaudePromptFileArgs,
     stripPromptFileArgs,
     isRateLimitError,
+    isMaxLLMInvocationsExceededError,
     isMaxTurnsExit,
     isNoDeferredMarkerError,
     isSignalTerminationExitCode,
