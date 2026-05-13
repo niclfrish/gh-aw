@@ -212,6 +212,7 @@ This workflow uses skip-roles across issues, comments, and pull requests.
 	t.Run("skip_roles_with_runtime_only_role_keeps_runtime_check_without_static_if", func(t *testing.T) {
 		workflowContent := `---
 on:
+  roles: all
   issue_comment:
     types: [created]
   skip-roles: [triage]
@@ -236,7 +237,7 @@ This workflow keeps triage as a runtime-only skip role.
 		lockContentStr := string(lockContent)
 		preActivationSection := extractJobSection(lockContentStr, "pre_activation")
 		assert.Contains(t, lockContentStr, `GH_AW_SKIP_ROLES: "triage"`, "Expected runtime skip-roles check to remain for triage")
-		assert.NotContains(t, preActivationSection, `!contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)`, "Expected no static skip-roles author_association gate for runtime-only skip roles")
+		assert.NotContains(t, preActivationSection, "\n    if:", "Expected no pre_activation if: when skip-roles only contains runtime-only roles")
 	})
 }
 

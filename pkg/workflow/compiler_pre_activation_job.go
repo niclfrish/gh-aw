@@ -576,6 +576,7 @@ func buildSkipRolesAuthorAssociationCondition(skipRoles []string, on string) str
 
 	authorAssociationsJSON, err := json.Marshal(authorAssociations)
 	if err != nil {
+		compilerActivationJobsLog.Printf("failed to marshal skip-roles author associations %v: %v", authorAssociations, err)
 		return ""
 	}
 
