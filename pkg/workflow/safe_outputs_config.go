@@ -63,8 +63,15 @@ type safeOutputExtractHandler struct {
 }
 
 // safeOutputExtractHandlers is the registry that drives extractSafeOutputsConfig.
-// Each Shape A entry assigns a parsed config when the key is present and non-false.
-// Each Shape B entry additionally falls back to a default when the key is absent.
+//
+// Shape A (most handlers): assign a parsed config when the key is present and non-false.
+// Shape B (4 "default-on" handlers): also fall back to a built-in default when the
+// key is entirely absent from the frontmatter (missing-tool, missing-data, noop,
+// report-incomplete).
+//
+// Scalar settings (staged, env, github-token, max-patch-size, max-patch-files,
+// allowed-domains, runs-on, messages, steps, etc.) are handled inline in
+// extractSafeOutputsConfig and do not appear in this table.
 var safeOutputExtractHandlers = []safeOutputExtractHandler{
 	{run: func(c *Compiler, cfg *SafeOutputsConfig, m map[string]any) {
 		if v := c.parseIssuesConfig(m); v != nil {
