@@ -182,8 +182,13 @@ describe("emit_outcome_spans.cjs", () => {
       rejected: 1,
       ignored: 0,
       pending: 0,
+      lifecycle: 0,
+      noop: 0,
+      zero_touch: 1,
       acceptance_rate: 0.5,
       waste_rate: 0.5,
+      zero_touch_rate: 1,
+      median_resolution_sec: 7200,
       date: "2026-05-13",
     };
     fs.writeFileSync(
@@ -197,7 +202,12 @@ describe("emit_outcome_spans.cjs", () => {
           run_id: 101,
           url: "https://github.com/github/gh-aw/issues/1",
           repo: "github/gh-aw",
+          number: 1,
           timestamp: "2026-05-13T09:00:00Z",
+          human_comments: 0,
+          human_reviews: 0,
+          zero_touch: true,
+          state_reason: "completed",
         }),
         JSON.stringify({
           type: "comment",
@@ -205,6 +215,8 @@ describe("emit_outcome_spans.cjs", () => {
           workflow: "triage",
           run_id: 102,
           repo: "github/gh-aw",
+          reactions: 0,
+          replies: 0,
         }),
       ].join("\n")
     );
@@ -263,10 +275,16 @@ describe("emit_outcome_spans.cjs", () => {
 
     expect(summarySpan.attributes).toContainEqual({ key: "gh-aw.exporter.name", value: "outcome-collector" });
     expect(summarySpan.attributes).toContainEqual({ key: "gh-aw.outcome.date", value: "2026-05-13" });
+    expect(summarySpan.attributes).toContainEqual({ key: "gh-aw.outcome.zero_touch", value: 1 });
+    expect(summarySpan.attributes).toContainEqual({ key: "gh-aw.outcome.zero_touch_rate", value: 1 });
+    expect(summarySpan.attributes).toContainEqual({ key: "gh-aw.outcome.median_resolution_sec", value: 7200 });
     expect(spans[1].attributes).toContainEqual({ key: "gh-aw.exporter.name", value: "outcome-collector" });
     expect(spans[1].attributes).toContainEqual({ key: "gh-aw.outcome.url", value: "https://github.com/github/gh-aw/issues/1" });
+    expect(spans[1].attributes).toContainEqual({ key: "gh-aw.outcome.number", value: 1 });
     expect(spans[1].attributes).toContainEqual({ key: "gh-aw.outcome.detail", value: "created item" });
     expect(spans[1].attributes).toContainEqual({ key: "gh-aw.outcome.created_at", value: "2026-05-13T09:00:00Z" });
+    expect(spans[1].attributes).toContainEqual({ key: "gh-aw.outcome.zero_touch", value: true });
+    expect(spans[1].attributes).toContainEqual({ key: "gh-aw.outcome.state_reason", value: "completed" });
 
     expect(mockAppendToOTLPJSONL).toHaveBeenCalledOnce();
     expect(mockSendOTLPToAllEndpoints).not.toHaveBeenCalled();

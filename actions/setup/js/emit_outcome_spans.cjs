@@ -140,14 +140,23 @@ async function main() {
     const sourceRunId = typeof eval_.run_id === "number" ? eval_.run_id : 0;
     const url = typeof eval_.url === "string" ? eval_.url : "";
     const repo = typeof eval_.repo === "string" ? eval_.repo : "";
+    const number = typeof eval_.number === "number" ? eval_.number : 0;
     const timestamp = typeof eval_.timestamp === "string" ? eval_.timestamp : "";
     const event = typeof eval_.event === "string" ? eval_.event : "";
     const resolutionSec = typeof eval_.resolution_sec === "number" ? eval_.resolution_sec : null;
     const pendingAgeSec = typeof eval_.pending_age_sec === "number" ? eval_.pending_age_sec : null;
     const reviewComments = typeof eval_.review_comments === "number" ? eval_.review_comments : null;
+    const humanComments = typeof eval_.human_comments === "number" ? eval_.human_comments : null;
+    const humanReviews = typeof eval_.human_reviews === "number" ? eval_.human_reviews : null;
     const changedFiles = typeof eval_.changed_files === "number" ? eval_.changed_files : null;
     const additions = typeof eval_.additions === "number" ? eval_.additions : null;
     const deletions = typeof eval_.deletions === "number" ? eval_.deletions : null;
+    const reactions = typeof eval_.reactions === "number" ? eval_.reactions : null;
+    const replies = typeof eval_.replies === "number" ? eval_.replies : null;
+    const zeroTouch = eval_.zero_touch === true;
+    const stateReason = typeof eval_.state_reason === "string" ? eval_.state_reason : "";
+    const closedBy = typeof eval_.closed_by === "string" ? eval_.closed_by : "";
+    const closedByBot = typeof eval_.closed_by_bot === "boolean" ? eval_.closed_by_bot : null;
 
     const attributes = [
       buildAttr("gh-aw.exporter.name", "outcome-collector"),
@@ -158,6 +167,7 @@ async function main() {
       buildAttr("gh-aw.outcome.repo", repo),
     ];
 
+    if (number > 0) attributes.push(buildAttr("gh-aw.outcome.number", number));
     if (url) attributes.push(buildAttr("gh-aw.outcome.url", url));
     if (detail) attributes.push(buildAttr("gh-aw.outcome.detail", detail));
     if (timestamp) attributes.push(buildAttr("gh-aw.outcome.created_at", timestamp));
@@ -165,9 +175,17 @@ async function main() {
     if (resolutionSec !== null) attributes.push(buildAttr("gh-aw.outcome.resolution_sec", resolutionSec));
     if (pendingAgeSec !== null) attributes.push(buildAttr("gh-aw.outcome.pending_age_sec", pendingAgeSec));
     if (reviewComments !== null) attributes.push(buildAttr("gh-aw.outcome.review_comments", reviewComments));
+    if (humanComments !== null) attributes.push(buildAttr("gh-aw.outcome.human_comments", humanComments));
+    if (humanReviews !== null) attributes.push(buildAttr("gh-aw.outcome.human_reviews", humanReviews));
     if (changedFiles !== null) attributes.push(buildAttr("gh-aw.outcome.changed_files", changedFiles));
     if (additions !== null) attributes.push(buildAttr("gh-aw.outcome.additions", additions));
     if (deletions !== null) attributes.push(buildAttr("gh-aw.outcome.deletions", deletions));
+    if (reactions !== null) attributes.push(buildAttr("gh-aw.outcome.reactions", reactions));
+    if (replies !== null) attributes.push(buildAttr("gh-aw.outcome.replies", replies));
+    if (zeroTouch) attributes.push(buildAttr("gh-aw.outcome.zero_touch", true));
+    if (stateReason) attributes.push(buildAttr("gh-aw.outcome.state_reason", stateReason));
+    if (closedBy) attributes.push(buildAttr("gh-aw.outcome.closed_by", closedBy));
+    if (closedByBot !== null) attributes.push(buildAttr("gh-aw.outcome.closed_by_bot", closedByBot));
 
     // Map result to OTLP status: accepted=OK, rejected=ERROR, noop=UNSET, pending/ignored=UNSET
     const statusCode = result === "rejected" ? 2 : result === "accepted" ? 1 : 0;
@@ -201,15 +219,24 @@ async function main() {
     buildAttr("gh-aw.outcome.rejected", getSummaryNumber("rejected", 0)),
     buildAttr("gh-aw.outcome.ignored", getSummaryNumber("ignored", 0)),
     buildAttr("gh-aw.outcome.pending", getSummaryNumber("pending", 0)),
+    buildAttr("gh-aw.outcome.lifecycle", getSummaryNumber("lifecycle", 0)),
     buildAttr("gh-aw.outcome.noop", getSummaryNumber("noop", 0)),
+    buildAttr("gh-aw.outcome.zero_touch", getSummaryNumber("zero_touch", 0)),
     buildAttr("gh-aw.outcome.acceptance_rate", getSummaryNumber("acceptance_rate", 0)),
     buildAttr("gh-aw.outcome.waste_rate", getSummaryNumber("waste_rate", 0)),
     buildAttr("gh-aw.outcome.noop_rate", getSummaryNumber("noop_rate", 0)),
+    buildAttr("gh-aw.outcome.zero_touch_rate", getSummaryNumber("zero_touch_rate", 0)),
     buildAttr("gh-aw.outcome.item_count", evaluations.length),
   ];
 
   if (summary && summary.date) {
     summaryAttributes.push(buildAttr("gh-aw.outcome.date", summary.date));
+  }
+  if (typeof getSummaryNumber("median_resolution_sec", null) === "number") {
+    summaryAttributes.push(buildAttr("gh-aw.outcome.median_resolution_sec", getSummaryNumber("median_resolution_sec", 0)));
+  }
+  if (typeof getSummaryNumber("median_pending_age_sec", null) === "number") {
+    summaryAttributes.push(buildAttr("gh-aw.outcome.median_pending_age_sec", getSummaryNumber("median_pending_age_sec", 0)));
   }
 
   // Median time-to-resolution for resolved items

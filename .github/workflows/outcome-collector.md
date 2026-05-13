@@ -70,6 +70,13 @@ The pre-agent step has already evaluated outcomes for recent workflow runs. Resu
 - `/tmp/gh-aw/outcome-summary.json` — fleet-wide summary
 - `/tmp/gh-aw/outcomes/run-*.json` — per-run outcome details
 
+The summary now also includes structured breakdowns:
+
+- `workflows[]` — per-workflow outcome counts and rates
+- `types[]` — per safe-output-type outcome counts and rates
+- `events[]` — per trigger/event outcome counts and rates
+- `median_resolution_sec`, `median_pending_age_sec`, `zero_touch`, `zero_touch_rate`
+
 ## Task
 
 1. Read `/tmp/gh-aw/outcome-summary.json`
@@ -81,7 +88,7 @@ The pre-agent step has already evaluated outcomes for recent workflow runs. Resu
 Create an issue with this structure:
 
 ```markdown
-## Safe Output Outcomes — {date}
+Safe Output Outcomes — {date}
 
 ### Fleet Summary
 
@@ -93,21 +100,35 @@ Create an issue with this structure:
 | Rejected | {rejected} |
 | Ignored | {ignored} |
 | Pending | {pending} |
+| Lifecycle | {lifecycle} |
+| Zero-touch accepted | {zero_touch} |
 | **Acceptance rate** | **{acceptance_rate}%** |
 | Waste rate | {waste_rate}% |
+| Zero-touch rate | {zero_touch_rate}% |
+| Median time to outcome | {median_resolution_sec} sec |
 
 ### Per-Workflow Breakdown
 
-For each workflow with outcomes, show:
+Use `workflows[]` from the summary. For each workflow with outcomes, show:
 - Workflow name
-- Outcomes: accepted / rejected / ignored
+- Outcomes: accepted / rejected / ignored / pending / lifecycle
 - Acceptance rate
+- Waste rate
+- Zero-touch count if non-zero
+
+If there are many workflows, keep only the highest-volume ones visible and put the rest in `<details>`.
+
+### Outcome Type Breakdown
+
+Use `types[]` from the summary to show which safe output types are generating the most accepted, ignored, and rejected outcomes.
 
 ### Key Observations
 
 - Which workflows have the highest acceptance rate?
 - Which workflows have the highest waste rate?
 - Any workflows with all outcomes ignored (noise signal)?
+- Which output types have the strongest zero-touch acceptance?
+- Is median pending age increasing for any high-volume workflow or type?
 ```
 
 ## Guidelines
