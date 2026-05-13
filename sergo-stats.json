@@ -1,10 +1,10 @@
 {
-  "total_runs": 7,
-  "total_findings": 69,
-  "total_tasks": 21,
+  "total_runs": 8,
+  "total_findings": 78,
+  "total_tasks": 23,
   "avg_success_score": 8.4,
-  "last_run": "2026-05-12",
-  "top_strategies": ["concurrency-safety-and-resource-lifecycle (Run 4, 9/10)", "function-complexity-and-long-function-hot-spots (Run 5, 9/10)", "parameter-list-systematic-scan-plus-deep-nesting (Run 6, 9/10)", "switch-statement-complexity-plus-exported-api-usage-audit (Run 7, 9/10)"],
+  "last_run": "2026-05-13",
+  "top_strategies": ["concurrency-safety-and-resource-lifecycle (Run 4, 9/10)", "function-complexity-and-long-function-hot-spots (Run 5, 9/10)", "parameter-list-systematic-scan-plus-deep-nesting (Run 6, 9/10)", "switch-statement-complexity-plus-exported-api-usage-audit (Run 7, 9/10)", "exported-symbol-dead-code-plus-magic-literal-duplication (Run 8, 8/10)"],
   "serena_lsp_status": "OPERATIONAL since 2026-05-07. Key: find_symbol --name_path_pattern (NOT --name_path); receiver methods need '(*Type).method' qualified form; find_referencing_symbols requires --relative_path as file (not dir); search_for_pattern uses --substring_pattern. Use JSON stdin pipe with '.' sentinel. WARNING: broad find_symbol queries (e.g. function name without kind filter) can take 70+ seconds - prefer Grep for plain lookups.",
   "completed_scans": {
     "type_assertions": "5 in all of pkg/ non-test, all safe comma-ok (Run 3)",
@@ -16,12 +16,16 @@
     "panic_calls": "16 in non-test pkg/, all legitimate fail-fast at init/embed-load or BUG guards (Run 5)",
     "nesting_depth": "depth-9 ifs in 30 files (57 occurrences); depth-11 clusters in parseToolCallsWithSequence (#aw_sg6n1), logs_metrics.go, claude_tools.go (Run 6)",
     "switch_case_count": "ranked pkg/ files - top: frontmatter_parsing.go 58, permissions.go 49 (convertStringToPermissionScope identity switch #aw_sg7a2), imports.go 45 (hasSafeOutputType), safe_outputs_permissions.go 35, mcp_config_custom.go 34, audit_agentic_analysis.go 32 (Run 7)",
-    "safe_outputs_dispatch_duplication": "8 parallel dispatch tables for SafeOutputs handler-type keys (Run 7 #aw_sg7a1). Documented in safe_outputs_state.go:16-21 (comment says 4, actual is 8): safeOutputFieldMapping, hasAnySafeOutputEnabled, hasNonBuiltinSafeOutputsEnabled, hasSafeOutputType, SafeOutputsConfigFromKeys, ComputePermissionsForSafeOutputs, mergeSafeOutputConfig, extractSafeOutputsConfig (#31298)"
+    "safe_outputs_dispatch_duplication": "8 parallel dispatch tables for SafeOutputs handler-type keys (Run 7 #aw_sg7a1). Documented in safe_outputs_state.go:16-21 (comment says 4, actual is 8): safeOutputFieldMapping, hasAnySafeOutputEnabled, hasNonBuiltinSafeOutputsEnabled, hasSafeOutputType, SafeOutputsConfigFromKeys, ComputePermissionsForSafeOutputs, mergeSafeOutputConfig, extractSafeOutputsConfig (#31298)",
+    "file_mode_octal_literals": "57 prod sites in pkg/ (Run 8): 27x 0755 dir, 16x 0644 file, 10x 0600 sensitive file, 4x 0750 sensitive dir. NO FilePerm/DirPerm constants exist in pkg/constants. awf_helpers.go:182 documents 0644 secret-leak risk but 16 other 0644 prod sites uncommented. Issue: #aw_sg8a1",
+    "http_client_timeout_30s_duplication": "4 prod sites use literal '30 * time.Second' for http.Client Timeout (Run 8): parser/remote_fetch.go:521, cli/mcp_registry.go:50, cli/deps_security.go:139, cli/agent_download.go:45. Plus mcp_inspect_mcp.go:253 OMITS Timeout entirely - potential indefinite hang. Centralize as constants.DefaultHTTPClientTimeout. Issue: #aw_sg8a2",
+    "dead_code_utility_packages": "Run 8: 9 utility packages audited - all healthy. sliceutil 90 uses across 43 files, typeutil 115 across 15 files, stringutil 538 across 195 files, semverutil 11 across 8 files, jsonutil 5 across 3 files. envutil.GetIntFromEnv: 1 prod site (logs_orchestrator.go) - borderline acceptable."
   },
   "established_patterns": {
     "options_struct_model": "CompileConfig in pkg/cli/compile_pipeline.go - reference model for refactors",
     "production_goroutine_convention": "defer recover() per update_check.go:273 pattern",
-    "string_constant_identity_switch": "When const block defines `const Foo Scope = \"foo\"` and a switch maps \"foo\"->Foo, collapse to map-validated cast (see #aw_sg7a2)"
+    "string_constant_identity_switch": "When const block defines `const Foo Scope = \"foo\"` and a switch maps \"foo\"->Foo, collapse to map-validated cast (see #aw_sg7a2)",
+    "pkg_constants_grouping": "pkg/constants/constants.go is the canonical home for Default* constants. 7 files total in pkg/constants (constants.go, version_constants.go, url_constants.go, job_constants.go, engine_constants.go, feature_constants.go, tool_constants.go). Adding new named timeouts/permissions there fits the pattern."
   },
-  "bash_policy_limits": "Workspace shell blocks running multi-statement scripts (.sh files) and awk on /dev/null. mkdir/ls/wc/stat blocked outside /home/runner/work/gh-aw/gh-aw. Must Grep/Read directly and Write to memory directly (no mkdir). gh CLI in sandbox returns HTTP 403 on /meta endpoint - duplicate-issue detection by gh search not possible; rely on cache + safeoutputs."
+  "bash_policy_limits": "Workspace shell blocks running multi-statement scripts (.sh files) and awk on /dev/null. mkdir/ls/wc/stat blocked outside /home/runner/work/gh-aw/gh-aw. Must Grep/Read directly and Write to memory directly (no mkdir). gh CLI in sandbox returns HTTP 403 on /meta endpoint - duplicate-issue detection by gh search not possible; rely on cache + safeoutputs. Heredoc append with `cat >> file << EOF` triggered 'brace with quote' policy in Run 8 - use Write tool to overwrite entire JSONL instead of bash append."
 }

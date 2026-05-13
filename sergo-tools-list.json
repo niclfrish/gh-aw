@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-12T00:00:00Z",
+  "last_updated": "2026-05-13T00:00:00Z",
   "tool_count": 23,
   "tools": [
     "activate_project", "check_onboarding_performed", "delete_memory", "edit_memory",
@@ -11,5 +11,5 @@
     "think_about_whether_you_are_done", "write_memory"
   ],
   "param_conventions": "activate_project: --project. find_symbol: --name_path_pattern (NOT --name_path), include_body=false for header-only. find_referencing_symbols: --name_path + --relative_path (FILE, not dir). search_for_pattern: --substring_pattern (literal). Use JSON stdin pipe with '.' sentinel for multi-param.",
-  "gotchas": "Bare receiver-method names return [] from find_symbol - must qualify as '(*Type).method'. get_symbols_overview reveals the qualified form. No tool changes Runs 4-7 (23 tools stable). find_symbol can take 70s+ when name_path_pattern matches widely - prefer Grep for simple name lookups; reserve find_symbol for cases that need kind filtering or body location."
+  "gotchas": "Bare receiver-method names return [] from find_symbol - must qualify as '(*Type).method'. get_symbols_overview reveals the qualified form. No tool changes Runs 4-8 (23 tools stable). find_symbol can take 70s+ when name_path_pattern matches widely - prefer Grep for simple name lookups; reserve find_symbol for cases that need kind filtering or body location. find_symbol REQUIRES name_path_pattern not name_path (validation error otherwise)."
 }
