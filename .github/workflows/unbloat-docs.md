@@ -31,7 +31,7 @@ runtimes:
 # AI engine configuration
 engine:
   id: claude
-  max-turns: 60  # Reduce from 90 to stay under 100-invocation per-run API limit
+  max-turns: 60  # Reduce from 90 to stay under Copilot API's 100-invocation-per-run limit
 
 # Shared instructions
 imports:
