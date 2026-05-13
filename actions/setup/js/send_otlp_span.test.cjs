@@ -1636,6 +1636,28 @@ describe("sendJobSetupSpan", () => {
     expect(keys).not.toContain("gh-aw.engine.id");
   });
 
+  it("uses aw_context.engine_id for gh-aw.engine.id when env is not set", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({ ok: true, status: 200, statusText: "OK" });
+    vi.stubGlobal("fetch", mockFetch);
+    const readFileSpy = vi.spyOn(fs, "readFileSync").mockImplementation(filePath => {
+      if (filePath === "/tmp/gh-aw/aw_info.json") {
+        return JSON.stringify({ context: { engine_id: "claude" } });
+      }
+      throw Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+    });
+
+    process.env.GH_AW_OTLP_ENDPOINTS = JSON.stringify([{ url: "https://traces.example.com" }]);
+    try {
+      await sendJobSetupSpan();
+
+      const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+      const span = body.resourceSpans[0].scopeSpans[0].spans[0];
+      expect(span.attributes).toContainEqual({ key: "gh-aw.engine.id", value: { stringValue: "claude" } });
+    } finally {
+      readFileSpy.mockRestore();
+    }
+  });
+
   describe("cross-job parent span propagation via aw_context", () => {
     let readFileSpy;
 
