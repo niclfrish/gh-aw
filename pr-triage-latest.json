@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-05-13T07:21:48Z",
-  "run_id": "25784524637",
+  "run_date": "2026-05-13T13:02:28Z",
+  "run_id": "25800671245",
   "fork_prs": 0,
-  "agent_prs_found": 9,
-  "agent_prs_excluded": 9,
-  "notes": "9 open copilot-swe-agent PRs found (#31886, #31885, #31884, #31881, #31877, #31876, #31874, #31872, #31709), all same-repo branch PRs (head_owner=github). Per triage rules, only fork PRs are triaged. No action taken.",
+  "agent_prs_found": 8,
+  "agent_prs_excluded": 8,
+  "notes": "8 open agent PRs found (#31935, #31928, #31927, #31921, #31920, #31917, #31916, #31709), all same-repo branch PRs (head_owner=github). Per triage rules, only fork PRs are triaged. No action taken.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,10 +17,10 @@
     "by_action": {}
   },
   "previous_run": {
-    "run_id": "25771886383",
-    "run_date": "2026-05-13T01:12:34Z",
+    "run_id": "25784524637",
+    "run_date": "2026-05-13T07:21:48Z",
     "fork_prs": 0,
-    "agent_prs_found": 2,
-    "agent_prs_excluded": 2
+    "agent_prs_found": 9,
+    "agent_prs_excluded": 9
   }
 }
