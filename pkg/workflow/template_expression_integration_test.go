@@ -5,6 +5,7 @@ package workflow
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -94,17 +95,17 @@ ${{ steps.sanitized.outputs.text }}
 	}
 
 	// Verify GitHub expressions are properly replaced with placeholders in template conditionals
-	// The GitHub context section (built-in) should have placeholders
-	// User markdown content is loaded via runtime-import and processed at runtime
-	expectedPlaceholderExpressions := []string{
-		"{{#if __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__ }}",
-		"{{#if __GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__ }}",
+	// The GitHub context section now uses aw_context fallbacks, which are complex expressions.
+	// Complex expressions use hash-based env vars and placeholder names.
+	if !strings.Contains(compiledStr, "github.event.issue.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'issue' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number)") {
+		t.Error("Compiled workflow should contain aw_context fallback for issue number")
 	}
-
-	for _, expectedExpr := range expectedPlaceholderExpressions {
-		if !strings.Contains(compiledStr, expectedExpr) {
-			t.Errorf("Compiled workflow should contain placeholder expression in GitHub context: %s", expectedExpr)
-		}
+	if !strings.Contains(compiledStr, "github.event.pull_request.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'pull_request' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number)") {
+		t.Error("Compiled workflow should contain aw_context fallback for pull request number")
+	}
+	placeholderConditionalPattern := regexp.MustCompile(`\{\{#if __GH_AW_[A-Z0-9_]+__ \}\}`)
+	if !placeholderConditionalPattern.MatchString(compiledStr) {
+		t.Error("Compiled workflow should contain placeholder-based template conditionals")
 	}
 
 	// Verify that the main workflow content is loaded via runtime-import
@@ -186,13 +187,13 @@ This expression needs wrapping.
 	// 2. Placeholders are not double-wrapped
 	// 3. Both expressions result in placeholder-based conditionals
 
-	// Verify that placeholder conditionals exist (not the original expressions)
-	if !strings.Contains(compiledStr, "{{#if __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__ }}") {
-		t.Error("Expected placeholder conditional for github.event.issue.number")
+	// Verify placeholder conditionals exist (exact env var names may vary for complex expressions).
+	placeholderConditionalPattern := regexp.MustCompile(`\{\{#if __GH_AW_[A-Z0-9_]+__ \}\}`)
+	if !placeholderConditionalPattern.MatchString(compiledStr) {
+		t.Error("Expected placeholder-based conditional in compiled output")
 	}
-
-	if !strings.Contains(compiledStr, "{{#if __GH_AW_GITHUB_ACTOR__ }}") {
-		t.Error("Expected placeholder conditional for github.actor")
+	if !strings.Contains(compiledStr, "GH_AW_GITHUB_ACTOR: ${{ github.actor }}") {
+		t.Error("Expected github.actor expression mapping to be present")
 	}
 
 	// Verify that expressions are not double-wrapped with ${{ ${{ ... }}
@@ -264,10 +265,13 @@ Steps expression - will be wrapped.
 
 	compiledStr := string(compiledYAML)
 
-	// Verify GitHub expressions in the GitHub context section are replaced with placeholders
-	// (These are in the built-in context, not the user's markdown)
-	if !strings.Contains(compiledStr, "{{#if __GH_AW_GITHUB_EVENT_ISSUE_NUMBER__ }}") {
-		t.Error("GitHub context should contain placeholder for github.event.issue.number")
+	// Verify GitHub context now uses aw_context fallback expressions.
+	if !strings.Contains(compiledStr, "github.event.issue.number || (fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_type == 'issue' && fromJSON(github.event.inputs.aw_context || github.event.client_payload.aw_context || '{}').item_number)") {
+		t.Error("GitHub context should contain aw_context fallback for github.event.issue.number")
+	}
+	placeholderConditionalPattern := regexp.MustCompile(`\{\{#if __GH_AW_[A-Z0-9_]+__ \}\}`)
+	if !placeholderConditionalPattern.MatchString(compiledStr) {
+		t.Error("GitHub context should contain placeholder-based conditionals")
 	}
 
 	// Verify that the main workflow content is loaded via runtime-import

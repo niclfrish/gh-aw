@@ -27,13 +27,11 @@ func TestLocalActionPermissions(t *testing.T) {
 			name: "pre-activation job with local actions needs contents read",
 			frontmatter: `---
 on:
-  issues:
-    types: [opened]
+  command: fix
 permissions:
   issues: read
 engine: claude
 strict: false
-command: /fix
 ---`,
 			description:        "Pre-activation job should have contents: read when using local actions",
 			expectedPermission: "contents: read",
@@ -153,7 +151,6 @@ permissions:
   issues: read
 engine: claude
 strict: false
-command: /fix
 ---`
 
 	testContent := frontmatter + "\n\n# Test Workflow\n\nTest workflow content."
