@@ -657,10 +657,10 @@ Deploy without status feedback.
 	lockStr := string(lockContent)
 
 	// Verify no status-comment steps are present in the compiled workflow
-	assert.NotContains(t, lockStr, "post_status_comment",
-		"compiled workflow should NOT contain post_status_comment when status_command: false")
-	assert.NotContains(t, lockStr, "update_status_comment",
-		"compiled workflow should NOT contain update_status_comment when status_command: false")
+	assert.NotContains(t, lockStr, "add-comment",
+		"compiled workflow should NOT contain add-comment step when status_command: false")
+	assert.NotContains(t, lockStr, "Add comment with workflow run link",
+		"compiled workflow should NOT contain status-comment step when status_command: false")
 }
 
 // TestLabelCommandStatusCommandEnabled verifies that setting status_command: true within
@@ -695,6 +695,20 @@ Deploy with explicit status feedback.
 	// Verify StatusComment is enabled
 	require.NotNil(t, workflowData.StatusComment, "StatusComment should not be nil when status_command: true")
 	assert.True(t, *workflowData.StatusComment, "StatusComment should be true when status_command: true")
+
+	err = compiler.CompileWorkflow(workflowPath)
+	require.NoError(t, err, "CompileWorkflow() should not error")
+
+	lockFilePath := stringutil.MarkdownToLockFile(workflowPath)
+	lockContent, err := os.ReadFile(lockFilePath)
+	require.NoError(t, err, "failed to read lock file")
+
+	lockStr := string(lockContent)
+
+	// Verify status-comment steps ARE present in the compiled workflow
+	assert.True(t,
+		strings.Contains(lockStr, "add-comment") || strings.Contains(lockStr, "Add comment with workflow run link"),
+		"compiled workflow should contain status-comment steps when status_command: true")
 }
 
 // TestLabelCommandStatusCommandDefaultTrue verifies that status-comment is auto-enabled by
@@ -728,6 +742,20 @@ Deploy with default status feedback.
 	// StatusComment should default to true for label_command
 	require.NotNil(t, workflowData.StatusComment, "StatusComment should not be nil for label_command workflows")
 	assert.True(t, *workflowData.StatusComment, "StatusComment should default to true for label_command workflows")
+
+	err = compiler.CompileWorkflow(workflowPath)
+	require.NoError(t, err, "CompileWorkflow() should not error")
+
+	lockFilePath := stringutil.MarkdownToLockFile(workflowPath)
+	lockContent, err := os.ReadFile(lockFilePath)
+	require.NoError(t, err, "failed to read lock file")
+
+	lockStr := string(lockContent)
+
+	// Verify status-comment steps ARE present in the compiled workflow (default auto-enable)
+	assert.True(t,
+		strings.Contains(lockStr, "add-comment") || strings.Contains(lockStr, "Add comment with workflow run link"),
+		"compiled workflow should contain status-comment steps by default for label_command")
 }
 
 // TestLabelCommandStatusCommandOverriddenByOnSection verifies that an explicit
