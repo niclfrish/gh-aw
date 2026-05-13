@@ -283,6 +283,14 @@ on:
     # (optional)
     remove_label: true
 
+    # Whether to post status comments (started/completed) on the triggering item.
+    # Defaults to true for label_command triggers (enabled by default to provide
+    # feedback to the user). Set to false to disable status comments inline within
+    # the label_command configuration. When on.status-comment is also set, the
+    # on.status-comment value takes precedence over this field.
+    # (optional)
+    status_command: true
+
   # Push event trigger that runs the workflow when code is pushed to the repository
   # (optional)
   push:

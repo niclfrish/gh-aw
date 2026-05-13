@@ -504,6 +504,7 @@ type WorkflowData struct {
 	LabelCommandDecentralized      bool                            // when true, label_command uses decentralized dispatch routing via agentic_commands.yml
 	LabelCommandOtherEvents        map[string]any                  // for merging label-command with other events
 	LabelCommandRemoveLabel        bool                            // whether to automatically remove the triggering label (default: true)
+	LabelCommandStatusCommand      *bool                           // when set, overrides auto-enable of status-comment for label_command (nil = auto-enable true)
 	AIReaction                     string                          // AI reaction type like "eyes", "heart", etc.
 	ReactionIssues                 *bool                           // whether reactions are allowed on issues/issue_comment triggers (default: true)
 	ReactionPullRequests           *bool                           // whether reactions are allowed on pull_request/pull_request_review_comment triggers (default: true)

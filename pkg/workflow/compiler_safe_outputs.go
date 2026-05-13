@@ -244,10 +244,17 @@ func (c *Compiler) parseOnSection(frontmatter map[string]any, workflowData *Work
 		workflowData.AIReaction = "eyes"
 	}
 
-	// Auto-enable status-comment for slash_command/label_command (and deprecated command) triggers if not explicitly set
+	// Auto-enable status-comment for slash_command/label_command (and deprecated command) triggers if not explicitly set.
+	// For label_command, the status_command field within the label_command config can override the default.
 	if (hasCommand || hasLabelCommand) && !hasStatusComment && workflowData.StatusComment == nil {
-		trueVal := true
-		workflowData.StatusComment = &trueVal
+		if hasLabelCommand && workflowData.LabelCommandStatusCommand != nil && !*workflowData.LabelCommandStatusCommand {
+			// label_command.status_command: false explicitly disables status-comment
+			falseVal := false
+			workflowData.StatusComment = &falseVal
+		} else {
+			trueVal := true
+			workflowData.StatusComment = &trueVal
+		}
 	}
 
 	// Store other events for merging in applyDefaults

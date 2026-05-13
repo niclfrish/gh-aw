@@ -1058,40 +1058,44 @@ func (c *Compiler) extractCommandConfig(frontmatter map[string]any) (commandName
 }
 
 // extractLabelCommandConfig extracts the label-command configuration from frontmatter
-// including label name(s), the events field, strategy, and the remove_label flag.
+// including label name(s), the events field, strategy, the remove_label flag, and the
+// status_command flag.
 // It reads on.label_command which can be:
 //   - a string: label name directly (e.g. label_command: "deploy")
-//   - a map with "name" or "names", optional "events", optional "strategy", and optional "remove_label" fields
+//   - a map with "name" or "names", optional "events", optional "strategy",
+//     optional "remove_label", and optional "status_command" fields
 //
-// Returns (labelNames, labelEvents, decentralized, removeLabel) where labelEvents is nil for default (all events)
-// and removeLabel defaults to true when not specified.
-func (c *Compiler) extractLabelCommandConfig(frontmatter map[string]any) (labelNames []string, labelEvents []string, decentralized bool, removeLabel bool) {
+// Returns (labelNames, labelEvents, decentralized, removeLabel, statusCommand) where
+// labelEvents is nil for default (all events), removeLabel defaults to true when not
+// specified, and statusCommand is nil when not specified (defaults to auto-enable true).
+func (c *Compiler) extractLabelCommandConfig(frontmatter map[string]any) (labelNames []string, labelEvents []string, decentralized bool, removeLabel bool, statusCommand *bool) {
 	frontmatterLog.Print("Extracting label-command configuration from frontmatter")
 	onValue, exists := frontmatter["on"]
 	if !exists {
-		return nil, nil, false, true
+		return nil, nil, false, true, nil
 	}
 	onMap, ok := onValue.(map[string]any)
 	if !ok {
-		return nil, nil, false, true
+		return nil, nil, false, true, nil
 	}
 	labelCommandValue, hasLabelCommand := onMap["label_command"]
 	if !hasLabelCommand {
-		return nil, nil, false, true
+		return nil, nil, false, true, nil
 	}
 
 	// Simple string form: label_command: "my-label"
 	if nameStr, ok := labelCommandValue.(string); ok {
 		frontmatterLog.Printf("Extracted label-command name (shorthand): %s", nameStr)
-		return []string{nameStr}, nil, false, true
+		return []string{nameStr}, nil, false, true, nil
 	}
 
-	// Map form: label_command: {name: "...", names: [...], events: [...], remove_label: bool}
+	// Map form: label_command: {name: "...", names: [...], events: [...], remove_label: bool, status_command: bool}
 	if lcMap, ok := labelCommandValue.(map[string]any); ok {
 		var names []string
 		var events []string
 		decentralized := false
 		removeLabelVal := true // default to true
+		var statusCommandVal *bool
 
 		if nameVal, hasName := lcMap["name"]; hasName {
 			if nameStr, ok := nameVal.(string); ok {
@@ -1132,11 +1136,18 @@ func (c *Compiler) extractLabelCommandConfig(frontmatter map[string]any) (labelN
 			}
 		}
 
-		frontmatterLog.Printf("Extracted label-command config: names=%v, events=%v, decentralized=%v, remove_label=%v", names, events, decentralized, removeLabelVal)
-		return names, events, decentralized, removeLabelVal
+		if statusCommandField, hasStatusCommand := lcMap["status_command"]; hasStatusCommand {
+			if b, ok := statusCommandField.(bool); ok {
+				statusCommandVal = &b
+			}
+		}
+
+		frontmatterLog.Printf("Extracted label-command config: names=%v, events=%v, decentralized=%v, remove_label=%v, status_command=%v",
+			names, events, decentralized, removeLabelVal, statusCommandVal)
+		return names, events, decentralized, removeLabelVal, statusCommandVal
 	}
 
-	return nil, nil, false, true
+	return nil, nil, false, true, nil
 }
 
 // isGitHubAppNestedField returns true if the trimmed YAML line represents a known

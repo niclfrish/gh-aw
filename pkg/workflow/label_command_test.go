@@ -611,3 +611,153 @@ Run CI diagnostics.
 	require.Contains(t, lockStr, "fromJSON(github.event.inputs.aw_context || '{}').event_type == 'pull_request'")
 	require.Contains(t, lockStr, "fromJSON(github.event.inputs.aw_context || '{}').trigger_label == 'ci-doctor'")
 }
+
+// TestLabelCommandStatusCommandDisabled verifies that setting status_command: false within
+// the label_command object disables the status-comment feature, which by default is
+// auto-enabled for label_command triggers.
+func TestLabelCommandStatusCommandDisabled(t *testing.T) {
+	tempDir := t.TempDir()
+
+	workflowContent := `---
+name: Label Command No Status
+on:
+  label_command:
+    name: deploy
+    status_command: false
+engine: copilot
+---
+
+Deploy without status feedback.
+`
+
+	workflowPath := filepath.Join(tempDir, "label-command-no-status.md")
+	err := os.WriteFile(workflowPath, []byte(workflowContent), 0644)
+	require.NoError(t, err, "failed to write test workflow")
+
+	compiler := NewCompiler()
+
+	// Verify that LabelCommandStatusCommand is parsed correctly
+	workflowData, err := compiler.ParseWorkflowFile(workflowPath)
+	require.NoError(t, err, "ParseWorkflowFile() should not error")
+
+	require.NotNil(t, workflowData.LabelCommandStatusCommand, "LabelCommandStatusCommand should not be nil when status_command: false")
+	assert.False(t, *workflowData.LabelCommandStatusCommand, "LabelCommandStatusCommand should be false")
+
+	// Verify that StatusComment is set to false (auto-enable should be skipped)
+	require.NotNil(t, workflowData.StatusComment, "StatusComment should not be nil when status_command: false")
+	assert.False(t, *workflowData.StatusComment, "StatusComment should be false when status_command: false")
+
+	err = compiler.CompileWorkflow(workflowPath)
+	require.NoError(t, err, "CompileWorkflow() should not error")
+
+	lockFilePath := stringutil.MarkdownToLockFile(workflowPath)
+	lockContent, err := os.ReadFile(lockFilePath)
+	require.NoError(t, err, "failed to read lock file")
+
+	lockStr := string(lockContent)
+
+	// Verify no status-comment steps are present in the compiled workflow
+	assert.NotContains(t, lockStr, "post_status_comment",
+		"compiled workflow should NOT contain post_status_comment when status_command: false")
+	assert.NotContains(t, lockStr, "update_status_comment",
+		"compiled workflow should NOT contain update_status_comment when status_command: false")
+}
+
+// TestLabelCommandStatusCommandEnabled verifies that setting status_command: true within
+// the label_command object explicitly enables the status-comment feature.
+func TestLabelCommandStatusCommandEnabled(t *testing.T) {
+	tempDir := t.TempDir()
+
+	workflowContent := `---
+name: Label Command With Status
+on:
+  label_command:
+    name: deploy
+    status_command: true
+engine: copilot
+---
+
+Deploy with explicit status feedback.
+`
+
+	workflowPath := filepath.Join(tempDir, "label-command-with-status.md")
+	err := os.WriteFile(workflowPath, []byte(workflowContent), 0644)
+	require.NoError(t, err, "failed to write test workflow")
+
+	compiler := NewCompiler()
+
+	workflowData, err := compiler.ParseWorkflowFile(workflowPath)
+	require.NoError(t, err, "ParseWorkflowFile() should not error")
+
+	require.NotNil(t, workflowData.LabelCommandStatusCommand, "LabelCommandStatusCommand should not be nil when status_command: true")
+	assert.True(t, *workflowData.LabelCommandStatusCommand, "LabelCommandStatusCommand should be true")
+
+	// Verify StatusComment is enabled
+	require.NotNil(t, workflowData.StatusComment, "StatusComment should not be nil when status_command: true")
+	assert.True(t, *workflowData.StatusComment, "StatusComment should be true when status_command: true")
+}
+
+// TestLabelCommandStatusCommandDefaultTrue verifies that status-comment is auto-enabled by
+// default (when status_command is not specified) for label_command triggers.
+func TestLabelCommandStatusCommandDefaultTrue(t *testing.T) {
+	tempDir := t.TempDir()
+
+	workflowContent := `---
+name: Label Command Default Status
+on:
+  label_command:
+    name: deploy
+engine: copilot
+---
+
+Deploy with default status feedback.
+`
+
+	workflowPath := filepath.Join(tempDir, "label-command-default-status.md")
+	err := os.WriteFile(workflowPath, []byte(workflowContent), 0644)
+	require.NoError(t, err, "failed to write test workflow")
+
+	compiler := NewCompiler()
+
+	workflowData, err := compiler.ParseWorkflowFile(workflowPath)
+	require.NoError(t, err, "ParseWorkflowFile() should not error")
+
+	// LabelCommandStatusCommand should be nil (not set in frontmatter)
+	assert.Nil(t, workflowData.LabelCommandStatusCommand, "LabelCommandStatusCommand should be nil when not specified")
+
+	// StatusComment should default to true for label_command
+	require.NotNil(t, workflowData.StatusComment, "StatusComment should not be nil for label_command workflows")
+	assert.True(t, *workflowData.StatusComment, "StatusComment should default to true for label_command workflows")
+}
+
+// TestLabelCommandStatusCommandOverriddenByOnSection verifies that an explicit
+// on.status-comment field takes precedence over label_command.status_command.
+func TestLabelCommandStatusCommandOverriddenByOnSection(t *testing.T) {
+	tempDir := t.TempDir()
+
+	workflowContent := `---
+name: Label Command Status Override
+on:
+  label_command:
+    name: deploy
+    status_command: false
+  status-comment: true
+engine: copilot
+---
+
+Deploy with status-comment overridden to true.
+`
+
+	workflowPath := filepath.Join(tempDir, "label-command-status-override.md")
+	err := os.WriteFile(workflowPath, []byte(workflowContent), 0644)
+	require.NoError(t, err, "failed to write test workflow")
+
+	compiler := NewCompiler()
+
+	workflowData, err := compiler.ParseWorkflowFile(workflowPath)
+	require.NoError(t, err, "ParseWorkflowFile() should not error")
+
+	// The on.status-comment: true should take precedence over label_command.status_command: false
+	require.NotNil(t, workflowData.StatusComment, "StatusComment should not be nil")
+	assert.True(t, *workflowData.StatusComment, "on.status-comment: true should override label_command.status_command: false")
+}
