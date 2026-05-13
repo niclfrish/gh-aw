@@ -7,7 +7,6 @@ on:
   
   # Command trigger for /unbloat in PR comments
   slash_command:
-    strategy: centralized
     name: unbloat
     events: [pull_request_comment]
   
@@ -32,7 +31,7 @@ runtimes:
 # AI engine configuration
 engine:
   id: claude
-  max-turns: 90  # Reduce from avg 115 turns
+  max-turns: 60  # Reduce from 90 to stay under 100-invocation per-run API limit
 
 # Shared instructions
 imports:
