@@ -14,3 +14,4 @@
 ./pkg/workflow/agentic_engine_test.go|2026-04-24
 ./pkg/workflow/reactions_test.go|2026-04-15
 ./pkg/workflow/time_delta_test.go|2026-05-10
+./pkg/cli/actionlint_test.go|2026-05-13
