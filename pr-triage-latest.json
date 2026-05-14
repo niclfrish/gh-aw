@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-05-14T07:18:09Z",
-  "run_id": "25847316257",
+  "run_date": "2026-05-14T12:56:50Z",
+  "run_id": "25861054077",
   "fork_prs": 0,
   "agent_prs_found": 0,
   "agent_prs_excluded": 0,
-  "notes": "GitHub API returned 403 Forbidden — gh CLI proxy not authenticated in this environment. Previous runs consistently found 0 fork PRs. No fork PRs to triage.",
+  "notes": "GitHub API returned 403 Forbidden — gh CLI proxy not authenticated in this environment. Consistent across multiple runs. No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,8 +17,8 @@
     "by_action": {}
   },
   "previous_run": {
-    "run_id": "25835723732",
-    "run_date": "2026-05-14T01:13:40Z",
+    "run_id": "25847316257",
+    "run_date": "2026-05-14T07:18:09Z",
     "fork_prs": 0,
     "agent_prs_found": 0,
     "agent_prs_excluded": 0
