@@ -1090,3 +1090,18 @@ func (c *Compiler) sanitizeAndWarnCustomSteps(customSteps string) string {
 	}
 	return sanitized
 }
+
+// sanitizeAndWarnStepMap applies sanitizeRunStepExpressions to a single step map,
+// emits a compiler warning for every expression that was extracted, and returns the
+// sanitized map.  If no expressions are found the original map is returned unchanged.
+func (c *Compiler) sanitizeAndWarnStepMap(stepMap map[string]any) map[string]any {
+	sanitized, warnings, changed := sanitizeRunStepExpressions(stepMap)
+	if !changed {
+		return stepMap
+	}
+	for _, w := range warnings {
+		fmt.Fprintln(os.Stderr, console.FormatWarningMessage(w))
+		c.IncrementWarningCount()
+	}
+	return sanitized
+}

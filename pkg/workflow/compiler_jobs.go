@@ -985,7 +985,8 @@ func (c *Compiler) extractPinnedJobSteps(fieldName string, jobName string, confi
 		}
 
 		pinnedStep := applyActionPinToTypedStep(typedStep, data)
-		stepYAML, err := ConvertStepToYAML(pinnedStep.ToMap())
+		sanitizedMap := c.sanitizeAndWarnStepMap(pinnedStep.ToMap())
+		stepYAML, err := ConvertStepToYAML(sanitizedMap)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert %s to YAML for job '%s': %w", fieldName, jobName, err)
 		}
