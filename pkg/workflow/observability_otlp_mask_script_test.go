@@ -1,0 +1,69 @@
+//go:build !integration
+
+package workflow
+
+import (
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestMaskOTLPHeadersScript(t *testing.T) {
+	_, file, _, ok := runtime.Caller(0)
+	require.True(t, ok, "runtime.Caller should resolve the current test file")
+
+	scriptPath := filepath.Join(filepath.Dir(file), "..", "..", "actions", "setup", "sh", "mask_otlp_headers.sh")
+
+	tests := []struct {
+		name string
+		env  []string
+		want []string
+	}{
+		{
+			name: "multi endpoint headers complete successfully",
+			env: []string{
+				"OTEL_EXPORTER_OTLP_HEADERS=Authorization=primary-token",
+				"GH_AW_OTLP_ALL_HEADERS=Authorization=primary-token,Authorization=secondary-token",
+			},
+			want: []string{
+				"::add-mask::Authorization=primary-token",
+				"::add-mask::Authorization=primary-token,Authorization=secondary-token",
+				"::add-mask::primary-token",
+				"::add-mask::secondary-token",
+			},
+		},
+		{
+			name: "bearer token masks raw token",
+			env: []string{
+				"OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer raw-token",
+			},
+			want: []string{
+				"::add-mask::Authorization=Bearer raw-token",
+				"::add-mask::Bearer raw-token",
+				"::add-mask::raw-token",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := exec.Command("bash", scriptPath)
+			cmd.Env = append(os.Environ(), tt.env...)
+
+			out, err := cmd.CombinedOutput()
+			require.NoError(t, err, "mask script should succeed, output:\n%s", out)
+
+			output := string(out)
+			for _, want := range tt.want {
+				assert.Contains(t, output, want)
+			}
+			assert.NotContains(t, strings.ToLower(output), "error")
+		})
+	}
+}
