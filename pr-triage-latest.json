@@ -1,10 +1,10 @@
 {
-  "run_date": "2026-05-13T18:52:03Z",
-  "run_id": "25819616387",
+  "run_date": "2026-05-14T01:13:40Z",
+  "run_id": "25835723732",
   "fork_prs": 0,
   "agent_prs_found": 0,
   "agent_prs_excluded": 0,
-  "notes": "GitHub API returned 403 Forbidden — gh CLI not authenticated. Previous run (25800671245) found 8 open agent PRs, all same-repo branch PRs excluded per triage rules. No fork PRs to triage.",
+  "notes": "GitHub API returned 403 Forbidden — gh CLI not authenticated in this environment. Previous runs found 8 open agent PRs but all were same-repo branch PRs excluded per triage rules (fork PRs only). No fork PRs to triage.",
   "total_prs_triaged": 0,
   "auto_merge_candidates": [],
   "fast_track_needed": [],
@@ -17,10 +17,10 @@
     "by_action": {}
   },
   "previous_run": {
-    "run_id": "25800671245",
-    "run_date": "2026-05-13T13:02:28Z",
+    "run_id": "25819616387",
+    "run_date": "2026-05-13T18:52:03Z",
     "fork_prs": 0,
-    "agent_prs_found": 8,
-    "agent_prs_excluded": 8
+    "agent_prs_found": 0,
+    "agent_prs_excluded": 0
   }
 }
