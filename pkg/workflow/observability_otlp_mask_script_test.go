@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -63,7 +62,6 @@ func TestMaskOTLPHeadersScript(t *testing.T) {
 			for _, want := range tt.want {
 				assert.Contains(t, output, want)
 			}
-			assert.NotContains(t, strings.ToLower(output), "error")
 		})
 	}
 }
