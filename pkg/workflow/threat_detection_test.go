@@ -1002,6 +1002,54 @@ func TestDetectionJobLevelCondition(t *testing.T) {
 	}
 }
 
+// TestDetectionJobDownloadsActivationArtifact verifies that the detection job
+// includes a step to download the activation artifact so that prompt.txt is
+// available at /tmp/gh-aw/aw-prompts/prompt.txt before the detection engine runs.
+func TestDetectionJobDownloadsActivationArtifact(t *testing.T) {
+	compiler := NewCompiler()
+
+	data := &WorkflowData{
+		Name: "test-workflow",
+		AI:   "copilot",
+		SafeOutputs: &SafeOutputsConfig{
+			ThreatDetection: &ThreatDetectionConfig{},
+			CreateIssues: &CreateIssuesConfig{
+				TitlePrefix: "[Test]",
+			},
+		},
+	}
+
+	job, err := compiler.buildDetectionJob(data)
+	if err != nil {
+		t.Fatalf("Unexpected error building detection job: %v", err)
+	}
+	if job == nil {
+		t.Fatal("Expected detection job to be built, got nil")
+	}
+
+	stepsStr := strings.Join(job.Steps, "")
+
+	// The detection job must download the activation artifact so that
+	// prompt.txt is available at /tmp/gh-aw/aw-prompts/prompt.txt.
+	if !strings.Contains(stepsStr, "Download activation artifact") {
+		t.Error("Expected detection job steps to include 'Download activation artifact' step")
+	}
+
+	// The activation artifact download must come before the agent artifact download
+	// so that prompt.txt is present when detection setup reads it.
+	activationPos := strings.Index(stepsStr, "Download activation artifact")
+	agentPos := strings.Index(stepsStr, "Download agent output artifact")
+	if activationPos == -1 {
+		t.Fatal("'Download activation artifact' step not found")
+	}
+	if agentPos == -1 {
+		t.Fatal("'Download agent output artifact' step not found")
+	}
+	if activationPos > agentPos {
+		t.Errorf("'Download activation artifact' should come before 'Download agent output artifact'. Got activation at %d, agent at %d", activationPos, agentPos)
+	}
+}
+
 // main engine config is never propagated to the detection engine config,
 // regardless of whether a model is explicitly configured.
 func TestBuildDetectionEngineExecutionStepStripsAgentField(t *testing.T) {

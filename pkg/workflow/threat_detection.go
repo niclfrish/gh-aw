@@ -890,7 +890,18 @@ func (c *Compiler) buildDetectionJob(data *WorkflowData) (*Job, error) {
 		steps = append(steps, c.generateSetupStep(data, setupActionRef, SetupActionDestination, false, detectionTraceID, detectionParentSpanID)...)
 	}
 
-	// Download agent output artifact to access output files (prompt.txt, agent_output.json, patches).
+	// Download activation artifact so the detection job has access to prompt.txt
+	// (at /tmp/gh-aw/aw-prompts/prompt.txt). The prompt file is created by the activation
+	// job and is required by the threat detection engine to understand what the workflow does.
+	// Use the downstream prefix (from activation job outputs) since this job depends on activation.
+	activationArtifactName := artifactPrefixExprForDownstreamJob(data) + constants.ActivationArtifactName
+	steps = append(steps, buildArtifactDownloadSteps(ArtifactDownloadConfig{
+		ArtifactName: activationArtifactName,
+		DownloadPath: "/tmp/gh-aw",
+		StepName:     "Download activation artifact",
+	}, c.getActionPin)...)
+
+	// Download agent output artifact to access output files (agent_output.json, patches).
 	// Use agent-downstream prefix since this job depends on the agent job.
 	agentArtifactPrefix := artifactPrefixExprForAgentDownstreamJob(data)
 	steps = append(steps, buildAgentOutputDownloadSteps(agentArtifactPrefix, c.getActionPin)...)
