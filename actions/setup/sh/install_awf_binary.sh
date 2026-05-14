@@ -32,6 +32,7 @@ AWF_REPO="github/gh-aw-firewall"
 AWF_INSTALL_DIR="/usr/local/bin"
 AWF_INSTALL_NAME="awf"
 AWF_LIB_DIR="/usr/local/lib/awf"
+SECURE_PATH_MINIMAL="/usr/sbin:/usr/bin:/sbin:/bin"
 
 if [ -z "$AWF_VERSION" ]; then
   echo "ERROR: AWF version is required"
@@ -214,9 +215,15 @@ ensure_linux_secure_path_awf() {
     return 0
   fi
 
+  local installed_awf="${AWF_INSTALL_DIR}/${AWF_INSTALL_NAME}"
+  if [ ! -f "$installed_awf" ]; then
+    echo "ERROR: Installed AWF binary not found at ${installed_awf}"
+    return 1
+  fi
+
   local secure_path_awf="/usr/bin/${AWF_INSTALL_NAME}"
-  if [ "${AWF_INSTALL_DIR}/${AWF_INSTALL_NAME}" != "$secure_path_awf" ]; then
-    sudo ln -sf "${AWF_INSTALL_DIR}/${AWF_INSTALL_NAME}" "$secure_path_awf"
+  if [ "$installed_awf" != "$secure_path_awf" ]; then
+    sudo ln -sf "$installed_awf" "$secure_path_awf"
   fi
 }
 
@@ -253,7 +260,7 @@ sudo env -u GITHUB_API_URL -u GITHUB_GRAPHQL_URL -u GH_HOST \
 # though the absolute-path version check above succeeds.
 if [ "$OS" = "Linux" ]; then
   sudo env -u GITHUB_API_URL -u GITHUB_GRAPHQL_URL -u GH_HOST \
-      PATH="/usr/sbin:/usr/bin:/sbin:/bin" \
+      PATH="$SECURE_PATH_MINIMAL" \
       awf --version
 fi
 
