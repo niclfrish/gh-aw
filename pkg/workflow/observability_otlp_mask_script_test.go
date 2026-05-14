@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -53,7 +54,10 @@ func TestMaskOTLPHeadersScript(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := exec.Command("bash", scriptPath)
-			cmd.Env = append(os.Environ(), tt.env...)
+			cmd.Env = append(filteredEnv(
+				"OTEL_EXPORTER_OTLP_HEADERS=",
+				"GH_AW_OTLP_ALL_HEADERS=",
+			), tt.env...)
 
 			out, err := cmd.CombinedOutput()
 			require.NoError(t, err, "mask script should succeed, output:\n%s", out)
@@ -64,4 +68,22 @@ func TestMaskOTLPHeadersScript(t *testing.T) {
 			}
 		})
 	}
+}
+
+func filteredEnv(excludedPrefixes ...string) []string {
+	env := make([]string, 0, len(os.Environ()))
+	for _, entry := range os.Environ() {
+		excluded := false
+		for _, prefix := range excludedPrefixes {
+			if strings.HasPrefix(entry, prefix) {
+				excluded = true
+				break
+			}
+		}
+		if excluded {
+			continue
+		}
+		env = append(env, entry)
+	}
+	return env
 }
