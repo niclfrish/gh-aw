@@ -1761,7 +1761,9 @@ jobs:
     needs: producer
     if: needs.producer.outputs.value == '42'
     steps:
-      - run: echo "Consuming ${{ needs.producer.outputs.value }}"
+      - env:
+          PRODUCER_VALUE: ${{ needs.producer.outputs.value }}
+        run: echo "Consuming $PRODUCER_VALUE"
 ---
 
 # Test Workflow
