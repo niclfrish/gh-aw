@@ -910,6 +910,29 @@ Based on the parsed requirements, determine:
      ```
      Without `skip-if-match`, a scheduled workflow that creates issues will open a new issue on every run even if an identical issue is already open.
    - **New workflows** (when creating, not updating): Consider enabling `missing-tool: create-issue: true` to automatically track missing tools as GitHub issues that expire after 1 week
+
+   > 💡 **Output channel heuristic — choose by audience and purpose:**
+   >
+   > | Audience / Purpose | Preferred output | Rationale |
+   > |---|---|---|
+   > | Developer feedback (PR reviews, CI failures, code quality) | `add-comment` on the PR/issue | Keeps feedback inline where developers already work |
+   > | Team or stakeholder reports (PM digests, weekly summaries, executive updates) | `create-discussion` | Richer reading experience; avoids cluttering the issue tracker |
+   > | Actionable work items (bug reports, feature requests, tasks) | `create-issue` | Supports assignment, labels, milestones, and tracking |
+   >
+   > **Decision tree:**
+   > 1. Does the output require follow-up action, assignment, or tracking? → **`create-issue`**
+   > 2. Is the output a report or digest for a non-developer audience (PMs, stakeholders, executives)? → **`create-discussion`**
+   > 3. Is the output feedback on existing work (PR review, CI result, code comment)? → **`add-comment`**
+   >
+   > ⚠️ **Discussions may be disabled** in many repositories. Always set `fallback-to-issue: true` on `create-discussion` so the workflow degrades gracefully to a `create-issue` when discussions are not available:
+   > ```yaml
+   > safe-outputs:
+   >   create-discussion:
+   >     category: "General"
+   >     fallback-to-issue: true   # degrades to create-issue when discussions are disabled
+   >     close-older-discussions: true
+   > ```
+
 5. **Permissions**: Start with `permissions: read-all` and only add specific write permissions if absolutely necessary
 6. **Repository Access Roles**: Consider who should be able to trigger the workflow:
    - **Default (when omitted)**: `roles: [admin, maintainer, write]` (only team members with write access)
