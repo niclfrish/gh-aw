@@ -32,6 +32,7 @@ safe-outputs:
     title-prefix: "[cache-strategy] "
     max: 1
     close-older-discussions: true
+max-effective-tokens: 40000000
 timeout-minutes: 60
 imports:
   - uses: shared/meta-analysis-base.md
