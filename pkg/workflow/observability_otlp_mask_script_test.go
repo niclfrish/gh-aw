@@ -15,6 +15,10 @@ import (
 )
 
 func TestMaskOTLPHeadersScript(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		t.Skip("requires Linux bash script behavior")
+	}
+
 	_, file, _, ok := runtime.Caller(0)
 	require.True(t, ok, "runtime.Caller should resolve the current test file")
 
