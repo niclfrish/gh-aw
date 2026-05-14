@@ -218,13 +218,12 @@ ensure_linux_secure_path_awf() {
   local installed_awf="${AWF_INSTALL_DIR}/${AWF_INSTALL_NAME}"
   if [ ! -f "$installed_awf" ]; then
     echo "ERROR: Installed AWF binary not found at ${installed_awf}"
+    echo "Check the preceding AWF installation logs to confirm the download/install step completed successfully."
     return 1
   fi
 
   local secure_path_awf="/usr/bin/${AWF_INSTALL_NAME}"
-  if [ "$installed_awf" != "$secure_path_awf" ]; then
-    sudo ln -sf "$installed_awf" "$secure_path_awf"
-  fi
+  sudo ln -sf "$installed_awf" "$secure_path_awf"
 }
 
 # Try lightweight bundle first, fall back to platform binary
