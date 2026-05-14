@@ -209,6 +209,17 @@ install_platform_binary() {
   esac
 }
 
+ensure_linux_secure_path_awf() {
+  if [ "$OS" != "Linux" ]; then
+    return 0
+  fi
+
+  local secure_path_awf="/usr/bin/${AWF_INSTALL_NAME}"
+  if [ "${AWF_INSTALL_DIR}/${AWF_INSTALL_NAME}" != "$secure_path_awf" ]; then
+    sudo ln -sf "${AWF_INSTALL_DIR}/${AWF_INSTALL_NAME}" "$secure_path_awf"
+  fi
+}
+
 # Try lightweight bundle first, fall back to platform binary
 if has_node_20; then
   if ! install_bundle; then
@@ -219,6 +230,8 @@ else
   echo "Node.js >= 20 not available, falling back to platform binary..."
   install_platform_binary
 fi
+
+ensure_linux_secure_path_awf
 
 # Verify installation by running --version with sudo.
 # Use sudo to match how awf is invoked in subsequent steps (sudo -E awf ...).
@@ -233,5 +246,15 @@ fi
 # version check to fail with a connection error if the proxy rejects the request.
 sudo env -u GITHUB_API_URL -u GITHUB_GRAPHQL_URL -u GH_HOST \
     "${AWF_INSTALL_DIR}/${AWF_INSTALL_NAME}" --version
+
+# Also verify that `sudo -E awf` resolves through a minimal secure_path-style PATH.
+# ubuntu-latest runners may omit /usr/local/bin from the sudo-resolved PATH, which
+# would make later workflow steps fail with "sudo: awf: command not found" even
+# though the absolute-path version check above succeeds.
+if [ "$OS" = "Linux" ]; then
+  sudo env -u GITHUB_API_URL -u GITHUB_GRAPHQL_URL -u GH_HOST \
+      PATH="/usr/sbin:/usr/bin:/sbin:/bin" \
+      awf --version
+fi
 
 echo "✓ AWF installation complete"
