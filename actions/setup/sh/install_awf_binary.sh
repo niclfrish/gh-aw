@@ -223,7 +223,9 @@ ensure_linux_secure_path_awf() {
   fi
 
   local secure_path_awf="/usr/bin/${AWF_INSTALL_NAME}"
+  echo "Ensuring awf is available via Linux secure_path at ${secure_path_awf}..."
   sudo ln -sf "$installed_awf" "$secure_path_awf"
+  echo "✓ secure_path-compatible awf symlink ready at ${secure_path_awf}"
 }
 
 # Try lightweight bundle first, fall back to platform binary
@@ -258,9 +260,11 @@ sudo env -u GITHUB_API_URL -u GITHUB_GRAPHQL_URL -u GH_HOST \
 # would make later workflow steps fail with "sudo: awf: command not found" even
 # though the absolute-path version check above succeeds.
 if [ "$OS" = "Linux" ]; then
+  echo "Verifying awf is available via sudo secure_path-compatible PATH..."
   sudo env -u GITHUB_API_URL -u GITHUB_GRAPHQL_URL -u GH_HOST \
       PATH="$SECURE_PATH_MINIMAL" \
       awf --version
+  echo "✓ secure_path-compatible awf invocation verified"
 fi
 
 echo "✓ AWF installation complete"
