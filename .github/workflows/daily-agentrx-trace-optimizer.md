@@ -30,6 +30,7 @@ imports:
     with:
       title-prefix: "[agentrx-optimizer] "
       expires: 7d
+  - shared/observability-otlp.md
 firewall:
   effective-token-steering: true
 ---
