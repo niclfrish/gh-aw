@@ -219,12 +219,16 @@ ensure_linux_secure_path_awf() {
   if [ ! -f "$installed_awf" ]; then
     echo "ERROR: Installed AWF binary not found at ${installed_awf}"
     echo "Check the preceding AWF installation logs to confirm the download/install step completed successfully."
+    echo "Common causes include a failed download, checksum verification failure, or a permission error while writing to ${AWF_INSTALL_DIR}."
     return 1
   fi
 
   local secure_path_awf="/usr/bin/${AWF_INSTALL_NAME}"
   echo "Ensuring awf is available via Linux secure_path at ${secure_path_awf}..."
-  sudo ln -sf "$installed_awf" "$secure_path_awf"
+  sudo ln -sf "$installed_awf" "$secure_path_awf" || {
+    echo "ERROR: Failed to create secure_path-compatible awf symlink at ${secure_path_awf}"
+    return 1
+  }
   echo "✓ secure_path-compatible awf symlink ready at ${secure_path_awf}"
 }
 
@@ -239,7 +243,7 @@ else
   install_platform_binary
 fi
 
-ensure_linux_secure_path_awf
+ensure_linux_secure_path_awf || exit 1
 
 # Verify installation by running --version with sudo.
 # Use sudo to match how awf is invoked in subsequent steps (sudo -E awf ...).
