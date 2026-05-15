@@ -12,6 +12,7 @@ import (
 	"github.com/github/gh-aw/pkg/constants"
 	"github.com/github/gh-aw/pkg/gitutil"
 	"github.com/github/gh-aw/pkg/logger"
+	"github.com/github/gh-aw/pkg/parser"
 	"github.com/spf13/cobra"
 )
 
@@ -151,8 +152,20 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		return fmt.Errorf("failed to update existing workflows: %w", err)
 	}
 
-	if _, err := AddWorkflows(ctx, workflows, addOpts); err != nil {
-		return fmt.Errorf("failed to add workflows: %w", err)
+	workflowsToAdd, skippedWorkflows, err := filterExistingSourcedWorkflows(workflows, addOpts)
+	if err != nil {
+		return fmt.Errorf("failed to inspect existing workflows: %w", err)
+	}
+	if len(skippedWorkflows) > 0 {
+		deployLog.Printf("Skipping add for existing sourced workflows (already handled by update): %s", strings.Join(skippedWorkflows, ", "))
+	}
+
+	if len(workflowsToAdd) > 0 {
+		if _, err := AddWorkflows(ctx, workflowsToAdd, addOpts); err != nil {
+			return fmt.Errorf("failed to add workflows: %w", err)
+		}
+	} else {
+		deployLog.Print("No new workflows to add after update pass")
 	}
 
 	compileConfig := CompileConfig{
@@ -182,4 +195,59 @@ func buildDeployPRMetadata(workflows []string, targetRepo string) (string, strin
 	}
 	body := fmt.Sprintf("Deploy %s to %s.\n\nThis PR was created by `gh aw deploy` after running update, add, and compile --purge in the target repository.", workflowDescription, targetRepo)
 	return deployCommitMessage, body
+}
+
+func filterExistingSourcedWorkflows(workflows []string, addOpts AddOptions) ([]string, []string, error) {
+	workflowsDir := addOpts.WorkflowDir
+	if workflowsDir == "" {
+		workflowsDir = getWorkflowsDir()
+	}
+
+	workflowsToAdd := make([]string, 0, len(workflows))
+	skippedWorkflows := make([]string, 0)
+
+	for _, workflowSpec := range workflows {
+		workflowName := normalizeWorkflowID(workflowSpec)
+		if addOpts.Name != "" && len(workflows) == 1 {
+			workflowName = normalizeWorkflowID(addOpts.Name)
+		}
+
+		existingPath := filepath.Join(workflowsDir, workflowName+".md")
+		hasSource, err := existingWorkflowHasSource(existingPath)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if hasSource {
+			skippedWorkflows = append(skippedWorkflows, workflowName)
+			continue
+		}
+
+		workflowsToAdd = append(workflowsToAdd, workflowSpec)
+	}
+
+	return workflowsToAdd, skippedWorkflows, nil
+}
+
+func existingWorkflowHasSource(path string) (bool, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return false, nil
+		}
+		return false, fmt.Errorf("failed to read workflow %s: %w", path, err)
+	}
+
+	result, err := parser.ExtractFrontmatterFromContent(string(content))
+	if err != nil {
+		return false, nil
+	}
+
+	sourceValue, ok := result.Frontmatter["source"]
+	if !ok {
+		return false, nil
+	}
+
+	source, ok := sourceValue.(string)
+	return ok && strings.TrimSpace(source) != "", nil
 }

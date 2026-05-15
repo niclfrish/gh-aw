@@ -3,6 +3,8 @@
 package cli
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -72,4 +74,64 @@ func TestBuildDeployPRMetadata_MultipleWorkflows(t *testing.T) {
 	title, body := buildDeployPRMetadata([]string{"a", "b", "c"}, "owner/repo")
 	assert.Equal(t, deployCommitMessage, title)
 	assert.Contains(t, body, "Deploy 3 workflows to owner/repo.")
+}
+
+func TestFilterExistingSourcedWorkflows_SkipsExistingSourcedWorkflow(t *testing.T) {
+	t.Parallel()
+
+	tempDir := t.TempDir()
+	workflowsDir := filepath.Join(tempDir, ".github", "workflows")
+	require.NoError(t, os.MkdirAll(workflowsDir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(workflowsDir, "ci-doctor.md"), []byte(`---
+source: githubnext/agentics/ci-doctor.md@v1
+---
+
+# Existing
+`), 0o644))
+
+	toAdd, skipped, err := filterExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
+	require.NoError(t, err)
+	assert.Empty(t, toAdd)
+	assert.Equal(t, []string{"ci-doctor"}, skipped)
+}
+
+func TestFilterExistingSourcedWorkflows_LeavesExistingNonSourcedWorkflowForAdd(t *testing.T) {
+	t.Parallel()
+
+	tempDir := t.TempDir()
+	workflowsDir := filepath.Join(tempDir, ".github", "workflows")
+	require.NoError(t, os.MkdirAll(workflowsDir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(workflowsDir, "ci-doctor.md"), []byte(`---
+name: CI Doctor
+---
+
+# Existing
+`), 0o644))
+
+	toAdd, skipped, err := filterExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
+	require.NoError(t, err)
+	assert.Equal(t, []string{"githubnext/agentics/ci-doctor"}, toAdd)
+	assert.Empty(t, skipped)
+}
+
+func TestFilterExistingSourcedWorkflows_UsesNameFlagForSingleWorkflow(t *testing.T) {
+	t.Parallel()
+
+	tempDir := t.TempDir()
+	workflowsDir := filepath.Join(tempDir, ".github", "workflows")
+	require.NoError(t, os.MkdirAll(workflowsDir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(workflowsDir, "custom-name.md"), []byte(`---
+source: githubnext/agentics/ci-doctor.md@v1
+---
+
+# Existing
+`), 0o644))
+
+	toAdd, skipped, err := filterExistingSourcedWorkflows(
+		[]string{"githubnext/agentics/ci-doctor"},
+		AddOptions{WorkflowDir: workflowsDir, Name: "custom-name"},
+	)
+	require.NoError(t, err)
+	assert.Empty(t, toAdd)
+	assert.Equal(t, []string{"custom-name"}, skipped)
 }
