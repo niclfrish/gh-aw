@@ -12,10 +12,10 @@ const { ERR_API } = require("./error_codes.cjs");
 /** Sentinel error class used to signal that the commit range contains a shape
  *  that the GitHub GraphQL `createCommitOnBranch` mutation cannot represent
  *  (merge commit, symlink mode 120000, or submodule mode 160000).  The catch
- *  block uses this to avoid silently falling back to an unsigned `git push`
- *  for these permanent, structural refusals.  Executable bit (mode 100755) is
- *  not included here because it only triggers a warning and continues with the
- *  GraphQL path (the bit is silently dropped by the mutation).
+ *  block uses this to route to a direct git-push fallback.  Executable bit
+ *  (mode 100755) is not included here because it only triggers a warning and
+ *  continues with the GraphQL path (the bit is silently dropped by the
+ *  mutation).
  */
 class PushSignedCommitsUnsupportedShape extends Error {
   /** @param {string} message */
@@ -151,6 +151,17 @@ async function pushBranchAndResolveHead({ branch, cwd, gitAuthEnv }) {
 async function resolveLocalHeadSha(cwd) {
   const { stdout } = await exec.getExecOutput("git", ["rev-parse", "HEAD"], { cwd });
   return stdout.trim();
+}
+
+/**
+ * Returns true when the remote rejects an unsigned push due to
+ * signed-commit enforcement.
+ *
+ * @param {string} message
+ * @returns {boolean}
+ */
+function isSignedCommitEnforcementError(message) {
+  return /GH013|must have verified signatures|commits must have verified signatures|verified signatures/i.test(message);
 }
 
 /**
@@ -437,14 +448,27 @@ async function pushSignedCommits({ githubClient, owner, repo, branch, baseRef, c
     return lastOid ?? shas[shas.length - 1];
   } catch (err) {
     if (err instanceof PushSignedCommitsUnsupportedShape) {
-      throw new Error(
-        `pushSignedCommits: refusing unsigned push for branch '${branch}': ${err.message}. ` +
-          `GitHub's createCommitOnBranch GraphQL mutation cannot represent merge commits, symlinks (mode 120000), ` +
-          `submodule entries (mode 160000), or executable bits (mode 100755). ` +
-          `Rewrite the commits to use only regular files (mode 100644) with no merge commits, ` +
-          `or set signed-commits: false if the repository does not require signed commits.`,
-        { cause: err }
-      );
+      core.warning(`pushSignedCommits: signed-commit replay unsupported for branch '${branch}' (${err.message}); attempting direct git push fallback`);
+      try {
+        const fallbackSha = await pushBranchAndResolveHead({ branch, cwd, gitAuthEnv });
+        core.info(`pushSignedCommits: git push fallback completed for unsupported commit shape, using pushed SHA ${fallbackSha}`);
+        return fallbackSha;
+      } catch (fallbackErr) {
+        const fallbackMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+        if (isSignedCommitEnforcementError(fallbackMsg)) {
+          throw new Error(
+            `pushSignedCommits: branch '${branch}' contains commit shapes not supported by GitHub's signed createCommitOnBranch API (${err.message}), ` +
+              `and direct git push was rejected because the repository requires verified signatures. ` +
+              `Rewrite the commits to avoid merge commits, symlinks (120000), and submodule entries (160000). ` +
+              `Original push error: ${fallbackMsg}`,
+            { cause: fallbackErr }
+          );
+        }
+        throw new Error(
+          `pushSignedCommits: branch '${branch}' contains commit shapes not supported by GitHub's signed createCommitOnBranch API (${err.message}), ` + `and direct git push fallback also failed. Original push error: ${fallbackMsg}`,
+          { cause: fallbackErr }
+        );
+      }
     }
     core.warning(`pushSignedCommits: GraphQL signed push failed, falling back to git push: ${err instanceof Error ? err.message : String(err)}`);
     const fallbackSha = await pushBranchAndResolveHead({ branch, cwd, gitAuthEnv });
