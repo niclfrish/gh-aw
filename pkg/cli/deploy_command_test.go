@@ -76,7 +76,7 @@ func TestBuildDeployPRMetadata_MultipleWorkflows(t *testing.T) {
 	assert.Contains(t, body, "Deploy 3 workflows to owner/repo.")
 }
 
-func TestFilterExistingSourcedWorkflows_SkipsExistingSourcedWorkflow(t *testing.T) {
+func TestExcludeExistingSourcedWorkflows_SkipsExistingSourcedWorkflow(t *testing.T) {
 	t.Parallel()
 
 	tempDir := t.TempDir()
@@ -89,13 +89,13 @@ source: githubnext/agentics/ci-doctor.md@v1
 # Existing
 `), 0o644))
 
-	toAdd, skipped, err := filterExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
+	toAdd, skipped, err := excludeExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
 	require.NoError(t, err)
 	assert.Empty(t, toAdd)
 	assert.Equal(t, []string{"ci-doctor"}, skipped)
 }
 
-func TestFilterExistingSourcedWorkflows_LeavesExistingNonSourcedWorkflowForAdd(t *testing.T) {
+func TestExcludeExistingSourcedWorkflows_LeavesExistingNonSourcedWorkflowForAdd(t *testing.T) {
 	t.Parallel()
 
 	tempDir := t.TempDir()
@@ -108,13 +108,13 @@ name: CI Doctor
 # Existing
 `), 0o644))
 
-	toAdd, skipped, err := filterExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
+	toAdd, skipped, err := excludeExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
 	require.NoError(t, err)
 	assert.Equal(t, []string{"githubnext/agentics/ci-doctor"}, toAdd)
 	assert.Empty(t, skipped)
 }
 
-func TestFilterExistingSourcedWorkflows_UsesNameFlagForSingleWorkflow(t *testing.T) {
+func TestExcludeExistingSourcedWorkflows_UsesNameFlagForSingleWorkflow(t *testing.T) {
 	t.Parallel()
 
 	tempDir := t.TempDir()
@@ -127,7 +127,7 @@ source: githubnext/agentics/ci-doctor.md@v1
 # Existing
 `), 0o644))
 
-	toAdd, skipped, err := filterExistingSourcedWorkflows(
+	toAdd, skipped, err := excludeExistingSourcedWorkflows(
 		[]string{"githubnext/agentics/ci-doctor"},
 		AddOptions{WorkflowDir: workflowsDir, Name: "custom-name"},
 	)
@@ -136,7 +136,7 @@ source: githubnext/agentics/ci-doctor.md@v1
 	assert.Equal(t, []string{"custom-name"}, skipped)
 }
 
-func TestFilterExistingSourcedWorkflows_MalformedFrontmatterNotSkipped(t *testing.T) {
+func TestExcludeExistingSourcedWorkflows_MalformedFrontmatterNotSkipped(t *testing.T) {
 	t.Parallel()
 
 	tempDir := t.TempDir()
@@ -149,7 +149,7 @@ source: [unterminated
 # Existing
 `), 0o644))
 
-	toAdd, skipped, err := filterExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
+	toAdd, skipped, err := excludeExistingSourcedWorkflows([]string{"githubnext/agentics/ci-doctor"}, AddOptions{WorkflowDir: workflowsDir})
 	require.NoError(t, err)
 	assert.Equal(t, []string{"githubnext/agentics/ci-doctor"}, toAdd)
 	assert.Empty(t, skipped)

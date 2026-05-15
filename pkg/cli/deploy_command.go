@@ -152,7 +152,7 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		return fmt.Errorf("failed to update existing workflows: %w", err)
 	}
 
-	workflowsToAdd, skippedWorkflows, err := filterExistingSourcedWorkflows(workflows, addOpts)
+	workflowsToAdd, skippedWorkflows, err := excludeExistingSourcedWorkflows(workflows, addOpts)
 	if err != nil {
 		return fmt.Errorf("failed to inspect existing workflows: %w", err)
 	}
@@ -197,7 +197,7 @@ func buildDeployPRMetadata(workflows []string, targetRepo string) (string, strin
 	return deployCommitMessage, body
 }
 
-func filterExistingSourcedWorkflows(workflows []string, addOpts AddOptions) ([]string, []string, error) {
+func excludeExistingSourcedWorkflows(workflows []string, addOpts AddOptions) ([]string, []string, error) {
 	workflowsDir := addOpts.WorkflowDir
 	if workflowsDir == "" {
 		workflowsDir = getWorkflowsDir()
@@ -240,7 +240,7 @@ func existingWorkflowHasSource(path string) (bool, error) {
 
 	result, err := parser.ExtractFrontmatterFromContent(string(content))
 	if err != nil {
-		deployLog.Printf("Failed to parse frontmatter in %s while checking source field: %v", path, err)
+		deployLog.Printf("Failed to parse frontmatter in %s while checking source field: %v (treating workflow as non-sourced and proceeding with add)", path, err)
 		return false, nil
 	}
 
