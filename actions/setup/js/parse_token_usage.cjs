@@ -18,6 +18,7 @@ const TOKEN_USAGE_AUDIT_PATH = "/tmp/gh-aw/sandbox/firewall-audit-logs/api-proxy
 const TOKEN_USAGE_PATH = "/tmp/gh-aw/sandbox/firewall/logs/api-proxy-logs/token-usage.jsonl";
 const TOKEN_USAGE_PATHS = [TOKEN_USAGE_AUDIT_PATH, TOKEN_USAGE_PATH];
 const AGENT_USAGE_PATH = "/tmp/gh-aw/agent_usage.json";
+const CODEX_STDIO_PATH = "/tmp/gh-aw/agent-stdio.log";
 
 /**
  * Returns readable, non-empty token usage files, skipping paths that error.
@@ -83,28 +84,104 @@ function readDedupedTokenUsage(paths) {
 }
 
 /**
+ * Builds token-usage-style JSONL from Codex response.completed SSE events.
+ * This is a fallback for runs where the AWF proxy does not emit token-usage.jsonl
+ * but agent-stdio.log still contains per-response usage.
+ * @param {string} logContent
+ * @returns {string}
+ */
+function buildCodexTokenUsageJsonlFromAgentLog(logContent) {
+  const usageLines = [];
+
+  for (const line of logContent.split("\n")) {
+    if (!line.includes("response.completed") || !line.includes("SSE event: ")) {
+      continue;
+    }
+
+    const jsonStart = line.indexOf("SSE event: ");
+    if (jsonStart === -1) continue;
+
+    let event;
+    try {
+      event = JSON.parse(line.slice(jsonStart + "SSE event: ".length).trim());
+    } catch {
+      continue;
+    }
+
+    if (event?.type !== "response.completed") continue;
+
+    const response = event?.response;
+    const usage = response?.usage;
+    if (!response || !usage || typeof usage !== "object") continue;
+
+    const inputTokens = Number(usage.input_tokens) || 0;
+    const outputTokens = Number(usage.output_tokens) || 0;
+    const cacheReadTokens = Number(usage.input_tokens_details?.cached_tokens) || 0;
+    if (inputTokens <= 0 && outputTokens <= 0 && cacheReadTokens <= 0) continue;
+
+    const createdAt = Number(response.created_at) || 0;
+    const completedAt = Number(response.completed_at) || 0;
+    const durationMs = createdAt > 0 && completedAt >= createdAt ? (completedAt - createdAt) * 1000 : 0;
+
+    usageLines.push(
+      JSON.stringify({
+        timestamp: createdAt > 0 ? new Date(createdAt * 1000).toISOString() : "",
+        request_id: response.id || "",
+        provider: "openai",
+        model: response.model || "unknown",
+        path: "/responses",
+        status: response.status === "completed" ? 200 : 0,
+        streaming: true,
+        input_tokens: inputTokens,
+        output_tokens: outputTokens,
+        cache_read_tokens: cacheReadTokens,
+        cache_write_tokens: 0,
+        duration_ms: durationMs,
+      })
+    );
+  }
+
+  return usageLines.join("\n");
+}
+
+/**
  * Main function to parse token usage and write the step summary.
  */
 async function main() {
   try {
     const tokenUsagePaths = getReadableTokenUsagePaths(TOKEN_USAGE_PATHS);
-    if (tokenUsagePaths.length === 0) {
-      core.info("No token usage data found, skipping summary");
-      return;
+    let content = "";
+    let sourceNote = "";
+
+    if (tokenUsagePaths.length > 0) {
+      content = readDedupedTokenUsage(tokenUsagePaths);
+      if (content.trim()) {
+        sourceNote = `Source: firewall proxy logs (${tokenUsagePaths.join(", ")})`;
+        core.info(`Parsing token usage from ${tokenUsagePaths.length} file(s): ${tokenUsagePaths.join(", ")} (${content.length} bytes)`);
+      }
     }
 
-    const content = readDedupedTokenUsage(tokenUsagePaths);
-    core.info(`Parsing token usage from ${tokenUsagePaths.length} file(s): ${tokenUsagePaths.join(", ")} (${content.length} bytes)`);
+    let summary = content.trim() ? parseTokenUsageJsonl(content) : null;
+    if ((!summary || summary.totalRequests === 0) && fs.existsSync(CODEX_STDIO_PATH)) {
+      const codexContent = fs.readFileSync(CODEX_STDIO_PATH, "utf8");
+      const codexTokenUsageJsonl = buildCodexTokenUsageJsonlFromAgentLog(codexContent);
+      if (codexTokenUsageJsonl.trim()) {
+        content = codexTokenUsageJsonl;
+        summary = parseTokenUsageJsonl(content);
+        sourceNote = `Source: Codex response.completed events in ${CODEX_STDIO_PATH}`;
+        core.info(`Token usage log not found; parsed fallback usage from ${CODEX_STDIO_PATH} (${content.length} bytes)`);
+      }
+    }
 
-    const summary = parseTokenUsageJsonl(content);
     if (!summary || summary.totalRequests === 0) {
-      core.info("Token usage file contained no valid entries");
+      core.info("No token usage data found, skipping summary");
       return;
     }
 
     const markdown = generateTokenUsageSummary(summary);
     if (markdown.length > 0) {
-      core.summary.addDetails("Token Usage", "\n\n" + markdown);
+      const detailsBody = sourceNote ? `\n\n_${sourceNote}_\n\n${markdown}` : "\n\n" + markdown;
+      core.summary.addDetails("Token Usage", detailsBody);
     }
 
     await core.summary.write();
@@ -141,10 +218,12 @@ if (typeof module !== "undefined" && module.exports) {
     getReadableTokenUsagePaths,
     extractRequestId,
     readDedupedTokenUsage,
+    buildCodexTokenUsageJsonlFromAgentLog,
     TOKEN_USAGE_AUDIT_PATH,
     TOKEN_USAGE_PATH,
     TOKEN_USAGE_PATHS,
     AGENT_USAGE_PATH,
+    CODEX_STDIO_PATH,
   };
 }
 

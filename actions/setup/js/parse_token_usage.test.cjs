@@ -5,7 +5,18 @@ const fs = require("fs");
 const path = require("path");
 const os = require("os");
 
-const { main, getReadableTokenUsagePaths, extractRequestId, readDedupedTokenUsage, TOKEN_USAGE_AUDIT_PATH, TOKEN_USAGE_PATH, TOKEN_USAGE_PATHS, AGENT_USAGE_PATH } = require("./parse_token_usage.cjs");
+const {
+  main,
+  getReadableTokenUsagePaths,
+  extractRequestId,
+  readDedupedTokenUsage,
+  buildCodexTokenUsageJsonlFromAgentLog,
+  TOKEN_USAGE_AUDIT_PATH,
+  TOKEN_USAGE_PATH,
+  TOKEN_USAGE_PATHS,
+  AGENT_USAGE_PATH,
+  CODEX_STDIO_PATH,
+} = require("./parse_token_usage.cjs");
 
 describe("parse_token_usage", () => {
   const singleEntry = JSON.stringify({
@@ -38,6 +49,10 @@ describe("parse_token_usage", () => {
 
     test("AGENT_USAGE_PATH points to agent_usage.json", () => {
       expect(AGENT_USAGE_PATH).toBe("/tmp/gh-aw/agent_usage.json");
+    });
+
+    test("CODEX_STDIO_PATH points to agent-stdio.log", () => {
+      expect(CODEX_STDIO_PATH).toBe("/tmp/gh-aw/agent-stdio.log");
     });
   });
 
@@ -124,6 +139,47 @@ describe("parse_token_usage", () => {
 
       expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining("No token usage data found"));
       expect(mockCore.summary.addDetails).not.toHaveBeenCalled();
+    });
+
+    test("falls back to Codex response.completed usage when token usage log is missing", async () => {
+      const agentUsageFile = path.join(tmpDir, "agent_usage.json");
+      const codexLog = [
+        '2026-05-15T00:04:38.621865Z TRACE codex_api::sse::responses: SSE event: {"type":"response.completed","response":{"id":"resp_1","created_at":1778803460,"completed_at":1778803478,"status":"completed","model":"gpt-5.4-2026-03-05","usage":{"input_tokens":21804,"input_tokens_details":{"cached_tokens":0},"output_tokens":755,"output_tokens_details":{"reasoning_tokens":516},"total_tokens":22559}}}',
+        '2026-05-15T00:04:59.621865Z TRACE codex_api::sse::responses: SSE event: {"type":"response.completed","response":{"id":"resp_2","created_at":1778803479,"completed_at":1778803484,"status":"completed","model":"gpt-5.4-2026-03-05","usage":{"input_tokens":25243,"input_tokens_details":{"cached_tokens":22400},"output_tokens":495,"output_tokens_details":{"reasoning_tokens":201},"total_tokens":25738}}}',
+      ].join("\n");
+
+      fs.existsSync = vi.fn(p => {
+        if (p === TOKEN_USAGE_AUDIT_PATH || p === TOKEN_USAGE_PATH) return false;
+        if (p === CODEX_STDIO_PATH) return true;
+        return originalExistsSync(p);
+      });
+      fs.statSync = vi.fn(p => {
+        if (p === TOKEN_USAGE_AUDIT_PATH || p === TOKEN_USAGE_PATH) return { size: 0 };
+        if (p === CODEX_STDIO_PATH) return { size: codexLog.length };
+        return originalStatSync(p);
+      });
+      fs.readFileSync = vi.fn((p, enc) => {
+        if (p === TOKEN_USAGE_AUDIT_PATH || p === TOKEN_USAGE_PATH) return "";
+        if (p === CODEX_STDIO_PATH) return codexLog;
+        return originalReadFileSync(p, enc);
+      });
+      fs.writeFileSync = vi.fn((p, data) => {
+        if (p === AGENT_USAGE_PATH) {
+          originalWriteFileSync(agentUsageFile, data);
+        } else {
+          originalWriteFileSync(p, data);
+        }
+      });
+
+      await main();
+
+      expect(mockCore.info).toHaveBeenCalledWith(expect.stringContaining("parsed fallback usage"));
+      expect(mockCore.summary.addDetails).toHaveBeenCalledWith("Token Usage", expect.stringContaining("Codex response.completed events"));
+      const agentUsage = JSON.parse(fs.readFileSync(agentUsageFile, "utf8"));
+      expect(agentUsage.input_tokens).toBe(47047);
+      expect(agentUsage.output_tokens).toBe(1250);
+      expect(agentUsage.cache_read_tokens).toBe(22400);
+      expect(agentUsage.cache_write_tokens).toBe(0);
     });
 
     test("writes token usage details section to summary", async () => {
@@ -448,6 +504,31 @@ describe("parse_token_usage", () => {
       expect(deduped).toContain('"request_id":"req-2"');
       expect(deduped).toContain('"request_id":"req-3"');
       expect(deduped.match(/"request_id":"req-1"/g)).toHaveLength(1);
+    });
+
+    test("buildCodexTokenUsageJsonlFromAgentLog extracts response.completed usage", () => {
+      const logContent = [
+        '2026-05-15T00:04:38.621865Z TRACE codex_api::sse::responses: SSE event: {"type":"response.completed","response":{"id":"resp_1","created_at":1778803460,"completed_at":1778803478,"status":"completed","model":"gpt-5.4-2026-03-05","usage":{"input_tokens":21804,"input_tokens_details":{"cached_tokens":0},"output_tokens":755,"output_tokens_details":{"reasoning_tokens":516},"total_tokens":22559}}}',
+        '2026-05-15T00:04:39.621865Z TRACE codex_api::sse::responses: SSE event: {"type":"response.output_text.delta","delta":"ignored"}',
+      ].join("\n");
+
+      const jsonl = buildCodexTokenUsageJsonlFromAgentLog(logContent);
+      const entries = jsonl.split("\n").map(line => JSON.parse(line));
+
+      expect(entries).toHaveLength(1);
+      expect(entries[0]).toMatchObject({
+        request_id: "resp_1",
+        provider: "openai",
+        model: "gpt-5.4-2026-03-05",
+        path: "/responses",
+        status: 200,
+        streaming: true,
+        input_tokens: 21804,
+        output_tokens: 755,
+        cache_read_tokens: 0,
+        cache_write_tokens: 0,
+      });
+      expect(entries[0].duration_ms).toBe(18000);
     });
   });
 });
