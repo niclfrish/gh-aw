@@ -201,8 +201,8 @@ func resolveDeployWorkflowSpecs(workflows []string, baseDir string) ([]string, e
 			continue
 		}
 
-		absPath := filepath.Join(baseDir, workflow)
-		absPath, err := filepath.Abs(absPath)
+		joinedPath := filepath.Join(baseDir, workflow)
+		absPath, err := filepath.Abs(joinedPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to resolve local workflow %q: %w", workflow, err)
 		}
