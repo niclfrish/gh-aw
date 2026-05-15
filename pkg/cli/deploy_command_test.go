@@ -159,11 +159,10 @@ func TestResolveDeployWorkflowSpecs_ResolvesRelativeLocalPathsAgainstOriginalDir
 	t.Parallel()
 
 	baseDir := t.TempDir()
-	workflows, err := resolveDeployWorkflowSpecs(
+	workflows := resolveDeployWorkflowSpecs(
 		[]string{"./my-workflow.md", "githubnext/agentics/ci-doctor"},
 		baseDir,
 	)
-	require.NoError(t, err)
 	require.Len(t, workflows, 2)
 
 	assert.Equal(t, filepath.Join(baseDir, "my-workflow.md"), workflows[0])
@@ -174,8 +173,7 @@ func TestResolveDeployWorkflowSpecs_ResolvesRelativeWildcardLocalPaths(t *testin
 	t.Parallel()
 
 	baseDir := t.TempDir()
-	workflows, err := resolveDeployWorkflowSpecs([]string{"./*.md"}, baseDir)
-	require.NoError(t, err)
+	workflows := resolveDeployWorkflowSpecs([]string{"./*.md"}, baseDir)
 	require.Len(t, workflows, 1)
 
 	assert.Equal(t, filepath.Join(baseDir, "*.md"), workflows[0])

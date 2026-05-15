@@ -131,10 +131,7 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		_ = os.Chdir(originalDir)
 	}()
 
-	resolvedWorkflows, err := resolveDeployWorkflowSpecs(workflows, originalDir)
-	if err != nil {
-		return err
-	}
+	resolvedWorkflows := resolveDeployWorkflowSpecs(workflows, originalDir)
 
 	if err := os.Chdir(checkoutDir); err != nil {
 		return fmt.Errorf("failed to change directory to checkout %s: %w", checkoutDir, err)
@@ -193,7 +190,7 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 	return nil
 }
 
-func resolveDeployWorkflowSpecs(workflows []string, baseDir string) ([]string, error) {
+func resolveDeployWorkflowSpecs(workflows []string, baseDir string) []string {
 	resolved := make([]string, 0, len(workflows))
 	for _, workflow := range workflows {
 		if !isLocalWorkflowPath(workflow) || filepath.IsAbs(workflow) {
@@ -201,16 +198,10 @@ func resolveDeployWorkflowSpecs(workflows []string, baseDir string) ([]string, e
 			continue
 		}
 
-		joinedPath := filepath.Join(baseDir, workflow)
-		absPath, err := filepath.Abs(joinedPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to resolve local workflow %q: %w", workflow, err)
-		}
-
-		resolved = append(resolved, absPath)
+		resolved = append(resolved, filepath.Join(baseDir, workflow))
 	}
 
-	return resolved, nil
+	return resolved
 }
 
 func buildDeployPRMetadata(workflows []string, targetRepo string) (string, string) {
