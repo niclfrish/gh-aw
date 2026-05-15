@@ -1,15 +1,1 @@
-{
-  "timestamp": "2026-05-13T15:46:57Z",
-  "date": "2026-05-13",
-  "benchmarks": {
-    "CompileSimpleWorkflow": {"ns_per_op": 1924948, "bytes_per_op": 871808, "allocs_per_op": 5808, "iterations": 3},
-    "CompileComplexWorkflow": {"ns_per_op": 4185075, "bytes_per_op": 1150688, "allocs_per_op": 10460, "iterations": 3},
-    "CompileMCPWorkflow": {"ns_per_op": 445879, "bytes_per_op": 125384, "allocs_per_op": 2356, "iterations": 3},
-    "CompileMemoryUsage": {"ns_per_op": 2524444, "bytes_per_op": 1040736, "allocs_per_op": 8788, "iterations": 3},
-    "ParseWorkflow": {"ns_per_op": 242757, "bytes_per_op": 85536, "allocs_per_op": 1653, "iterations": 3},
-    "Validation": {"ns_per_op": 3040, "bytes_per_op": 360, "allocs_per_op": 3, "iterations": 3},
-    "YAMLGeneration": {"ns_per_op": 1844244, "bytes_per_op": 818298, "allocs_per_op": 5337, "iterations": 3},
-    "ExtractWorkflowNameFromFile": {"ns_per_op": 8270, "bytes_per_op": 1816, "allocs_per_op": 8, "iterations": 3},
-    "FindIncludesInContent": {"ns_per_op": 2865, "bytes_per_op": 112, "allocs_per_op": 3, "iterations": 3}
-  }
-}
+{"timestamp": "2026-05-15T15:35:59Z", "date": "2026-05-15", "benchmarks": {"CompileSimpleWorkflow": {"ns_per_op": 1951507, "bytes_per_op": 861656, "allocs_per_op": 5810, "iterations": 3}, "CompileComplexWorkflow": {"ns_per_op": 2874127, "bytes_per_op": 1191106, "allocs_per_op": 10499, "iterations": 3}, "CompileMCPWorkflow": {"ns_per_op": 392529, "bytes_per_op": 125512, "allocs_per_op": 2356, "iterations": 3}, "CompileMemoryUsage": {"ns_per_op": 2587797, "bytes_per_op": 1047354, "allocs_per_op": 8803, "iterations": 3}, "ParseWorkflow": {"ns_per_op": 280861, "bytes_per_op": 85792, "allocs_per_op": 1653, "iterations": 3}, "Validation": {"ns_per_op": 3473, "bytes_per_op": 360, "allocs_per_op": 3, "iterations": 3}, "YAMLGeneration": {"ns_per_op": 1994191, "bytes_per_op": 821722, "allocs_per_op": 5349, "iterations": 3}, "ExtractWorkflowNameFromFile": {"ns_per_op": 12517, "bytes_per_op": 1816, "allocs_per_op": 8, "iterations": 3}, "FindIncludesInContent": {"ns_per_op": 2929, "bytes_per_op": 112, "allocs_per_op": 3, "iterations": 3}}}
