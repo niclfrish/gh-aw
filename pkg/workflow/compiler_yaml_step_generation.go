@@ -128,6 +128,8 @@ func setupParentSpanNeedsExpr(upstreamJob constants.JobName) string {
 }
 
 func (c *Compiler) generateSetupStep(data *WorkflowData, setupActionRef string, destination string, enableArtifactClient bool, traceID string, parentSpanID string) []string {
+	engineID := getEngineIDForSetup(data)
+
 	// Script mode: run the setup.sh script directly
 	if c.actionMode.IsScript() {
 		lines := []string{
@@ -144,6 +146,9 @@ func (c *Compiler) generateSetupStep(data *WorkflowData, setupActionRef string, 
 				fmt.Sprintf("          GH_AW_SETUP_WORKFLOW_NAME: %q\n", data.Name),
 				fmt.Sprintf("          GH_AW_CURRENT_WORKFLOW_REF: %s\n", buildSetupWorkflowRefExpr(data)),
 			)
+			if engineID != "" {
+				lines = append(lines, fmt.Sprintf("          GH_AW_INFO_ENGINE_ID: %q\n", engineID))
+			}
 			if v := getVersionForSetup(data); v != "" {
 				lines = append(lines, fmt.Sprintf("          GH_AW_INFO_VERSION: %q\n", v))
 			}
@@ -187,6 +192,9 @@ func (c *Compiler) generateSetupStep(data *WorkflowData, setupActionRef string, 
 		fmt.Sprintf("          GH_AW_SETUP_WORKFLOW_NAME: %q\n", data.Name),
 		fmt.Sprintf("          GH_AW_CURRENT_WORKFLOW_REF: %s\n", buildSetupWorkflowRefExpr(data)),
 	)
+	if engineID != "" {
+		lines = append(lines, fmt.Sprintf("          GH_AW_INFO_ENGINE_ID: %q\n", engineID))
+	}
 	if v := getVersionForSetup(data); v != "" {
 		lines = append(lines, fmt.Sprintf("          GH_AW_INFO_VERSION: %q\n", v))
 	}

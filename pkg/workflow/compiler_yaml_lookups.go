@@ -48,6 +48,18 @@ func getVersionForSetup(data *WorkflowData) string {
 	}
 }
 
+// getEngineIDForSetup returns the engine ID to inject into setup-step env.
+// Prefer EngineConfig.ID and fall back to the legacy AI field.
+func getEngineIDForSetup(data *WorkflowData) string {
+	if data == nil {
+		return ""
+	}
+	if data.EngineConfig != nil && data.EngineConfig.ID != "" {
+		return data.EngineConfig.ID
+	}
+	return data.AI
+}
+
 // getInstallationVersion returns the version that will be installed for the given engine.
 // This matches the logic in BuildStandardNpmEngineInstallSteps.
 func getInstallationVersion(data *WorkflowData, engine CodingAgentEngine) string {

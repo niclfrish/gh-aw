@@ -153,3 +153,34 @@ func TestGenerateSetupStepIncludesParentSpanID(t *testing.T) {
 		t.Fatalf("expected setup step to include parent-span-id input, got:\n%s", combined)
 	}
 }
+
+func TestGenerateSetupStepIncludesEngineID(t *testing.T) {
+	t.Run("action mode injects engine id", func(t *testing.T) {
+		c := NewCompiler()
+		data := &WorkflowData{
+			Name:         "my-workflow",
+			EngineConfig: &EngineConfig{ID: "codex"},
+		}
+		lines := c.generateSetupStep(data, "github/gh-aw/actions/setup@abc123", "${{ runner.temp }}/gh-aw", false, "", "")
+		combined := strings.Join(lines, "")
+
+		if !strings.Contains(combined, `GH_AW_INFO_ENGINE_ID: "codex"`) {
+			t.Fatalf("expected setup step to include GH_AW_INFO_ENGINE_ID for action mode, got:\n%s", combined)
+		}
+	})
+
+	t.Run("script mode injects engine id", func(t *testing.T) {
+		c := NewCompiler()
+		c.actionMode = ActionModeScript
+		data := &WorkflowData{
+			Name: "my-workflow",
+			AI:   "copilot",
+		}
+		lines := c.generateSetupStep(data, "./actions/setup", "${{ runner.temp }}/gh-aw", false, "", "")
+		combined := strings.Join(lines, "")
+
+		if !strings.Contains(combined, `GH_AW_INFO_ENGINE_ID: "copilot"`) {
+			t.Fatalf("expected setup step to include GH_AW_INFO_ENGINE_ID for script mode, got:\n%s", combined)
+		}
+	})
+}
