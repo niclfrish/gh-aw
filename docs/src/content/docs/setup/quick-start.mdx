@@ -118,9 +118,11 @@ To customize it now:
 > [!NOTE]
 > You edit the workflow `.md` source file. `gh aw compile` regenerates the `.lock.yml` file that GitHub Actions actually runs.
 >
-> Never edit `.lock.yml` by hand; treat it as generated output. In your `.md` file, **frontmatter** means the configuration block between the `---` markers at the top, and it controls schedule, engine, and tool access.
+> Never edit `.lock.yml` by hand; treat it as generated output.
 >
-> The **body** below frontmatter contains your natural-language task instructions.
+> In your `.md` file, **frontmatter** means the configuration block between the `---` markers at the top, and it controls schedule, engine, and tool access.
+>
+> Changes to the **body** below frontmatter (your natural-language task instructions) take effect on the next run without recompilation.
 
 1. Open the workflow markdown file located at `.github/workflows/daily-repo-status.md` in your repository.
 
