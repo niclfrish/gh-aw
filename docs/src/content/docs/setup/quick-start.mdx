@@ -72,17 +72,30 @@ This will take you through an interactive process to:
 4. **Add the workflow** - Adds the workflow file (`.md`) and its generated GitHub Actions lock file (`.lock.yml`) to `.github/workflows/`.
 5. **Optionally trigger an initial run** - Starts the workflow immediately.
 
+> [!IMPORTANT]
+> The sample `daily-repo-status` workflow does not declare `engine:` in frontmatter. If you are not using Copilot, set your engine explicitly before your first run:
+>
+> ```aw wrap
+> ---
+> engine: claude
+> ---
+> ```
+>
+> Then run `gh aw compile` to regenerate the `.lock.yml` file.
+>
+
 > [!NOTE]
 > **Setting up `COPILOT_GITHUB_TOKEN`?**
 > 1. [Create a fine-grained PAT](https://github.com/settings/personal-access-tokens/new) under your user account.
 > 2. Under **Permissions → Account permissions**, set **Copilot Requests** to **Read**, then generate the token.
-> 3. Add it as a repository secret from your repository root with `gh secret set COPILOT_GITHUB_TOKEN < /path/to/token.txt`, or use the GitHub UI. See [Authentication](/gh-aw/reference/auth/#copilot_github_token) for more detail.
+> 3. Add it as a repository secret from your repository root with `gh secret set COPILOT_GITHUB_TOKEN < /path/to/token.txt`, or use the GitHub UI. See [Authentication](/gh-aw/reference/auth/#copilot_github_token) for setup details.
 >
 
 > [!NOTE]
 > **Setting up `ANTHROPIC_API_KEY`?**
 > 1. Create an API key in [Anthropic Console](https://console.anthropic.com/settings/keys).
-> 2. Add it as a repository secret from your repository root with `gh secret set ANTHROPIC_API_KEY < /path/to/key.txt`, or use the GitHub UI. See [Authentication](/gh-aw/reference/auth/#anthropic_api_key) for more detail.
+> 2. Add it as a repository secret from your repository root with `gh secret set ANTHROPIC_API_KEY < /path/to/key.txt`, or use the GitHub UI.
+> 3. See [Authentication](/gh-aw/reference/auth/#anthropic_api_key) for setup details.
 >
 
 > [!TIP]
