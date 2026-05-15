@@ -217,10 +217,10 @@ func checkForUpdates(noCheckUpdate bool, verbose bool) {
 
 // getLatestRelease queries GitHub API for the latest release of gh-aw
 func getLatestRelease(includePrereleases bool) (string, error) {
-	updateCheckLog.Print("Querying GitHub API for latest release...")
+	updateCheckLog.Printf("Querying GitHub API for latest release from %s...", extensionHost)
 
 	// Create GitHub REST client using go-gh
-	client, err := api.NewRESTClient(api.ClientOptions{})
+	client, err := api.NewRESTClient(api.ClientOptions{Host: extensionHost})
 	if err != nil {
 		return "", fmt.Errorf("failed to create GitHub client: %w", err)
 	}

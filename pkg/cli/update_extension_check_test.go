@@ -276,3 +276,30 @@ func TestExtensionUpgradeArgs(t *testing.T) {
 	args := extensionUpgradeArgs()
 	assert.Equal(t, []string{"extension", "upgrade", "github/gh-aw", "--force"}, args, "upgrade command must force upgrades for pinned extensions")
 }
+
+func TestWithEnvOverride(t *testing.T) {
+	env := []string{
+		"PATH=/usr/bin",
+		"GH_HOST=ghe.example.com",
+		"HOME=/tmp/home",
+	}
+
+	updated := withEnvOverride(env, "GH_HOST", extensionHost)
+
+	assert.Equal(t, []string{
+		"PATH=/usr/bin",
+		"HOME=/tmp/home",
+		"GH_HOST=github.com",
+	}, updated)
+}
+
+func TestGithubExtensionCommand_ForcesGitHubHost(t *testing.T) {
+	t.Setenv("GH_HOST", "ghe.example.com")
+
+	cmd := githubExtensionCommand("extension", "upgrade", extensionRepo)
+
+	assert.Equal(t, "gh", filepath.Base(cmd.Path))
+	assert.Equal(t, []string{"gh", "extension", "upgrade", extensionRepo}, cmd.Args)
+	assert.Contains(t, cmd.Env, "GH_HOST=github.com")
+	assert.NotContains(t, cmd.Env, "GH_HOST=ghe.example.com")
+}

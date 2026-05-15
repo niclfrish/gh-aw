@@ -47,6 +47,9 @@ const backupCleanupRetryDelay = 300 * time.Millisecond
 func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, string, error) {
 	currentVersion := GetVersion()
 	updateExtensionCheckLog.Printf("Checking if extension needs upgrade (current: %s)", currentVersion)
+	if verbose {
+		fmt.Fprintln(os.Stderr, console.FormatInfoMessage("Checking gh-aw extension updates from "+extensionHost+"..."))
+	}
 
 	// Skip for non-release versions (dev builds)
 	if !workflow.IsReleasedVersion(currentVersion) {
@@ -85,7 +88,7 @@ func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, st
 		if semver.Compare(currentSV, latestSV) >= 0 {
 			updateExtensionCheckLog.Print("Extension is already up to date")
 			if verbose {
-				fmt.Fprintln(os.Stderr, console.FormatSuccessMessage("gh-aw extension is up to date"))
+				fmt.Fprintln(os.Stderr, console.FormatSuccessMessage("gh-aw extension is up to date (checked "+extensionHost+")"))
 			}
 			return false, "", nil
 		}
@@ -98,7 +101,7 @@ func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, st
 
 	// A newer version is available – upgrade automatically
 	updateExtensionCheckLog.Printf("Upgrading extension from %s to %s", currentVersion, latestVersion)
-	fmt.Fprintln(os.Stderr, console.FormatInfoMessage(fmt.Sprintf("Upgrading gh-aw extension from %s to %s...", currentVersion, latestVersion)))
+	fmt.Fprintln(os.Stderr, console.FormatInfoMessage(fmt.Sprintf("Upgrading gh-aw extension from %s to %s (source: %s)...", currentVersion, latestVersion, extensionHost)))
 
 	// When targeting a prerelease version on platforms that do not lock running
 	// binaries (i.e., not Linux or Windows), gh extension upgrade --force resolves
@@ -113,13 +116,13 @@ func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, st
 	// version.
 	if includePrereleases && !needsRenameWorkaround() {
 		updateExtensionCheckLog.Printf("Prerelease upgrade on macOS: skipping gh extension upgrade (uses /releases/latest, ignores prereleases), using pin-based install for %s", latestVersion)
-		removeCmd := exec.Command("gh", "extension", "remove", extensionRepo)
+		removeCmd := githubExtensionCommand("extension", "remove", extensionRepo)
 		removeCmd.Stdout = os.Stderr
 		removeCmd.Stderr = os.Stderr
 		if removeErr := removeCmd.Run(); removeErr != nil {
 			updateExtensionCheckLog.Printf("Could not remove extension before pin-based install (continuing anyway): %v", removeErr)
 		}
-		pinCmd := exec.Command("gh", "extension", "install", extensionRepo, "--pin", latestVersion)
+		pinCmd := githubExtensionCommand("extension", "install", extensionRepo, "--pin", latestVersion)
 		pinCmd.Stdout = os.Stderr
 		pinCmd.Stderr = os.Stderr
 		if pinErr := pinCmd.Run(); pinErr != nil {
@@ -140,7 +143,7 @@ func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, st
 	// rename+retry path succeeds and the user is not shown a confusing failure.
 	var firstAttemptBuf bytes.Buffer
 	firstAttemptOut := firstAttemptWriter(os.Stderr, &firstAttemptBuf)
-	firstCmd := exec.Command("gh", extensionUpgradeArgs()...)
+	firstCmd := githubExtensionCommand(extensionUpgradeArgs()...)
 	firstCmd.Stdout = firstAttemptOut
 	firstCmd.Stderr = firstAttemptOut
 	firstErr := firstCmd.Run()
@@ -244,7 +247,7 @@ func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, st
 	// been moved to the OS temp directory (above) so the remove step can always
 	// succeed.  In both cases we clear backupPath after a successful remove to
 	// avoid a misleading restore attempt on subsequent failures.
-	removeCmd := exec.Command("gh", "extension", "remove", extensionRepo)
+	removeCmd := githubExtensionCommand("extension", "remove", extensionRepo)
 	removeCmd.Stdout = os.Stderr
 	removeCmd.Stderr = os.Stderr
 	if removeErr := removeCmd.Run(); removeErr == nil {
@@ -254,7 +257,7 @@ func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, st
 		updateExtensionCheckLog.Printf("Could not remove extension before reinstall (will attempt install anyway): %v", removeErr)
 	}
 
-	retryCmd := exec.Command("gh", "extension", "install", extensionRepo, "--pin", latestVersion)
+	retryCmd := githubExtensionCommand("extension", "install", extensionRepo, "--pin", latestVersion)
 	retryCmd.Stdout = os.Stderr
 	retryCmd.Stderr = os.Stderr
 	if retryErr := retryCmd.Run(); retryErr != nil {
@@ -268,10 +271,10 @@ func upgradeExtensionIfOutdated(verbose bool, includePrereleases bool) (bool, st
 			// running. Guide the user to upgrade manually from a separate shell.
 			fmt.Fprintln(os.Stderr, console.FormatInfoMessage("On Windows, gh-aw cannot self-upgrade while it is running."))
 			fmt.Fprintln(os.Stderr, console.FormatInfoMessage("Please upgrade manually by running one of the following:"))
-			fmt.Fprintln(os.Stderr, "  gh extension upgrade gh-aw")
+			fmt.Fprintln(os.Stderr, "  GH_HOST="+extensionHost+" gh extension upgrade gh-aw")
 			fmt.Fprintln(os.Stderr, console.FormatInfoMessage("If that does not work, try reinstalling:"))
-			fmt.Fprintln(os.Stderr, "  gh extension remove gh-aw")
-			fmt.Fprintln(os.Stderr, "  gh extension install "+extensionRepo)
+			fmt.Fprintln(os.Stderr, "  GH_HOST="+extensionHost+" gh extension remove gh-aw")
+			fmt.Fprintln(os.Stderr, "  GH_HOST="+extensionHost+" gh extension install "+extensionRepo)
 		}
 		return false, "", fmt.Errorf("failed to upgrade gh-aw extension: %w", retryErr)
 	}
@@ -421,5 +424,24 @@ func extensionUpgradeArgs() []string {
 	return []string{"extension", "upgrade", extensionRepo, "--force"}
 }
 
+func githubExtensionCommand(args ...string) *exec.Cmd {
+	cmd := exec.Command("gh", args...)
+	cmd.Env = withEnvOverride(os.Environ(), "GH_HOST", extensionHost)
+	return cmd
+}
+
+func withEnvOverride(env []string, key string, value string) []string {
+	prefix := key + "="
+	filtered := make([]string, 0, len(env)+1)
+	for _, entry := range env {
+		if strings.HasPrefix(entry, prefix) {
+			continue
+		}
+		filtered = append(filtered, entry)
+	}
+	return append(filtered, prefix+value)
+}
+
 // extensionRepo is the GitHub repo slug used in all gh-extension CLI invocations.
 const extensionRepo = "github/gh-aw"
+const extensionHost = "github.com"
