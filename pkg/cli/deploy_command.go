@@ -192,6 +192,7 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 
 // resolveDeployWorkflowSpecs rewrites relative local workflow specs to be anchored
 // to the caller's original working directory before deploy switches into checkoutDir.
+// Remote specs and already-absolute local paths are preserved unchanged.
 func resolveDeployWorkflowSpecs(workflows []string, baseDir string) []string {
 	resolved := make([]string, 0, len(workflows))
 	for _, workflow := range workflows {
