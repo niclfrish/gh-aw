@@ -103,7 +103,7 @@
 #   - python:alpine@sha256:6f873e340e6786787a632c919ecfb1d2301eb33ccfbe9f0d0add16cbc0892116
 
 name: "MCP Inspector Agent"
-"on":
+on:
   schedule:
   - cron: "35 18 * * 1"
     # Friendly format: weekly on monday around 18:00 (scattered)
@@ -154,7 +154,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -467,7 +467,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1265,7 +1265,7 @@ jobs:
             }
           }
           GH_AW_MCP_CONFIG_354319565115a473_EOF
-      - name: Mount MCP servers as CLIs
+      - name: Mount MCP Servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
         env:
@@ -1560,7 +1560,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1708,7 +1708,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -2206,7 +2206,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -2291,7 +2291,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:

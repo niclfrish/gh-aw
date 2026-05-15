@@ -59,7 +59,7 @@
 #   - node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f
 
 name: "Daily Regulatory Report Generator"
-"on":
+on:
   schedule:
   - cron: "9 21 * * *"
     # Friendly format: daily (scattered)
@@ -110,7 +110,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -372,7 +372,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1193,7 +1193,7 @@ jobs:
             }
           }
           GH_AW_MCP_CONFIG_b51314108e50d7d5_EOF
-      - name: Mount MCP servers as CLIs
+      - name: Mount MCP Servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
         env:
@@ -1469,7 +1469,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1621,7 +1621,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1844,7 +1844,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:

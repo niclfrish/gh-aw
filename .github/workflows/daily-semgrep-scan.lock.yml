@@ -58,7 +58,7 @@
 #   - semgrep/semgrep:latest@sha256:17d89ddd91a7729bbd5de09402f7f79a70204289e2a94635086e9db532a495f2
 
 name: "Daily Semgrep Scan"
-"on":
+on:
   schedule:
   - cron: "20 4 * * *"
     # Friendly format: daily (scattered)
@@ -108,7 +108,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -363,7 +363,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -743,7 +743,7 @@ jobs:
             }
           }
           GH_AW_MCP_CONFIG_7b933829bf2027e8_EOF
-      - name: Mount MCP servers as CLIs
+      - name: Mount MCP Servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
         env:
@@ -1008,7 +1008,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1153,7 +1153,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1376,7 +1376,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:

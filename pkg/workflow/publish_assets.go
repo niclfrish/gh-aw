@@ -198,7 +198,7 @@ func (c *Compiler) buildUploadAssetsJob(data *WorkflowData, mainJobName string, 
 	// In dev mode the setup action is referenced via a local path (./actions/setup), so its
 	// files live in the workspace. The upload_assets step does a git checkout to the assets
 	// branch, which replaces the workspace content and removes the actions/setup directory.
-	// Without restoring it, the runner's post-step for Setup Scripts would fail with
+	// Without restoring it, the runner's post-step for Setup scripts would fail with
 	// "Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under .../actions/setup".
 	// We add a restore checkout step (if: always()) after the main step so the post-step
 	// can always find action.yml and complete its /tmp/gh-aw cleanup.

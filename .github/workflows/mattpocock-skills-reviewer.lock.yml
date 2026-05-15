@@ -57,7 +57,7 @@
 #   - node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f
 
 name: "Matt Pocock Skills Reviewer"
-"on":
+on:
   pull_request:
     types:
     - ready_for_review
@@ -108,7 +108,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -388,7 +388,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -799,7 +799,7 @@ jobs:
             }
           }
           GH_AW_MCP_CONFIG_9638f4b486b0c76a_EOF
-      - name: Mount MCP servers as CLIs
+      - name: Mount MCP Servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
         env:
@@ -1067,7 +1067,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1213,7 +1213,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1416,7 +1416,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1481,7 +1481,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:

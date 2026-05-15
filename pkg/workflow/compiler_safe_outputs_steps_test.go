@@ -590,7 +590,7 @@ func TestStepOrderInConsolidatedJob(t *testing.T) {
 	stepsContent := strings.Join(job.Steps, "")
 
 	// Find positions of key steps
-	setupPos := strings.Index(stepsContent, "name: Setup Scripts")
+	setupPos := strings.Index(stepsContent, "name: Setup scripts")
 	downloadPos := strings.Index(stepsContent, "name: Download agent output")
 	patchPos := strings.Index(stepsContent, "name: Download patch artifact")
 	extractBranchPos := strings.Index(stepsContent, "name: Extract base branch from agent output")

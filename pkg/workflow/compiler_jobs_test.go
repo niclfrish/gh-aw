@@ -1073,7 +1073,7 @@ func TestInsertPreStepsAfterSetupBeforeCheckout(t *testing.T) {
 		{
 			name: "insert at next step boundary after setup id",
 			steps: []string{
-				"      - name: Setup Scripts",
+				"      - name: Setup scripts",
 				"        uses: actions/github-script@v7",
 				"        with:",
 				"          job-name: ${{ github.job }}",
@@ -1086,7 +1086,7 @@ func TestInsertPreStepsAfterSetupBeforeCheckout(t *testing.T) {
 				"        run: echo \"pre\"",
 			},
 			want: []string{
-				"      - name: Setup Scripts",
+				"      - name: Setup scripts",
 				"        uses: actions/github-script@v7",
 				"        with:",
 				"          job-name: ${{ github.job }}",
@@ -1100,7 +1100,7 @@ func TestInsertPreStepsAfterSetupBeforeCheckout(t *testing.T) {
 		{
 			name: "append when setup is final step and no boundary exists",
 			steps: []string{
-				"      - name: Setup Scripts",
+				"      - name: Setup scripts",
 				"        uses: actions/github-script@v7",
 				"        id: setup",
 			},
@@ -1109,7 +1109,7 @@ func TestInsertPreStepsAfterSetupBeforeCheckout(t *testing.T) {
 				"        run: echo \"pre\"",
 			},
 			want: []string{
-				"      - name: Setup Scripts",
+				"      - name: Setup scripts",
 				"        uses: actions/github-script@v7",
 				"        id: setup",
 				"      - name: Pre setup",

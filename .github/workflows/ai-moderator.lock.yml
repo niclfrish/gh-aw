@@ -55,7 +55,7 @@
 #   - node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f
 
 name: "AI Moderator"
-"on":
+on:
   issue_comment:
     # lock-for-agent: true # Lock-for-agent processed as issue locking in activation job
     types:
@@ -142,7 +142,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -430,7 +430,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -851,7 +851,7 @@ jobs:
           mkdir -p "${CODEX_HOME}"
           if [ "/tmp/gh-aw/mcp-config/config.toml" != "${CODEX_HOME}/config.toml" ]; then cp "/tmp/gh-aw/mcp-config/config.toml" "${CODEX_HOME}/config.toml"; fi
           chmod 600 "${CODEX_HOME}/config.toml"
-      - name: Mount MCP servers as CLIs
+      - name: Mount MCP Servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
         env:
@@ -1102,7 +1102,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1230,7 +1230,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1317,7 +1317,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:
@@ -1398,7 +1398,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         id: setup
         uses: ./actions/setup
         with:

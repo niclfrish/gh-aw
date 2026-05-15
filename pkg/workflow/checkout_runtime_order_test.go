@@ -127,7 +127,7 @@ steps:
 
 	// Verify the order in dev mode (when local actions are used):
 	// 1. First step should be "Checkout actions folder" (checkout local actions)
-	// 2. Second step should be "Setup Scripts" (use the checked out action)
+	// 2. Second step should be "Setup scripts" (use the checked out action)
 	// 3. Third step should be "Set runtime paths" (safe-outputs port, always injected)
 	// 4. Fourth step should be "Create gh-aw temp directory" (before custom steps)
 	// 5. Fifth step should be "Configure gh CLI for GitHub Enterprise" (GHE host setup)
@@ -140,8 +140,8 @@ steps:
 		t.Errorf("First step should be 'Checkout actions folder', got '%s'", stepNames[0])
 	}
 
-	if stepNames[1] != "Setup Scripts" {
-		t.Errorf("Second step should be 'Setup Scripts', got '%s'", stepNames[1])
+	if stepNames[1] != "Setup scripts" {
+		t.Errorf("Second step should be 'Setup scripts', got '%s'", stepNames[1])
 	}
 
 	if stepNames[2] != "Set runtime paths" {
@@ -317,7 +317,7 @@ Run node --version to check the Node.js version.
 
 	// Verify the order in dev mode:
 	// 1. First step should be "Checkout actions folder" (checkout local actions)
-	// 2. Second step should be "Setup Scripts" (use the checked out action)
+	// 2. Second step should be "Setup scripts" (use the checked out action)
 	// 3. Third step should be "Set runtime paths" (safe-outputs port, always injected)
 	// 4. Fourth step should be "Checkout repository" (automatic full checkout - no separate .github checkout needed)
 	// NOTE: The .github sparse checkout is skipped when full repository checkout is performed
@@ -326,8 +326,8 @@ Run node --version to check the Node.js version.
 		t.Errorf("First step should be 'Checkout actions folder', got '%s'", stepNames[0])
 	}
 
-	if stepNames[1] != "Setup Scripts" {
-		t.Errorf("Second step should be 'Setup Scripts', got '%s'", stepNames[1])
+	if stepNames[1] != "Setup scripts" {
+		t.Errorf("Second step should be 'Setup scripts', got '%s'", stepNames[1])
 	}
 
 	if stepNames[2] != "Set runtime paths" {

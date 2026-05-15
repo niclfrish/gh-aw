@@ -790,7 +790,7 @@ func (c *Compiler) generatePostAgentCollectionAndUpload(yaml *strings.Builder, d
 	// live in the workspace. When a checkout: entry targets an external repository without a path
 	// (e.g. "checkout: [{repository: owner/other-repo}]"), actions/checkout replaces the workspace
 	// root with the external repository content, removing the actions/setup directory.
-	// Without restoring it, the runner's post-step for Setup Scripts would fail with
+	// Without restoring it, the runner's post-step for Setup scripts would fail with
 	// "Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under .../actions/setup".
 	// We add a restore checkout step (if: always()) as the final step so the post-step
 	// can always find action.yml and complete its /tmp/gh-aw cleanup.

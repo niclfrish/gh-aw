@@ -744,7 +744,7 @@ func (c *Compiler) buildPushRepoMemoryJob(data *WorkflowData, threatDetectionEna
 	// In dev mode the setup action is referenced via a local path (./actions/setup), so its files
 	// live in the workspace. The push_repo_memory.cjs script internally checks out the memory
 	// branch, which replaces the workspace content and removes the actions/setup directory.
-	// Without restoring it, the runner's post-step for Setup Scripts would fail with
+	// Without restoring it, the runner's post-step for Setup scripts would fail with
 	// "Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under .../actions/setup".
 	// We add a restore checkout step (if: always()) after all push steps so the post-step
 	// can always find action.yml and complete its /tmp/gh-aw cleanup.

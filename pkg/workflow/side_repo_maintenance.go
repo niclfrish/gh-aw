@@ -264,7 +264,7 @@ jobs:
 			yaml.WriteString("          persist-credentials: false\n\n")
 		}
 
-		yaml.WriteString(`      - name: Setup Scripts
+		yaml.WriteString(`      - name: Setup scripts
         uses: ` + setupActionRef + `
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
@@ -332,7 +332,7 @@ jobs:
 		yaml.WriteString("          persist-credentials: false\n\n")
 	}
 
-	yaml.WriteString(`      - name: Setup Scripts
+	yaml.WriteString(`      - name: Setup scripts
         uses: ` + setupActionRef + `
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
@@ -380,7 +380,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ` + setupActionRef + `
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
@@ -428,7 +428,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ` + setupActionRef + `
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
@@ -540,7 +540,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ` + setupActionRef + `
         with:
           destination: ${{ runner.temp }}/gh-aw/actions

@@ -489,7 +489,7 @@ func (c *Compiler) buildSafeOutputsJobFromParts(
 	// live in the workspace. When the safe_outputs job contains a checkout step for
 	// create_pull_request or push_to_pull_request_branch, the workspace is replaced with the
 	// target repository content, removing the actions/setup directory.
-	// Without restoring it, the runner's post-step for Setup Scripts would fail with
+	// Without restoring it, the runner's post-step for Setup scripts would fail with
 	// "Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under .../actions/setup".
 	// We add a restore checkout step (if: always()) as the last step so the post-step
 	// can always find action.yml and complete its /tmp/gh-aw cleanup.

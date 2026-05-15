@@ -181,13 +181,13 @@ func TestJobManager_ValidateDuplicateSteps_MultipleIdenticalSteps(t *testing.T) 
 		Name:   "buggy-job",
 		RunsOn: "ubuntu-latest",
 		Steps: []string{
-			`      - name: Setup Scripts
+			`      - name: Setup scripts
         uses: ./actions/setup`,
 			`      - name: Install tools
         run: npm install`,
-			`      - name: Setup Scripts
+			`      - name: Setup scripts
         uses: ./actions/setup`,
-			`      - name: Setup Scripts
+			`      - name: Setup scripts
         uses: ./actions/setup`,
 		},
 	}
@@ -204,8 +204,8 @@ func TestJobManager_ValidateDuplicateSteps_MultipleIdenticalSteps(t *testing.T) 
 	}
 
 	// Should report the first duplicate found
-	if !strings.Contains(err.Error(), "Setup Scripts") {
-		t.Errorf("Error should mention 'Setup Scripts', got: %v", err)
+	if !strings.Contains(err.Error(), "Setup scripts") {
+		t.Errorf("Error should mention 'Setup scripts', got: %v", err)
 	}
 }
 

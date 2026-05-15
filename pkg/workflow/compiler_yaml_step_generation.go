@@ -60,7 +60,7 @@ func (c *Compiler) generateCheckoutActionsFolder(data *WorkflowData) []string {
 	// Dev mode: checkout actions folder from github/gh-aw so that cross-repo
 	// callers (e.g. event-driven relays) can find the actions/ directory.
 	// Without repository: the runner defaults to the caller's repo, which has
-	// no actions/ directory, causing Setup Scripts to fail immediately.
+	// no actions/ directory, causing Setup scripts to fail immediately.
 	if c.actionMode.IsDev() {
 		lines := []string{
 			"      - name: Checkout actions folder\n",
@@ -82,7 +82,7 @@ func (c *Compiler) generateCheckoutActionsFolder(data *WorkflowData) []string {
 // re-checks out only the actions/setup subfolder from github/gh-aw. This is used in dev mode
 // after a job step has checked out a different repository (or a different git branch) and
 // replaced the workspace content, removing the actions/setup directory. Without restoring it,
-// the GitHub Actions runner's post-step for "Setup Scripts" would fail with
+// the GitHub Actions runner's post-step for "Setup scripts" would fail with
 // "Can't find 'action.yml', 'action.yaml' or 'Dockerfile' under .../actions/setup".
 //
 // The step is guarded by `if: always()` so it runs even if prior steps fail, ensuring
@@ -131,7 +131,7 @@ func (c *Compiler) generateSetupStep(data *WorkflowData, setupActionRef string, 
 	// Script mode: run the setup.sh script directly
 	if c.actionMode.IsScript() {
 		lines := []string{
-			"      - name: Setup Scripts\n",
+			"      - name: Setup scripts\n",
 			"        id: setup\n",
 			"        run: |\n",
 			"          bash /tmp/gh-aw/actions-source/actions/setup/setup.sh\n",
@@ -166,7 +166,7 @@ func (c *Compiler) generateSetupStep(data *WorkflowData, setupActionRef string, 
 	// Dev/Release mode: use the setup action
 	compilerYamlStepGenerationLog.Printf("Generating setup step: ref=%s, destination=%s, artifactClient=%t, traceID=%q, parentSpanID=%q", setupActionRef, destination, enableArtifactClient, traceID, parentSpanID)
 	lines := []string{
-		"      - name: Setup Scripts\n",
+		"      - name: Setup scripts\n",
 		"        id: setup\n",
 		fmt.Sprintf("        uses: %s\n", setupActionRef),
 		"        with:\n",

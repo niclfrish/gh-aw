@@ -289,7 +289,7 @@ jobs:
       - name: Checkout repository
         uses: ` + getActionPin("actions/checkout") + `
 
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ` + setupActionRef + `
         with:
           destination: ` + SetupActionDestination + `

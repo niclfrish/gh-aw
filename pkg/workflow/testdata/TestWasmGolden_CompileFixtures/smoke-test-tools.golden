@@ -38,7 +38,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ./actions/setup
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
@@ -285,7 +285,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ./actions/setup
         with:
           destination: ${{ runner.temp }}/gh-aw/actions
@@ -610,7 +610,7 @@ jobs:
           sparse-checkout: |
             actions
           persist-credentials: false
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ./actions/setup
         with:
           destination: ${{ runner.temp }}/gh-aw/actions

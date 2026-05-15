@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0  # Fetch all history for all branches
           persist-credentials: true  # Required for git push operations
 
-      - name: Setup Scripts
+      - name: Setup scripts
         uses: ./actions/setup
 
       - name: Check admin permissions

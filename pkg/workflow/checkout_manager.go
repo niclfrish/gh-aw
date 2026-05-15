@@ -316,7 +316,7 @@ func (cm *CheckoutManager) HasAppAuth() bool {
 // When such a checkout exists, the workspace root is replaced with the external
 // repository content, which removes any locally-checked-out actions/setup directory.
 // In dev mode, a "Restore actions folder" step must be added after such checkouts so
-// the runner's post-step for the Setup Scripts action can find action.yml.
+// the runner's post-step for the Setup scripts action can find action.yml.
 //
 // Note: the "." path is normalized to "" in add(), so both "" and "." are covered
 // by the entry.key.path == "" check.
