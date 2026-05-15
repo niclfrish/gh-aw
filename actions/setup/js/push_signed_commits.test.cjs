@@ -1176,7 +1176,7 @@ exit 1
       expect(mockCore.warning).toHaveBeenCalledWith(expect.stringMatching(/merge commit [0-9a-f]{7,40} detected/));
     });
 
-    it("should fail before attempting unsigned push when merge commits are present and signed commits are enabled", async () => {
+    it("should fail when merge commits are present and signed commits are enabled", async () => {
       execGit(["checkout", "-b", "signed-required-side"], { cwd: workDir });
       fs.writeFileSync(path.join(workDir, "signed-required-side.txt"), "side branch content\n");
       execGit(["add", "signed-required-side.txt"], { cwd: workDir });

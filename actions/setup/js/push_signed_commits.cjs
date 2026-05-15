@@ -449,7 +449,7 @@ async function pushSignedCommits({ githubClient, owner, repo, branch, baseRef, c
   } catch (err) {
     if (err instanceof PushSignedCommitsUnsupportedShape) {
       core.warning(`pushSignedCommits: signed-commit replay unsupported for branch '${branch}' (${err.message})`);
-      if (signedCommits !== false) {
+      if (signedCommits === true) {
         throw new Error(
           `pushSignedCommits: branch '${branch}' contains commit shapes not supported by GitHub's signed createCommitOnBranch API (${err.message}), ` +
             `and unsigned fallback is not allowed while signed-commits is enabled. ` +
