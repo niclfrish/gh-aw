@@ -40,6 +40,7 @@ func TestNewDeployCommand_RegistersCoreFlags(t *testing.T) {
 		"no-stop-after",
 		"stop-after",
 		"disable-security-scanner",
+		"cool-down",
 	}
 
 	for _, flagName := range expectedFlags {
@@ -48,4 +49,14 @@ func TestNewDeployCommand_RegistersCoreFlags(t *testing.T) {
 			require.NotNil(t, flag, "expected flag %q to be registered", flagName)
 		})
 	}
+}
+
+func TestNewDeployCommand_RequiresRepoFlag(t *testing.T) {
+	cmd := NewDeployCommand(func(string) error { return nil })
+	require.NotNil(t, cmd)
+	cmd.SetArgs([]string{"githubnext/agentics/ci-doctor"})
+
+	err := cmd.Execute()
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "--repo flag is required")
 }

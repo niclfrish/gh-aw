@@ -17,6 +17,9 @@ import (
 
 var deployLog = logger.New("cli:deploy_command")
 
+const defaultDeployCoolDown = "7d"
+const deployCommitMessage = "chore: deploy agentic workflows"
+
 // NewDeployCommand creates the deploy command.
 func NewDeployCommand(validateEngine func(string) error) *cobra.Command {
 	cmd := &cobra.Command{
@@ -53,6 +56,7 @@ Examples:
 			noStopAfter, _ := cmd.Flags().GetBool("no-stop-after")
 			stopAfter, _ := cmd.Flags().GetString("stop-after")
 			disableSecurityScanner, _ := cmd.Flags().GetBool("disable-security-scanner")
+			coolDownStr, _ := cmd.Flags().GetString("cool-down")
 
 			if nameFlag != "" && len(workflows) > 1 {
 				return errors.New("--name flag cannot be used when adding multiple workflows at once")
@@ -62,9 +66,9 @@ Examples:
 				return err
 			}
 
-			coolDown, err := parseCoolDownFlag("7d")
+			coolDown, err := parseCoolDownFlag(coolDownStr)
 			if err != nil {
-				return err
+				return fmt.Errorf("invalid --cool-down value: %w", err)
 			}
 
 			opts := AddOptions{
@@ -94,6 +98,7 @@ Examples:
 	cmd.Flags().Bool("no-stop-after", false, "Remove any stop-after field from the workflow")
 	cmd.Flags().String("stop-after", "", "Override stop-after value in the workflow (e.g., '+48h', '2025-12-31 23:59:59')")
 	cmd.Flags().Bool("disable-security-scanner", false, "Disable security scanning of workflow markdown content")
+	cmd.Flags().String("cool-down", defaultDeployCoolDown, "Cooldown period before applying a new release during update (e.g. 7d, 24h, 0)")
 
 	RegisterEngineFlagCompletion(cmd)
 	RegisterDirFlagCompletion(cmd, "dir")
@@ -160,15 +165,13 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		return fmt.Errorf("failed to compile workflows with purge: %w", err)
 	}
 
-	workflowLabel := workflows[0]
+	workflowDescription := workflows[0]
 	if len(workflows) > 1 {
-		workflowLabel = fmt.Sprintf("%d workflows", len(workflows))
+		workflowDescription = fmt.Sprintf("%d workflows", len(workflows))
 	}
-	commitMessage := "chore: deploy agentic workflows"
-	prTitle := "chore: deploy agentic workflows"
-	prBody := fmt.Sprintf("Deploy %s to %s.\n\nThis PR was created by `gh aw deploy` after running update, add, and compile --purge in the target repository.", workflowLabel, targetRepo)
+	prBody := fmt.Sprintf("Deploy %s to %s.\n\nThis PR was created by `gh aw deploy` after running update, add, and compile --purge in the target repository.", workflowDescription, targetRepo)
 
-	_, err = CreatePRWithChanges("deploy-workflows", commitMessage, prTitle, prBody, addOpts.Verbose)
+	_, err = CreatePRWithChanges("deploy-workflows", deployCommitMessage, deployCommitMessage, prBody, addOpts.Verbose)
 	if err != nil {
 		return fmt.Errorf("failed to create deploy pull request: %w", err)
 	}
