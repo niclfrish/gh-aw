@@ -60,3 +60,16 @@ func TestNewDeployCommand_RequiresRepoFlag(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "--repo flag is required")
 }
+
+func TestBuildDeployPRMetadata_SingleWorkflow(t *testing.T) {
+	title, body := buildDeployPRMetadata([]string{"githubnext/agentics/ci-doctor"}, "owner/repo")
+	assert.Equal(t, deployCommitMessage, title)
+	assert.Contains(t, body, "Deploy ci-doctor to owner/repo.")
+	assert.Contains(t, body, "compile --purge")
+}
+
+func TestBuildDeployPRMetadata_MultipleWorkflows(t *testing.T) {
+	title, body := buildDeployPRMetadata([]string{"a", "b", "c"}, "owner/repo")
+	assert.Equal(t, deployCommitMessage, title)
+	assert.Contains(t, body, "Deploy 3 workflows to owner/repo.")
+}

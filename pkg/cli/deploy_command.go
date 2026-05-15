@@ -109,7 +109,7 @@ Examples:
 func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOpts AddOptions, coolDown time.Duration) error {
 	gitRoot, err := gitutil.FindGitRoot()
 	if err != nil {
-		return fmt.Errorf("--repo requires running inside a git repository: %w", err)
+		return fmt.Errorf("deploy command requires running inside a git repository: %w", err)
 	}
 
 	updatesDir, err := ensureUpdateTargetRepoGitignore(gitRoot)
@@ -165,17 +165,21 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		return fmt.Errorf("failed to compile workflows with purge: %w", err)
 	}
 
-	workflowDescription := normalizeWorkflowID(workflows[0])
-	if len(workflows) > 1 {
-		workflowDescription = fmt.Sprintf("%d workflows", len(workflows))
-	}
-	prBody := fmt.Sprintf("Deploy %s to %s.\n\nThis PR was created by `gh aw deploy` after running update, add, and compile --purge in the target repository.", workflowDescription, targetRepo)
-
-	_, err = CreatePRWithChanges("deploy-workflows", deployCommitMessage, deployCommitMessage, prBody, addOpts.Verbose)
+	prTitle, prBody := buildDeployPRMetadata(workflows, targetRepo)
+	_, err = CreatePRWithChanges("deploy-workflows", deployCommitMessage, prTitle, prBody, addOpts.Verbose)
 	if err != nil {
 		return fmt.Errorf("failed to create deploy pull request: %w", err)
 	}
 
 	deployLog.Printf("Successfully deployed workflows to %s", targetRepo)
 	return nil
+}
+
+func buildDeployPRMetadata(workflows []string, targetRepo string) (string, string) {
+	workflowDescription := normalizeWorkflowID(workflows[0])
+	if len(workflows) > 1 {
+		workflowDescription = fmt.Sprintf("%d workflows", len(workflows))
+	}
+	body := fmt.Sprintf("Deploy %s to %s.\n\nThis PR was created by `gh aw deploy` after running update, add, and compile --purge in the target repository.", workflowDescription, targetRepo)
+	return deployCommitMessage, body
 }
