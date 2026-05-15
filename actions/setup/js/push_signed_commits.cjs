@@ -448,7 +448,15 @@ async function pushSignedCommits({ githubClient, owner, repo, branch, baseRef, c
     return lastOid ?? shas[shas.length - 1];
   } catch (err) {
     if (err instanceof PushSignedCommitsUnsupportedShape) {
-      core.warning(`pushSignedCommits: signed-commit replay unsupported for branch '${branch}' (${err.message}); attempting direct git push fallback`);
+      core.warning(`pushSignedCommits: signed-commit replay unsupported for branch '${branch}' (${err.message})`);
+      if (signedCommits !== false) {
+        throw new Error(
+          `pushSignedCommits: branch '${branch}' contains commit shapes not supported by GitHub's signed createCommitOnBranch API (${err.message}), ` +
+            `and unsigned fallback is not allowed while signed-commits is enabled. ` +
+            `Set signed-commits: false to allow direct git push for this branch.`,
+          { cause: err }
+        );
+      }
       try {
         const fallbackSha = await pushBranchAndResolveHead({ branch, cwd, gitAuthEnv });
         core.info(`pushSignedCommits: git push fallback completed for unsupported commit shape, using pushed SHA ${fallbackSha}`);
