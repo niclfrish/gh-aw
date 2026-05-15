@@ -465,7 +465,7 @@ async function pushSignedCommits({ githubClient, owner, repo, branch, baseRef, c
           );
         }
         throw new Error(
-          `pushSignedCommits: branch '${branch}' contains commit shapes not supported by GitHub's signed createCommitOnBranch API (${err.message}), ` + `and direct git push fallback also failed. Original push error: ${fallbackMsg}`,
+          `pushSignedCommits: branch '${branch}' contains commit shapes not supported by GitHub's signed createCommitOnBranch API (${err.message}), and direct git push fallback also failed. Original push error: ${fallbackMsg}`,
           { cause: fallbackErr }
         );
       }
