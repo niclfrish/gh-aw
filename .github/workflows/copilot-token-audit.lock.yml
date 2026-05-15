@@ -545,13 +545,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_AW_GITHUB_MCP_SERVER_TOKEN || secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          # Check if gh-aw extension is already installed
-          if gh extension list | grep -qE '(^|[[:space:]])gh-aw($|[[:space:]])'; then
-            echo "gh-aw extension already installed, upgrading..."
-            gh extension upgrade gh-aw || true
-          else
+          # Install gh-aw only if not already available
+          if ! gh aw --version >/dev/null 2>&1; then
             echo "Installing gh-aw extension..."
-            gh extension install github/gh-aw
+            curl -fsSL https://raw.githubusercontent.com/github/gh-aw/refs/heads/main/install-gh-aw.sh | bash
           fi
           gh aw --version
           # Copy the gh-aw binary to ${RUNNER_TEMP}/gh-aw for MCP server containerization
@@ -1819,4 +1816,3 @@ jobs:
             actions/setup
           sparse-checkout-cone-mode: true
           persist-credentials: false
-
