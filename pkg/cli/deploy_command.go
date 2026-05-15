@@ -240,6 +240,7 @@ func existingWorkflowHasSource(path string) (bool, error) {
 
 	result, err := parser.ExtractFrontmatterFromContent(string(content))
 	if err != nil {
+		deployLog.Printf("Failed to parse frontmatter in %s while checking source field: %v", path, err)
 		return false, nil
 	}
 
