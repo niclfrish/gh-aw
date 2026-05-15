@@ -1,5 +1,4 @@
 ---
-emoji: "📝"
 description: Reviews and improves technical documentation based on provided topics
 on:
   workflow_dispatch:

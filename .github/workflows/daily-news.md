@@ -1,5 +1,4 @@
 ---
-emoji: "📰"
 description: Generates a daily news digest of repository activity including issues, PRs, discussions, and workflow runs
 on:
   schedule:

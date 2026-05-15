@@ -1,9 +1,7 @@
 ---
-emoji: "✍️"
 description: Generates new agentic workflow markdown files based on user requests when invoked with /craft command
 on:
   slash_command:
-    strategy: centralized
     name: craft
     events: [issues]
 permissions:

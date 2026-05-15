@@ -1,5 +1,4 @@
 ---
-emoji: "📝"
 name: Developer Documentation Consolidator
 description: Consolidates and organizes developer documentation from multiple sources into a unified, searchable knowledge base
 on:

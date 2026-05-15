@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 description: Smoke test that validates assign-to-agent with the agentic-workflows custom agent
 on:
   workflow_dispatch:

@@ -1,5 +1,4 @@
 ---
-emoji: "🎙️"
 name: Dictation Prompt Generator
 description: Generates optimized prompts for voice dictation and speech-to-text workflows
 on:

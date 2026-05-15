@@ -1,5 +1,4 @@
 ---
-emoji: "🔍"
 description: Analyzes workflow examples to identify patterns, best practices, and potential improvements
 on:
   schedule: weekly on monday around 09:00

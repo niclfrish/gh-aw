@@ -1,5 +1,4 @@
 ---
-emoji: "✅"
 description: Detects inconsistencies between JSON schema, implementation code, and documentation
 on:
   schedule: daily
@@ -11,7 +10,6 @@ permissions:
   pull-requests: read
 engine:
   id: claude
-max-effective-tokens: 20000000
 tools:
   edit:
   bash: ["*"]

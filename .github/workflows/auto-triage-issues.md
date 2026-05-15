@@ -1,5 +1,4 @@
 ---
-emoji: "🔧"
 name: Auto-Triage Issues
 description: Automatically labels new and existing unlabeled issues to improve discoverability and triage efficiency
 on:
@@ -7,9 +6,6 @@ on:
     types: [opened, edited]
   schedule: every 6h
   workflow_dispatch:
-user-rate-limit:
-  max-runs-per-window: 5
-  window: 60
 permissions:
   contents: read
   issues: read

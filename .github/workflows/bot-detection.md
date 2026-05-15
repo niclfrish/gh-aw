@@ -1,5 +1,4 @@
 ---
-emoji: "🤖"
 description: Investigates suspicious repository activity and maintains a single triage issue
 on:
   schedule:

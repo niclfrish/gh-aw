@@ -1,14 +1,10 @@
 ---
-emoji: "🔧"
 description: Workflow generator that updates issue status and assigns to Copilot coding agent for workflow design
 on:
   issues:
     types: [opened]
     lock-for-agent: true
   reaction: "eyes"
-user-rate-limit:
-  max-runs-per-window: 5
-  window: 60
 permissions:
   contents: read
   issues: read

@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 name: Daily Grafana OTel Instrumentation Advisor
 description: Daily DevOps analysis of OpenTelemetry instrumentation in JavaScript code using Grafana traces to identify the single most impactful improvement and create an actionable GitHub issue
 on:

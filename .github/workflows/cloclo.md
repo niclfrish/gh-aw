@@ -1,12 +1,9 @@
 ---
-emoji: "📊"
 on:
   slash_command:
     name: cloclo
-    strategy: centralized
   label_command:
     name: cloclo
-    strategy: decentralized
   status-comment: true
 permissions:
   contents: read

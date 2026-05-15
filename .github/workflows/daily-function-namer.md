@@ -1,5 +1,4 @@
 ---
-emoji: "🔧"
 name: Daily Go Function Namer
 description: Analyzes one entire Go package per day using Serena to extract function names and suggest renames that improve agent discoverability, using round-robin over package directories via cache-memory
 on:

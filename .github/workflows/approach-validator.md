@@ -1,14 +1,11 @@
 ---
-emoji: "✅"
 name: Approach Validator
 description: Validates proposed technical approaches before implementation begins using a sequential multi-agent panel of Devil's Advocate, Alternatives Scout, Implementation Estimator, and Dead End Detector
 on:
   label_command:
     names: [approach-proposal, needs-design]
     events: [issues, pull_request]
-    strategy: decentralized
   slash_command:
-    strategy: centralized
     name: approach-validator
     events: [issue_comment, pull_request_comment]
 permissions:

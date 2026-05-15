@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 description: Smoke test workflow that validates Claude engine functionality by reviewing recent PRs twice daily
 on: 
   workflow_dispatch:

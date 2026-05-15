@@ -1,11 +1,9 @@
 ---
-emoji: "🏛️"
 name: Archie
 description: Generates Mermaid diagrams to visualize issue and pull request relationships when invoked with the /archie command
 on:
   slash_command:
     name: archie
-    strategy: centralized
     events: [issues, issue_comment, pull_request, pull_request_comment]
   reaction: eyes
   status-comment: true

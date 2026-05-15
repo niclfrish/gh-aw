@@ -1,5 +1,4 @@
 ---
-emoji: "👨‍🍳"
 name: PR Sous Chef
 description: Keeps open non-draft PRs moving toward maintainer investigation by posting targeted Copilot nudges
 on:

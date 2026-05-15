@@ -1,5 +1,4 @@
 ---
-emoji: "🔒"
 description: Monitors and analyzes the health of safe output operations across all agentic workflows
 on:
   schedule: daily

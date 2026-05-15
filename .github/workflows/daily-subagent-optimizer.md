@@ -1,5 +1,4 @@
 ---
-emoji: "⚡"
 name: Daily Sub-Agent Optimizer
 description: Identifies high-token workflows lacking inline sub-agents, applies LLM-expert heuristics to locate decomposable tasks, and creates a concrete inline-agent refactoring proposal
 on:

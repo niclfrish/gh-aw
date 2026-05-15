@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 name: Agentic Workflow Portfolio Yield
 description: Weekly portfolio analysis of agentic workflows using deterministic scoring, overlap detection, and OTel-backed evidence for governance recommendations
 on:

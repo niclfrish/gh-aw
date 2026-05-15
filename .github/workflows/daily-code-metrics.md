@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 description: Tracks and visualizes daily code metrics and trends to monitor repository health and development patterns
 on:
   schedule: daily
@@ -13,7 +12,6 @@ engine: claude
 tools:
   cli-proxy: true
   repo-memory:
-    branch-prefix: daily
     description: "Historical code quality and health metrics"
     file-glob: ["*.json", "*.jsonl", "*.csv", "*.md"]
     max-file-size: 102400  # 100KB

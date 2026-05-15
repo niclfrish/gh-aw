@@ -1,5 +1,4 @@
 ---
-emoji: "🧹"
 name: Instructions Janitor
 description: Reviews and cleans up instruction files to ensure clarity, consistency, adherence to best practices, and optimal file sizes for agentic consumption
 on:

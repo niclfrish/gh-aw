@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 name: Smoke CI
 description: Smoke CI workflow that exercises pull request safe outputs through an agent session
 on:

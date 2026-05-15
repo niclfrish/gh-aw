@@ -1,12 +1,10 @@
 ---
-emoji: "🔍"
 name: "PR Code Quality Reviewer"
 description: Comprehensive code quality review covering bugs, performance, style, naming, and best practices — consolidates Grumpy Code Reviewer and PR Nitpick Reviewer
 on:
   pull_request:
     types: [ready_for_review]
   slash_command:
-    strategy: centralized
     name: review
     events: [pull_request_comment, pull_request_review_comment]
 engine: copilot

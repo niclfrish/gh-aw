@@ -1,5 +1,4 @@
 ---
-emoji: "🧹"
 description: CI cleaner that fixes format, lint, and test issues when CI fails on main branch. Schedule disabled (issue #26015); use workflow_dispatch to trigger manually.
 on:
   workflow_dispatch:

@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 name: Test Project URL Explicit Requirement
 engine: copilot
 on:

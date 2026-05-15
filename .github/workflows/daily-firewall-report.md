@@ -1,5 +1,4 @@
 ---
-emoji: "🔒"
 description: Collects and reports on firewall log events to monitor network security and access patterns
 on:
   schedule:

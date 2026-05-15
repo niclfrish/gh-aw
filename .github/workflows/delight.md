@@ -1,5 +1,4 @@
 ---
-emoji: "✨"
 name: Delight
 description: Targeted scan of user-facing aspects to improve clarity, usability, and professionalism in enterprise software context
 on:

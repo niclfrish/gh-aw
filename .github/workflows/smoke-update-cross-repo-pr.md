@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 name: Smoke Update Cross-Repo PR
 description: Smoke test validating cross-repo pull request updates in github/gh-aw-side-repo by adding lines from Homer's Odyssey to the README
 

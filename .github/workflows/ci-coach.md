@@ -1,5 +1,4 @@
 ---
-emoji: "🏋️"
 description: Daily CI optimization coach that analyzes workflow runs for efficiency improvements and cost reduction opportunities
 on:
   schedule:

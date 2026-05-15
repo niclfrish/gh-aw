@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 description: Smoke test workflow that validates Codex engine functionality by reviewing recent PRs twice daily
 on:
   workflow_dispatch:
@@ -55,9 +54,6 @@ safe-outputs:
       close-older-issues: true
       close-older-key: "smoke-codex"
       labels: [automation, testing]
-    set-issue-field:
-      max: 1
-      allowed-fields: ["*"]
     add-labels:
       allowed: [smoke-codex]
     remove-labels:

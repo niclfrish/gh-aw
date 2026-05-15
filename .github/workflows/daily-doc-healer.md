@@ -1,5 +1,4 @@
 ---
-emoji: "📝"
 name: Daily Documentation Healer
 description: Self-healing companion to the Daily Documentation Updater that detects documentation gaps missed by DDUw and proposes corrections
 on:

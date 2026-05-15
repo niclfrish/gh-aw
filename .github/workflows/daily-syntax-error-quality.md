@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 name: Daily Syntax Error Quality Check
 description: Tests compiler error message quality by introducing syntax errors in workflows, evaluating error clarity, and suggesting improvements
 on:

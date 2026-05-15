@@ -1,5 +1,4 @@
 ---
-emoji: "🔒"
 description: Daily deep red teaming security scan of actions/setup/js and actions/setup/sh directories, looking for backdoors, secret leaks, and malicious code
 on:
   schedule: daily

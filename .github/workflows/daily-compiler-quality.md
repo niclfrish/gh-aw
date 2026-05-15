@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 name: Daily Compiler Quality Check
 description: Analyzes compiler code daily to assess if it meets human-written quality standards, creates discussion reports, and uses cache memory to avoid re-analyzing unchanged files
 on:
@@ -48,7 +47,6 @@ safe-outputs:
     close-older-discussions: true
     fallback-to-issue: true
     max: 1
-    min-body-length: 200
 timeout-minutes: 30
 strict: true
 features:

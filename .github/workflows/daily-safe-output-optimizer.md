@@ -1,5 +1,4 @@
 ---
-emoji: "⚡"
 name: Daily Safe Output Tool Optimizer
 description: Analyzes gateway logs for errored safe output tool calls and creates issues to improve tool descriptions
 on:
@@ -21,8 +20,6 @@ safe-outputs:
     max: 1
 
 timeout-minutes: 30
-max-runs: 200
-max-effective-tokens: 40000000
 strict: true
 
 imports:

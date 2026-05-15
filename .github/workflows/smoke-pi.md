@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 description: Smoke test workflow that validates Pi engine functionality
 on:
   workflow_dispatch:

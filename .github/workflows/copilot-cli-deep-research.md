@@ -1,5 +1,4 @@
 ---
-emoji: "🔬"
 description: Deep research analyzing Copilot CLI current state, available features, and missed optimization opportunities
 on:
   schedule:

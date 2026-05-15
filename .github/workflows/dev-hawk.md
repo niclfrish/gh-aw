@@ -1,5 +1,4 @@
 ---
-emoji: "🦅"
 name: Dev Hawk
 description: Monitors development workflow activities and provides real-time alerts and insights on pull requests and CI status
 on:

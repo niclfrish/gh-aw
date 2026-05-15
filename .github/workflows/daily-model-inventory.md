@@ -1,5 +1,4 @@
 ---
-emoji: "📦"
 name: Daily Model Inventory Checker
 description: Queries model lists from OpenAI, Anthropic, and Google APIs daily, uses AWF /reflect for Copilot models, then analyzes the combined inventory to propose updates to the builtin model alias mapping
 on:

@@ -1,5 +1,4 @@
 ---
-emoji: "🔍"
 name: Duplicate Code Detector
 description: Identifies duplicate code patterns across the codebase and suggests refactoring opportunities
 on:

@@ -1,5 +1,4 @@
 ---
-emoji: "🧹"
 name: Draft PR Cleanup
 description: Automated cleanup policy for stale draft pull requests to reduce clutter and improve triage efficiency
 on:

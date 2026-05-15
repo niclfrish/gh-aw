@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 name: Daily Cache Strategy Analyzer
 description: Analyzes agentic workflow logs daily for cache misses and misconfigured caches in workflows that use cache-memory, tracks history across runs, and creates issues when problems or improvements are found
 on:

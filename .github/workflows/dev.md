@@ -1,10 +1,8 @@
 ---
-emoji: "💻"
 on:
   workflow_dispatch:
   label_command:
     name: dev
-    strategy: decentralized
   schedule:
     - cron: 'daily around 9:00'  # ~9 AM UTC
 name: Dev

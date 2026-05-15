@@ -1,5 +1,4 @@
 ---
-emoji: "🔍"
 description: Comprehensive repository audit to identify productivity improvement opportunities using agentic workflows
 on:
   workflow_dispatch:

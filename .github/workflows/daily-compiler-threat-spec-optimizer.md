@@ -1,5 +1,4 @@
 ---
-emoji: "🔒"
 name: Daily Compiler Threat Spec Optimizer
 description: Daily optimizer that reconciles compiler threat coverage with W3C specification-driven detection rules
 on:

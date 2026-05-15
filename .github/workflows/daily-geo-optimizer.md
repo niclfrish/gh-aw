@@ -1,5 +1,4 @@
 ---
-emoji: "🌍"
 description: Daily GEO (Generative Engine Optimization) audit of the README and documentation site using geo-optimizer-skill
 on:
   schedule: daily

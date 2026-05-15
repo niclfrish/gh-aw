@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 description: Daily report on GitHub REST API consumption by agentic workflows — with trending charts and quota analysis
 on:
   schedule: daily

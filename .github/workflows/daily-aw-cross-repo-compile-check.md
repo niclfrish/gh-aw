@@ -1,5 +1,4 @@
 ---
-emoji: "🔧"
 name: Daily AW Cross-Repo Compile Check
 description: Daily Claude workflow that finds popular repositories using gh-aw lock files, compiles/upgrades them, caches results, and reports compatibility gaps
 on:

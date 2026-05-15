@@ -1,5 +1,4 @@
 ---
-emoji: "🔒"
 name: Code Scanning Fixer
 description: Automatically fixes code scanning alerts by creating pull requests with remediation
 on:

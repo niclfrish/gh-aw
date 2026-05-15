@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 description: Daily codebase quality report using sentrux — tracks architecture health, quality signal, and structural trends
 name: Daily Sentrux Report
 on:
@@ -22,7 +21,6 @@ tools:
   bash: true
   cli-proxy: true
   repo-memory:
-    branch-prefix: daily
     description: "Historical sentrux quality signal and architecture metrics"
     file-glob: ["*.json", "*.jsonl"]
     max-file-size: 51200

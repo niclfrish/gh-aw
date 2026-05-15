@@ -1,11 +1,9 @@
 ---
-emoji: "🏥"
 description: Investigates failed CI workflows to identify root causes and patterns, creating issues with diagnostic information; also reviews PR check failures when the ci-doctor label is applied
 on:
   label_command:
     name: ci-doctor
     events: [pull_request]
-    strategy: decentralized
 
 permissions:
   actions: read         # To query workflow runs, jobs, and logs

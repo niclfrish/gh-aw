@@ -1,5 +1,4 @@
 ---
-emoji: "💄"
 name: Terminal Stylist
 description: Analyzes and improves console output styling and formatting in the codebase
 on:

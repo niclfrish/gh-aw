@@ -1,5 +1,4 @@
 ---
-emoji: "✅"
 name: Daily Rendering Scripts Verifier
 description: Daily verification that the engine-specific log parser and rendering scripts correctly handle real agentic workflow output files
 on:

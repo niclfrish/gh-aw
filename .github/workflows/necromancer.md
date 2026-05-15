@@ -1,12 +1,10 @@
 ---
-emoji: "💀"
 name: Necromancer
 description: Investigates merge-ready pull requests, traces root-cause issues, and adds regression tests before merge
 on:
   label_command:
     name: necromancer
     events: [pull_request]
-    strategy: decentralized
   status-comment: true
 permissions:
   contents: read

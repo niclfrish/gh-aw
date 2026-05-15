@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 on:
   workflow_dispatch:
 permissions:

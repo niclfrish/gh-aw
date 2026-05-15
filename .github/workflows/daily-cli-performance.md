@@ -1,5 +1,4 @@
 ---
-emoji: "⚡"
 description: Daily CLI Performance - Runs benchmarks, tracks performance trends, and reports regressions
 on:
   schedule: daily

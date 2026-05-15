@@ -1,5 +1,4 @@
 ---
-emoji: "🤖"
 name: Sergo - Serena Go Expert
 description: Daily Go code quality analysis using Serena MCP language service protocol expert
 on:

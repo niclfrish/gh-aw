@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 description: Smoke test that validates OTLP telemetry export to all supported vendors (OTLP endpoint + JSONL mirror) with a simple bash script.
 on:
   workflow_dispatch:

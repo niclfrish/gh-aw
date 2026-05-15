@@ -1,5 +1,4 @@
 ---
-emoji: "🌳"
 description: Generates ASCII tree map visualization of repository file structure weekly
 on:
   schedule: weekly on monday around 15:00

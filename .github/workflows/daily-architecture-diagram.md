@@ -1,5 +1,4 @@
 ---
-emoji: "🏗️"
 description: Generates a weekly high-level ASCII architecture diagram of the repository, using cache-memory to focus only on what changed since the last run.
 on:
   schedule: weekly on Monday around 08:00

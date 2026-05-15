@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 description: "Guard policy smoke test: repos=public, min-integrity=none"
 on:
   workflow_dispatch:

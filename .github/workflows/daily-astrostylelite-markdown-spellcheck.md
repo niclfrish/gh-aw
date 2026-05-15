@@ -1,5 +1,4 @@
 ---
-emoji: "📝"
 name: Daily AstroStyleLite Markdown Spellcheck
 description: Runs daily American English spellcheck for AstroStyleLite docs content and opens a safe PR only when findings exist
 on:

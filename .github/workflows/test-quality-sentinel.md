@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 name: Test Quality Sentinel
 description: Analyzes test quality beyond code coverage percentages on every PR, detecting implementation-detail tests, happy-path-only tests, test inflation, and duplication
 on:

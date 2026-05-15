@@ -1,5 +1,4 @@
 ---
-emoji: "🔧"
 name: Code Simplifier
 description: Analyzes recently modified code and creates pull requests with simplifications that improve clarity, consistency, and maintainability while preserving functionality
 on:

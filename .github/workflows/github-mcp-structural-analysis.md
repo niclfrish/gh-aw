@@ -1,5 +1,4 @@
 ---
-emoji: "🔍"
 description: Structural analysis of GitHub MCP tool responses with schema evaluation and usefulness ratings for agentic work
 timeout-minutes: 15
 on:

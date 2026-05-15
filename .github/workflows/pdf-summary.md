@@ -1,10 +1,8 @@
 ---
-emoji: "📄"
 description: pdf summarizer
 on:
   # Command trigger - responds to /summarize mentions
   slash_command:
-    strategy: centralized
     name: summarize
     events: [issue_comment, issues]
   

@@ -1,5 +1,4 @@
 ---
-emoji: "📊"
 name: Copilot Session Insights
 description: Analyzes GitHub Copilot coding agent sessions to provide detailed insights on usage patterns, success rates, and performance metrics
 on:

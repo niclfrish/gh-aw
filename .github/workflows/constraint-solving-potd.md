@@ -1,5 +1,4 @@
 ---
-emoji: "🧩"
 on:
   schedule: daily
   workflow_dispatch:

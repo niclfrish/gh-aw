@@ -1,5 +1,4 @@
 ---
-emoji: "📅"
 description: Creates a narrative chronicle of daily repository activity including commits, PRs, issues, and discussions
 on:
   schedule:

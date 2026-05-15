@@ -1,5 +1,4 @@
 ---
-emoji: "🧪"
 name: Smoke Multi PR
 description: Test creating multiple pull requests in a single workflow run
 on:
