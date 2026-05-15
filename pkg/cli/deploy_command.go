@@ -131,6 +131,11 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		_ = os.Chdir(originalDir)
 	}()
 
+	resolvedWorkflows, err := resolveDeployWorkflowSpecs(workflows, originalDir)
+	if err != nil {
+		return err
+	}
+
 	if err := os.Chdir(checkoutDir); err != nil {
 		return fmt.Errorf("failed to change directory to checkout %s: %w", checkoutDir, err)
 	}
@@ -152,7 +157,7 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		return fmt.Errorf("failed to update existing workflows: %w", err)
 	}
 
-	workflowsToAdd, skippedWorkflows, err := excludeExistingSourcedWorkflows(workflows, addOpts)
+	workflowsToAdd, skippedWorkflows, err := excludeExistingSourcedWorkflows(resolvedWorkflows, addOpts)
 	if err != nil {
 		return fmt.Errorf("failed to inspect existing workflows: %w", err)
 	}
@@ -178,7 +183,7 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		return fmt.Errorf("failed to compile workflows with purge: %w", err)
 	}
 
-	prTitle, prBody := buildDeployPRMetadata(workflows, targetRepo)
+	prTitle, prBody := buildDeployPRMetadata(resolvedWorkflows, targetRepo)
 	_, err = CreatePRWithChanges("deploy-workflows", deployCommitMessage, prTitle, prBody, addOpts.Verbose)
 	if err != nil {
 		return fmt.Errorf("failed to create deploy pull request: %w", err)
@@ -186,6 +191,26 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 
 	deployLog.Printf("Successfully deployed workflows to %s", targetRepo)
 	return nil
+}
+
+func resolveDeployWorkflowSpecs(workflows []string, baseDir string) ([]string, error) {
+	resolved := make([]string, 0, len(workflows))
+	for _, workflow := range workflows {
+		if !isLocalWorkflowPath(workflow) || filepath.IsAbs(workflow) {
+			resolved = append(resolved, workflow)
+			continue
+		}
+
+		absPath := filepath.Join(baseDir, workflow)
+		absPath, err := filepath.Abs(absPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve local workflow %q: %w", workflow, err)
+		}
+
+		resolved = append(resolved, absPath)
+	}
+
+	return resolved, nil
 }
 
 func buildDeployPRMetadata(workflows []string, targetRepo string) (string, string) {

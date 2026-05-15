@@ -154,3 +154,29 @@ source: [unterminated
 	assert.Equal(t, []string{"githubnext/agentics/ci-doctor"}, toAdd)
 	assert.Empty(t, skipped)
 }
+
+func TestResolveDeployWorkflowSpecs_ResolvesRelativeLocalPathsAgainstOriginalDirectory(t *testing.T) {
+	t.Parallel()
+
+	baseDir := t.TempDir()
+	workflows, err := resolveDeployWorkflowSpecs(
+		[]string{"./my-workflow.md", "githubnext/agentics/ci-doctor"},
+		baseDir,
+	)
+	require.NoError(t, err)
+	require.Len(t, workflows, 2)
+
+	assert.Equal(t, filepath.Join(baseDir, "my-workflow.md"), workflows[0])
+	assert.Equal(t, "githubnext/agentics/ci-doctor", workflows[1])
+}
+
+func TestResolveDeployWorkflowSpecs_ResolvesRelativeWildcardLocalPaths(t *testing.T) {
+	t.Parallel()
+
+	baseDir := t.TempDir()
+	workflows, err := resolveDeployWorkflowSpecs([]string{"./*.md"}, baseDir)
+	require.NoError(t, err)
+	require.Len(t, workflows, 1)
+
+	assert.Equal(t, filepath.Join(baseDir, "*.md"), workflows[0])
+}
