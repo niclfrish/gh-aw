@@ -293,6 +293,26 @@ func TestWithEnvOverride(t *testing.T) {
 	}, updated)
 }
 
+func TestWithEnvOverride_AddsMissingKey(t *testing.T) {
+	env := []string{
+		"PATH=/usr/bin",
+		"HOME=/tmp/home",
+	}
+
+	updated := withEnvOverride(env, "GH_HOST", extensionHost)
+
+	assert.Equal(t, []string{
+		"PATH=/usr/bin",
+		"HOME=/tmp/home",
+		"GH_HOST=github.com",
+	}, updated)
+}
+
+func TestWithEnvOverride_EmptyEnv(t *testing.T) {
+	updated := withEnvOverride(nil, "GH_HOST", extensionHost)
+	assert.Equal(t, []string{"GH_HOST=github.com"}, updated)
+}
+
 func TestGithubExtensionCommand_ForcesGitHubHost(t *testing.T) {
 	t.Setenv("GH_HOST", "ghe.example.com")
 
@@ -300,6 +320,8 @@ func TestGithubExtensionCommand_ForcesGitHubHost(t *testing.T) {
 
 	assert.Equal(t, "gh", filepath.Base(cmd.Path))
 	assert.Equal(t, []string{"gh", "extension", "upgrade", extensionRepo}, cmd.Args)
+	assert.Contains(t, cmd.String(), "gh extension upgrade github/gh-aw")
 	assert.Contains(t, cmd.Env, "GH_HOST=github.com")
 	assert.NotContains(t, cmd.Env, "GH_HOST=ghe.example.com")
+	assert.NotEmpty(t, cmd.Env, "command should inherit process environment")
 }
