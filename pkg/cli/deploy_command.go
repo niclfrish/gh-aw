@@ -165,7 +165,7 @@ func runDeploy(ctx context.Context, targetRepo string, workflows []string, addOp
 		return fmt.Errorf("failed to compile workflows with purge: %w", err)
 	}
 
-	workflowDescription := workflows[0]
+	workflowDescription := normalizeWorkflowID(workflows[0])
 	if len(workflows) > 1 {
 		workflowDescription = fmt.Sprintf("%d workflows", len(workflows))
 	}
