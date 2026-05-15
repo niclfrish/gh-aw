@@ -54,6 +54,21 @@ func getEngineIDForSetup(data *WorkflowData) string {
 	if data == nil {
 		return ""
 	}
+	if engineRaw, ok := data.RawFrontmatter["engine"]; ok {
+		if engineStr, ok := engineRaw.(string); ok {
+			return strings.TrimSpace(engineStr)
+		}
+		if engineObj, ok := engineRaw.(map[string]any); ok {
+			if id, ok := engineObj["id"].(string); ok && strings.TrimSpace(id) != "" {
+				return strings.TrimSpace(id)
+			}
+			if runtimeObj, ok := engineObj["runtime"].(map[string]any); ok {
+				if runtimeID, ok := runtimeObj["id"].(string); ok {
+					return strings.TrimSpace(runtimeID)
+				}
+			}
+		}
+	}
 	if data.EngineConfig != nil && data.EngineConfig.ID != "" {
 		return data.EngineConfig.ID
 	}

@@ -184,3 +184,47 @@ func TestGenerateSetupStepIncludesEngineID(t *testing.T) {
 		}
 	})
 }
+
+func TestGetEngineIDForSetup(t *testing.T) {
+	t.Run("reads engine from raw frontmatter string", func(t *testing.T) {
+		data := &WorkflowData{
+			RawFrontmatter: map[string]any{"engine": "claude"},
+			EngineConfig:   &EngineConfig{ID: "copilot"},
+			AI:             "copilot",
+		}
+		if got := getEngineIDForSetup(data); got != "claude" {
+			t.Fatalf("expected raw frontmatter engine to win, got %q", got)
+		}
+	})
+
+	t.Run("reads engine.id from raw frontmatter object", func(t *testing.T) {
+		data := &WorkflowData{
+			RawFrontmatter: map[string]any{"engine": map[string]any{"id": "codex"}},
+			EngineConfig:   &EngineConfig{ID: "copilot"},
+		}
+		if got := getEngineIDForSetup(data); got != "codex" {
+			t.Fatalf("expected raw frontmatter engine.id, got %q", got)
+		}
+	})
+
+	t.Run("reads engine.runtime.id from raw frontmatter object", func(t *testing.T) {
+		data := &WorkflowData{
+			RawFrontmatter: map[string]any{"engine": map[string]any{"runtime": map[string]any{"id": "custom-engine"}}},
+			EngineConfig:   &EngineConfig{ID: "copilot"},
+		}
+		if got := getEngineIDForSetup(data); got != "custom-engine" {
+			t.Fatalf("expected raw frontmatter engine.runtime.id, got %q", got)
+		}
+	})
+
+	t.Run("falls back to merged engine fields when raw frontmatter has no engine", func(t *testing.T) {
+		data := &WorkflowData{
+			RawFrontmatter: map[string]any{"name": "wf"},
+			EngineConfig:   &EngineConfig{ID: "copilot"},
+			AI:             "claude",
+		}
+		if got := getEngineIDForSetup(data); got != "copilot" {
+			t.Fatalf("expected EngineConfig fallback, got %q", got)
+		}
+	})
+}
