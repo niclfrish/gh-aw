@@ -30,6 +30,29 @@
         "token",
         "workflow"
       ]
+    },
+    {
+      "date": "2026-05-15",
+      "pr_count": 50,
+      "avg_sentiment": 0.0245,
+      "positive_count": 21,
+      "neutral_count": 19,
+      "negative_count": 10,
+      "top_keywords": [
+        "command",
+        "block",
+        "workflow",
+        "triggering",
+        "http"
+      ],
+      "top_topic": "Fix/Bug Fixes",
+      "cluster_labels": [
+        "feature, manifest, reference, page, package",
+        "sous chef, sous, chef, pr sous, pr",
+        "fix, bug, workflow, job, formatting",
+        "token, budget, et, field, changes",
+        "mcp, sentry, shared, import, sentry mcp"
+      ]
     }
   ]
 }
