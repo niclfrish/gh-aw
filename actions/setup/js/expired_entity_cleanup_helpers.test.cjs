@@ -34,14 +34,24 @@ describe("expired_entity_cleanup_helpers", () => {
   const makeExpirationBody = date => `> - [x] expires <!-- gh-aw-expires: ${date.toISOString()} --> on ${date.toUTCString()} UTC`;
 
   describe("delay", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("resolves after the specified time", async () => {
-      const start = Date.now();
-      await delay(10);
-      expect(Date.now() - start).toBeGreaterThanOrEqual(10);
+      const promise = delay(10);
+      vi.advanceTimersByTime(10);
+      await expect(promise).resolves.toBeUndefined();
     });
 
     it("resolves immediately for 0 ms", async () => {
-      await expect(delay(0)).resolves.toBeUndefined();
+      const promise = delay(0);
+      vi.advanceTimersByTime(0);
+      await expect(promise).resolves.toBeUndefined();
     });
   });
 
