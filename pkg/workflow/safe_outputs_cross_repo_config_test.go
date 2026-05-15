@@ -221,8 +221,10 @@ func TestAddCommentGitHubTokenInHandlerConfig(t *testing.T) {
 				BaseSafeOutputConfig: BaseSafeOutputConfig{
 					GitHubToken: "${{ secrets.TEMP_USER_PAT }}",
 				},
-				TargetRepoSlug: "githubnext/gh-aw-side-repo",
-				AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "githubnext/gh-aw-side-repo",
+					AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				},
 			},
 		},
 	}
@@ -259,8 +261,10 @@ func TestCreateIssueGitHubTokenInHandlerConfig(t *testing.T) {
 				BaseSafeOutputConfig: BaseSafeOutputConfig{
 					GitHubToken: "${{ secrets.TEMP_USER_PAT }}",
 				},
-				TargetRepoSlug: "githubnext/gh-aw-side-repo",
-				AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "githubnext/gh-aw-side-repo",
+					AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				},
 			},
 		},
 	}
@@ -290,8 +294,10 @@ func TestCreateDiscussionGitHubTokenInHandlerConfig(t *testing.T) {
 				BaseSafeOutputConfig: BaseSafeOutputConfig{
 					GitHubToken: "${{ secrets.TEMP_USER_PAT }}",
 				},
-				TargetRepoSlug: "githubnext/gh-aw-side-repo",
-				AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "githubnext/gh-aw-side-repo",
+					AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				},
 			},
 		},
 	}
@@ -320,9 +326,11 @@ func TestCreateCodeScanningAlertCrossRepoInHandlerConfig(t *testing.T) {
 				BaseSafeOutputConfig: BaseSafeOutputConfig{
 					GitHubToken: "${{ secrets.TEMP_USER_PAT }}",
 				},
-				TargetRepoSlug: "githubnext/gh-aw-side-repo",
-				AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
-				Driver:         "test-scanner",
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "githubnext/gh-aw-side-repo",
+					AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				},
+				Driver: "test-scanner",
 			},
 		},
 	}
@@ -398,8 +406,10 @@ func TestPushToPullRequestBranchCrossRepoInHandlerConfig(t *testing.T) {
 				BaseSafeOutputConfig: BaseSafeOutputConfig{
 					GitHubToken: "${{ secrets.TEMP_USER_PAT }}",
 				},
-				TargetRepoSlug: "githubnext/gh-aw-side-repo",
-				AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "githubnext/gh-aw-side-repo",
+					AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+				},
 			},
 		},
 	}
@@ -441,8 +451,10 @@ func TestHandlerManagerStepPerOutputTokenInHandlerConfig(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{
 						GitHubToken: "${{ secrets.TEMP_USER_PAT }}",
 					},
-					TargetRepoSlug: "githubnext/gh-aw-side-repo",
-					AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "githubnext/gh-aw-side-repo",
+						AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+					},
 				},
 			},
 			expectedInHandlerConfig:   []string{"TEMP_USER_PAT"},
@@ -456,8 +468,10 @@ func TestHandlerManagerStepPerOutputTokenInHandlerConfig(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{
 						GitHubToken: "${{ secrets.TEMP_USER_PAT }}",
 					},
-					TargetRepoSlug: "githubnext/gh-aw-side-repo",
-					AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "githubnext/gh-aw-side-repo",
+						AllowedRepos:   []string{"githubnext/gh-aw-side-repo"},
+					},
 				},
 			},
 			expectedInHandlerConfig:   []string{"TEMP_USER_PAT"},

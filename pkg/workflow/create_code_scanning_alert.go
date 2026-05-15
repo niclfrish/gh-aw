@@ -13,10 +13,9 @@ var createCodeScanningAlertLog = logger.New("workflow:create_code_scanning_alert
 
 // CreateCodeScanningAlertsConfig holds configuration for creating repository security advisories (SARIF format) from agent output
 type CreateCodeScanningAlertsConfig struct {
-	BaseSafeOutputConfig `yaml:",inline"`
-	Driver               string   `yaml:"driver,omitempty"`        // Driver name for SARIF tool.driver.name field (default: "GitHub Agentic Workflows Security Scanner")
-	TargetRepoSlug       string   `yaml:"target-repo,omitempty"`   // Target repository in format "owner/repo" for cross-repository code scanning alert creation
-	AllowedRepos         []string `yaml:"allowed-repos,omitempty"` // List of additional repositories in format "owner/repo" that code scanning alerts can be created in
+	BaseSafeOutputConfig   `yaml:",inline"`
+	SafeOutputTargetConfig `yaml:",inline"`
+	Driver                 string `yaml:"driver,omitempty"` // Driver name for SARIF tool.driver.name field (default: "GitHub Agentic Workflows Security Scanner")
 }
 
 // parseCodeScanningAlertsConfig handles create-code-scanning-alert configuration

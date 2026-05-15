@@ -8,10 +8,9 @@ var createAgentSessionLog = logger.New("workflow:create_agent_session")
 
 // CreateAgentSessionConfig holds configuration for creating GitHub Copilot coding agent sessions from agent output
 type CreateAgentSessionConfig struct {
-	BaseSafeOutputConfig `yaml:",inline"`
-	Base                 string   `yaml:"base,omitempty"`          // Base branch for the pull request
-	TargetRepoSlug       string   `yaml:"target-repo,omitempty"`   // Target repository in format "owner/repo" for cross-repository agent sessions
-	AllowedRepos         []string `yaml:"allowed-repos,omitempty"` // List of additional repositories that agent sessions can be created in (additionally to the target-repo)
+	BaseSafeOutputConfig   `yaml:",inline"`
+	SafeOutputTargetConfig `yaml:",inline"`
+	Base                   string `yaml:"base,omitempty"` // Base branch for the pull request
 }
 
 // parseAgentSessionConfig handles create-agent-session configuration

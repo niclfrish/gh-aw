@@ -113,7 +113,9 @@ func TestBuildSharedPRCheckoutSteps(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{
 						GitHubToken: "${{ secrets.GH_AW_CROSS_REPO_PAT }}",
 					},
-					TargetRepoSlug: "org/target-repo",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/target-repo",
+					},
 				},
 			},
 			checkContains: []string{
@@ -129,7 +131,9 @@ func TestBuildSharedPRCheckoutSteps(t *testing.T) {
 			name: "cross-repo without base-branch uses safe ref omitting github.ref_name",
 			safeOutputs: &SafeOutputsConfig{
 				CreatePullRequests: &CreatePullRequestsConfig{
-					TargetRepoSlug: "org/other-repo",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/other-repo",
+					},
 				},
 			},
 			checkContains: []string{
@@ -155,8 +159,10 @@ func TestBuildSharedPRCheckoutSteps(t *testing.T) {
 			name: "cross-repo with explicit base-branch uses base-branch not cross-repo fallback",
 			safeOutputs: &SafeOutputsConfig{
 				CreatePullRequests: &CreatePullRequestsConfig{
-					TargetRepoSlug: "org/other-repo",
-					BaseBranch:     "develop",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/other-repo",
+					},
+					BaseBranch: "develop",
 				},
 			},
 			checkContains: []string{
@@ -231,7 +237,9 @@ func TestBuildSharedPRCheckoutSteps(t *testing.T) {
 			name: "push-to-pull-request-branch with target-repo and no create-pull-request",
 			safeOutputs: &SafeOutputsConfig{
 				PushToPullRequestBranch: &PushToPullRequestBranchConfig{
-					TargetRepoSlug: "microsoft/vscode",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "microsoft/vscode",
+					},
 				},
 			},
 			checkContains: []string{
@@ -264,7 +272,9 @@ func TestBuildSharedPRCheckoutSteps(t *testing.T) {
 			name: "push-to-pull-request-branch target-repo takes precedence over update-pull-request target-repo",
 			safeOutputs: &SafeOutputsConfig{
 				PushToPullRequestBranch: &PushToPullRequestBranchConfig{
-					TargetRepoSlug: "org/push-branch-target",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/push-branch-target",
+					},
 				},
 				UpdatePullRequests: &UpdatePullRequestsConfig{
 					UpdateEntityConfig: UpdateEntityConfig{
@@ -284,10 +294,14 @@ func TestBuildSharedPRCheckoutSteps(t *testing.T) {
 			name: "create-pull-request target-repo takes precedence over push-to-pull-request-branch target-repo",
 			safeOutputs: &SafeOutputsConfig{
 				CreatePullRequests: &CreatePullRequestsConfig{
-					TargetRepoSlug: "org/create-pr-target",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/create-pr-target",
+					},
 				},
 				PushToPullRequestBranch: &PushToPullRequestBranchConfig{
-					TargetRepoSlug: "org/push-branch-target",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/push-branch-target",
+					},
 				},
 			},
 			checkContains: []string{

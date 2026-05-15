@@ -138,8 +138,10 @@ func TestAddAllSafeOutputConfigEnvVars(t *testing.T) {
 			safeOutputs: &SafeOutputsConfig{
 				Staged: true,
 				CreateIssues: &CreateIssuesConfig{
-					TargetRepoSlug: "org/repo",
-					TitlePrefix:    "[Test] ",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/repo",
+					},
+					TitlePrefix: "[Test] ",
 				},
 			},
 			checkContains: []string{
@@ -253,7 +255,9 @@ func TestStagedFlagWithTargetRepo(t *testing.T) {
 				SafeOutputs: &SafeOutputsConfig{
 					Staged: true,
 					CreateIssues: &CreateIssuesConfig{
-						TargetRepoSlug: tt.targetRepo,
+						SafeOutputTargetConfig: SafeOutputTargetConfig{
+							TargetRepoSlug: tt.targetRepo,
+						},
 					},
 				},
 			}
@@ -450,7 +454,9 @@ func TestStagedFlagPrecedence(t *testing.T) {
 				SafeOutputs: &SafeOutputsConfig{
 					Staged: tt.staged,
 					CreateIssues: &CreateIssuesConfig{
-						TargetRepoSlug: tt.targetRepo,
+						SafeOutputTargetConfig: SafeOutputTargetConfig{
+							TargetRepoSlug: tt.targetRepo,
+						},
 					},
 				},
 			}
@@ -478,7 +484,9 @@ func TestAddCommentsTargetRepoStagedBehavior(t *testing.T) {
 		SafeOutputs: &SafeOutputsConfig{
 			Staged: true,
 			AddComments: &AddCommentsConfig{
-				TargetRepoSlug: "org/target",
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "org/target",
+				},
 				BaseSafeOutputConfig: BaseSafeOutputConfig{
 					Max: strPtr("5"),
 				},

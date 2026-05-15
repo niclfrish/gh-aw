@@ -444,14 +444,16 @@ func TestGenerateSafeOutputsConfigCreatePullRequestTargetRepo(t *testing.T) {
 		SafeOutputs: &SafeOutputsConfig{
 			CreatePullRequests: &CreatePullRequestsConfig{
 				BaseSafeOutputConfig: BaseSafeOutputConfig{Max: strPtr("1")},
-				TargetRepoSlug:       "caido/proxy-frontend",
-				AllowedRepos:         []string{"caido/other-repo"},
-				BaseBranch:           "dev",
-				Draft:                strPtr("true"),
-				Reviewers:            []string{"corb3nik"},
-				TeamReviewers:        []string{"platform-reviewers"},
-				TitlePrefix:          "[refactor] ",
-				FallbackAsIssue:      &falseVal,
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "caido/proxy-frontend",
+					AllowedRepos:   []string{"caido/other-repo"},
+				},
+				BaseBranch:      "dev",
+				Draft:           strPtr("true"),
+				Reviewers:       []string{"corb3nik"},
+				TeamReviewers:   []string{"platform-reviewers"},
+				TitlePrefix:     "[refactor] ",
+				FallbackAsIssue: &falseVal,
 			},
 		},
 	}

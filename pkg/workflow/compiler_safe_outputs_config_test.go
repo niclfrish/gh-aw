@@ -47,7 +47,9 @@ func TestAddHandlerManagerConfigEnvVar(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{
 						Max: strPtr("3"),
 					},
-					Target:            "issue",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						Target: "issue",
+					},
 					HideOlderComments: testStringPtr("true"),
 				},
 			},
@@ -170,7 +172,9 @@ func TestAddHandlerManagerConfigEnvVar(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{
 						Max: strPtr("5"),
 					},
-					Target:            "pull_request",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						Target: "pull_request",
+					},
 					TitlePrefix:       "[Update] ",
 					Labels:            []string{"update"},
 					IfNoChanges:       "skip",
@@ -190,7 +194,9 @@ func TestAddHandlerManagerConfigEnvVar(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{
 						Staged: true,
 					},
-					Target:      "*",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						Target: "*",
+					},
 					IfNoChanges: "warn",
 				},
 			},
@@ -241,8 +247,10 @@ func TestAddHandlerManagerConfigEnvVar(t *testing.T) {
 			name: "config with target-repo",
 			safeOutputs: &SafeOutputsConfig{
 				CreateIssues: &CreateIssuesConfig{
-					TargetRepoSlug: "org/repo",
-					TitlePrefix:    "[Test] ",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "org/repo",
+					},
+					TitlePrefix: "[Test] ",
 				},
 			},
 			checkContains: []string{
@@ -255,7 +263,9 @@ func TestAddHandlerManagerConfigEnvVar(t *testing.T) {
 			name: "config with allowed repos",
 			safeOutputs: &SafeOutputsConfig{
 				CreateIssues: &CreateIssuesConfig{
-					AllowedRepos: []string{"org/repo1", "org/repo2"},
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						AllowedRepos: []string{"org/repo1", "org/repo2"},
+					},
 				},
 			},
 			checkContains: []string{
@@ -1350,7 +1360,9 @@ func TestHandlerConfigTargetRepo(t *testing.T) {
 		Name: "Test Workflow",
 		SafeOutputs: &SafeOutputsConfig{
 			CreateIssues: &CreateIssuesConfig{
-				TargetRepoSlug: "org/target-repo",
+				SafeOutputTargetConfig: SafeOutputTargetConfig{
+					TargetRepoSlug: "org/target-repo",
+				},
 			},
 		},
 	}
@@ -2138,7 +2150,9 @@ func TestHandlerConfigStagedMode(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{
 						Staged: true,
 					},
-					Target:      "*",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						Target: "*",
+					},
 					IfNoChanges: "warn",
 				},
 			},

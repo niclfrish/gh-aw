@@ -68,7 +68,9 @@ func TestEnhanceToolDescription(t *testing.T) {
 					BaseSafeOutputConfig: BaseSafeOutputConfig{Max: strPtr("3")},
 					TitlePrefix:          "[bot] ",
 					Labels:               []string{"automated"},
-					TargetRepoSlug:       "owner/repo",
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						TargetRepoSlug: "owner/repo",
+					},
 				},
 			},
 			wantContains: []string{

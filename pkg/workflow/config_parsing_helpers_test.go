@@ -1292,7 +1292,9 @@ func TestHandlerConfigExpressionFields(t *testing.T) {
 			name: "create_pull_request allowed_repos expression stored as string",
 			safeOuts: &SafeOutputsConfig{
 				CreatePullRequests: &CreatePullRequestsConfig{
-					AllowedRepos: []string{"${{ inputs['allowed-repos'] }}"},
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						AllowedRepos: []string{"${{ inputs['allowed-repos'] }}"},
+					},
 				},
 			},
 			handler:   "create_pull_request",
@@ -1314,7 +1316,9 @@ func TestHandlerConfigExpressionFields(t *testing.T) {
 			name: "add_comment allowed_repos expression stored as string",
 			safeOuts: &SafeOutputsConfig{
 				AddComments: &AddCommentsConfig{
-					AllowedRepos: []string{"${{ inputs['allowed-repos'] }}"},
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						AllowedRepos: []string{"${{ inputs['allowed-repos'] }}"},
+					},
 				},
 			},
 			handler:   "add_comment",
@@ -1336,7 +1340,9 @@ func TestHandlerConfigExpressionFields(t *testing.T) {
 			name: "push_to_pull_request_branch allowed_repos expression stored as string",
 			safeOuts: &SafeOutputsConfig{
 				PushToPullRequestBranch: &PushToPullRequestBranchConfig{
-					AllowedRepos: []string{"${{ inputs['allowed-repos'] }}"},
+					SafeOutputTargetConfig: SafeOutputTargetConfig{
+						AllowedRepos: []string{"${{ inputs['allowed-repos'] }}"},
+					},
 				},
 			},
 			handler:   "push_to_pull_request_branch",

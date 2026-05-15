@@ -6,12 +6,10 @@ var commentMemoryLog = logger.New("workflow:comment_memory")
 
 // CommentMemoryConfig holds configuration for the comment_memory safe output type.
 type CommentMemoryConfig struct {
-	BaseSafeOutputConfig `yaml:",inline"`
-	Target               string   `yaml:"target,omitempty"`        // Target: "triggering" (default), "*" or explicit issue/PR number
-	TargetRepoSlug       string   `yaml:"target-repo,omitempty"`   // Target repository in owner/repo format
-	AllowedRepos         []string `yaml:"allowed-repos,omitempty"` // Additional allowed repositories
-	MemoryID             string   `yaml:"memory-id,omitempty"`     // Default memory identifier when item does not provide memory_id
-	Footer               *string  `yaml:"footer,omitempty"`        // Footer visibility control ("true"/"false" templatable string); nil defaults to visible footer
+	BaseSafeOutputConfig   `yaml:",inline"`
+	SafeOutputTargetConfig `yaml:",inline"`
+	MemoryID               string  `yaml:"memory-id,omitempty"` // Default memory identifier when item does not provide memory_id
+	Footer                 *string `yaml:"footer,omitempty"`    // Footer visibility control ("true"/"false" templatable string); nil defaults to visible footer
 }
 
 // extractCommentMemoryConfig extracts comment-memory configuration from tools section.

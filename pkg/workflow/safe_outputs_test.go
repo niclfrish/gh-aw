@@ -588,7 +588,9 @@ func TestGenerateSafeOutputsConfig(t *testing.T) {
 				SafeOutputs: &SafeOutputsConfig{
 					AddComments: &AddCommentsConfig{
 						BaseSafeOutputConfig: BaseSafeOutputConfig{Max: strPtr("2")},
-						Target:               "issue",
+						SafeOutputTargetConfig: SafeOutputTargetConfig{
+							Target: "issue",
+						},
 					},
 				},
 			},

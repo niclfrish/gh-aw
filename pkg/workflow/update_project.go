@@ -23,13 +23,12 @@ type ProjectFieldDefinition struct {
 
 // UpdateProjectConfig holds configuration for unified project board management
 type UpdateProjectConfig struct {
-	BaseSafeOutputConfig `yaml:",inline"`
-	GitHubToken          string                   `yaml:"github-token,omitempty"`
-	Project              string                   `yaml:"project,omitempty"`       // Default project URL for operations
-	TargetRepoSlug       string                   `yaml:"target-repo,omitempty"`   // Default repository for cross-repo content resolution in "owner/repo" format
-	AllowedRepos         []string                 `yaml:"allowed-repos,omitempty"` // List of additional repositories allowed for target_repo resolution
-	Views                []ProjectView            `yaml:"views,omitempty"`
-	FieldDefinitions     []ProjectFieldDefinition `yaml:"field-definitions,omitempty" json:"field_definitions,omitempty"`
+	BaseSafeOutputConfig   `yaml:",inline"`
+	SafeOutputTargetConfig `yaml:",inline"`
+	GitHubToken            string                   `yaml:"github-token,omitempty"`
+	Project                string                   `yaml:"project,omitempty"` // Default project URL for operations
+	Views                  []ProjectView            `yaml:"views,omitempty"`
+	FieldDefinitions       []ProjectFieldDefinition `yaml:"field-definitions,omitempty" json:"field_definitions,omitempty"`
 }
 
 // parseUpdateProjectConfig handles update-project configuration

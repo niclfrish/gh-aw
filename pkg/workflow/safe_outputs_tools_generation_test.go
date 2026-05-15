@@ -92,8 +92,10 @@ func TestAddRepoParameterIfNeededCreatesIssueWithRepos(t *testing.T) {
 
 	safeOutputs := &SafeOutputsConfig{
 		CreateIssues: &CreateIssuesConfig{
-			AllowedRepos:   []string{"org/repo1", "org/repo2"},
-			TargetRepoSlug: "org/repo1",
+			SafeOutputTargetConfig: SafeOutputTargetConfig{
+				AllowedRepos:   []string{"org/repo1", "org/repo2"},
+				TargetRepoSlug: "org/repo1",
+			},
 		},
 	}
 
