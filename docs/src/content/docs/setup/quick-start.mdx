@@ -73,10 +73,13 @@ This will take you through an interactive process to:
 5. **Optionally trigger an initial run** - Starts the workflow immediately.
 
 > [!NOTE]
-> **Setting up `COPILOT_GITHUB_TOKEN`?**
-> 1. [Create a fine-grained PAT](https://github.com/settings/personal-access-tokens/new) under your user account.
-> 2. Under **Permissions → Account permissions**, set **Copilot Requests** to **Read**, then generate the token.
-> 3. Add it as a repository secret from your repository root with `gh secret set COPILOT_GITHUB_TOKEN < /path/to/token.txt`, or use the GitHub UI. See [Authentication](/gh-aw/reference/auth/#copilot_github_token) for more detail.
+> **`COPILOT_GITHUB_TOKEN` setup checklist**
+> 1. [Create a fine-grained PAT](https://github.com/settings/personal-access-tokens/new) with your **user account** as the resource owner (not an organization).
+> 2. In that PAT form, go to **Permissions → Account permissions** and set **Copilot Requests** to **Read**.
+> 3. Generate and copy the token value.
+> 4. Add it to your repository as a GitHub Actions secret named `COPILOT_GITHUB_TOKEN` (repo-level secret), for example:
+>    `gh secret set COPILOT_GITHUB_TOKEN < /path/to/token.txt`
+> 5. See [Authentication](/gh-aw/reference/auth/#copilot_github_token) for additional options.
 >
 
 > [!NOTE]
@@ -113,15 +116,17 @@ With GitHub Agentic Workflows, you are in control! Your repository automation is
 To customize it now:
 
 > [!NOTE]
-> Workflows have two files: the `.md` file you edit and a generated `.lock.yml` file that GitHub Actions runs. `gh aw compile` regenerates the `.lock.yml` file from your markdown whenever you change the workflow configuration.
+> You edit the workflow `.md` source file. `gh aw compile` regenerates the `.lock.yml` file that GitHub Actions actually runs.
 >
-> Within the `.md` file, the **frontmatter** (the configuration block between the `---` markers at the top) controls when the workflow runs, which AI engine powers it, and what tools it can access — changes here require recompiling. The **body** below contains your natural language task description and instructions — changes here take effect immediately on the next run.
+> Never edit `.lock.yml` by hand; treat it as generated output. In your `.md` file, **frontmatter** means the configuration block between the opening `---` markers at the top, and it controls schedule, engine, and tool access.
+>
+> The **body** below frontmatter contains your natural-language task instructions.
 
 1. Open the workflow markdown file located at `.github/workflows/daily-repo-status.md` in your repository.
 
 2. Edit the section "What to include" to list things you are having trouble with regularly in your repository: your issue backlog, your CI setup, your testing, the performance of your software, your roadmap. Any or all of these, or anything else you want to improve. You can also customize the style and process sections to guide the coding agent's behavior.
 
-3. If you changed the [frontmatter](/gh-aw/reference/frontmatter/) (the configuration block between the `---` markers at the top of the file), regenerate the compiled workflow by running:
+3. If you changed the [frontmatter](/gh-aw/reference/frontmatter/) (the top `---` delimited configuration block), regenerate the compiled workflow by running:
 
    ```text
    gh aw compile
