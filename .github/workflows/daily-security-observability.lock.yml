@@ -130,6 +130,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Security Observability Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/daily-security-observability.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
@@ -409,6 +410,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Security Observability Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/daily-security-observability.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Set runtime paths
         id: set-runtime-paths
@@ -1195,6 +1197,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Security Observability Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/daily-security-observability.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1348,6 +1351,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Security Observability Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/daily-security-observability.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1571,6 +1575,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Security Observability Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/daily-security-observability.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
@@ -1655,6 +1660,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Security Observability Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/daily-security-observability.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Download cache-memory artifact (default)
         id: download_cache_default
@@ -1710,6 +1716,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Security Observability Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/daily-security-observability.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

@@ -121,6 +121,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Copilot PR Merged Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/copilot-pr-merged-report.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
@@ -341,6 +342,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Copilot PR Merged Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/copilot-pr-merged-report.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Set runtime paths
         id: set-runtime-paths
@@ -959,6 +961,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Copilot PR Merged Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/copilot-pr-merged-report.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1107,6 +1110,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Copilot PR Merged Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/copilot-pr-merged-report.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1330,6 +1334,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Copilot PR Merged Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/copilot-pr-merged-report.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
@@ -1414,6 +1419,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Daily Copilot PR Merged Report"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/copilot-pr-merged-report.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_VERSION: "1.0.43"
       - name: Download cache-memory artifact (default)
         id: download_cache_default

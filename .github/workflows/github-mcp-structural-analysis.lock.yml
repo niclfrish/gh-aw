@@ -123,6 +123,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "GitHub MCP Structural Analysis"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/github-mcp-structural-analysis.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "claude"
           GH_AW_INFO_VERSION: "2.1.141"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
@@ -393,6 +394,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "GitHub MCP Structural Analysis"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/github-mcp-structural-analysis.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "claude"
           GH_AW_INFO_VERSION: "2.1.141"
       - name: Set runtime paths
         id: set-runtime-paths
@@ -1143,6 +1145,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "GitHub MCP Structural Analysis"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/github-mcp-structural-analysis.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "claude"
           GH_AW_INFO_VERSION: "2.1.141"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1287,6 +1290,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "GitHub MCP Structural Analysis"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/github-mcp-structural-analysis.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "claude"
           GH_AW_INFO_VERSION: "2.1.141"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1518,6 +1522,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "GitHub MCP Structural Analysis"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/github-mcp-structural-analysis.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "claude"
           GH_AW_INFO_VERSION: "2.1.141"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
@@ -1602,6 +1607,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "GitHub MCP Structural Analysis"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/github-mcp-structural-analysis.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "claude"
           GH_AW_INFO_VERSION: "2.1.141"
       - name: Download cache-memory artifact (default)
         id: download_cache_default
@@ -1657,6 +1663,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "GitHub MCP Structural Analysis"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/github-mcp-structural-analysis.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "claude"
           GH_AW_INFO_VERSION: "2.1.141"
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

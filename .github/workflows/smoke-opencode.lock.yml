@@ -134,6 +134,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Smoke OpenCode"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/smoke-opencode.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "opencode"
           GH_AW_INFO_VERSION: "1.2.14"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
@@ -434,6 +435,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Smoke OpenCode"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/smoke-opencode.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "opencode"
           GH_AW_INFO_VERSION: "1.2.14"
       - name: Set runtime paths
         id: set-runtime-paths
@@ -1072,6 +1074,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Smoke OpenCode"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/smoke-opencode.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "opencode"
           GH_AW_INFO_VERSION: "1.2.14"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1234,6 +1237,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Smoke OpenCode"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/smoke-opencode.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "opencode"
           GH_AW_INFO_VERSION: "1.2.14"
       - name: Download agent output artifact
         id: download-agent-output
@@ -1431,6 +1435,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Smoke OpenCode"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/smoke-opencode.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "opencode"
           GH_AW_INFO_VERSION: "1.2.14"
       - name: Check team membership for workflow
         id: check_membership
@@ -1499,6 +1504,7 @@ jobs:
         env:
           GH_AW_SETUP_WORKFLOW_NAME: "Smoke OpenCode"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/smoke-opencode.lock.yml@${{ github.ref }}
+          GH_AW_INFO_ENGINE_ID: "opencode"
           GH_AW_INFO_VERSION: "1.2.14"
       - name: Mask OTLP telemetry headers
         run: bash "${RUNNER_TEMP}/gh-aw/actions/mask_otlp_headers.sh"
