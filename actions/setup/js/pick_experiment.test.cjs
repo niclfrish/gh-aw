@@ -21,7 +21,7 @@ const mockCore = {
 
 global.core = mockCore;
 
-const { pickVariant, pickVariantWeighted, loadState, saveState, recordVariant, isWithinDateWindow, normalizeConfig, main } = await import("./pick_experiment.cjs");
+const { pickVariant, pickVariantWeighted, loadState, saveState, recordVariant, isWithinDateWindow, normalizeConfig, sanitizeOtelKey, main } = await import("./pick_experiment.cjs");
 
 describe("pick_experiment", () => {
   /** @type {string} */
@@ -844,6 +844,32 @@ describe("pick_experiment", () => {
     });
   });
 
+  // ── sanitizeOtelKey ────────────────────────────────────────────────────────
+
+  describe("sanitizeOtelKey", () => {
+    it("leaves safe characters unchanged", () => {
+      expect(sanitizeOtelKey("team-infra")).toBe("team-infra");
+      expect(sanitizeOtelKey("q1_2026")).toBe("q1_2026");
+      expect(sanitizeOtelKey("v1.2.3")).toBe("v1.2.3");
+    });
+
+    it("replaces colon with underscore", () => {
+      expect(sanitizeOtelKey("team:infra")).toBe("team_infra");
+    });
+
+    it("replaces comma, equals, and whitespace with underscores", () => {
+      expect(sanitizeOtelKey("a,b=c d")).toBe("a_b_c_d");
+    });
+
+    it("replaces multiple consecutive disallowed characters", () => {
+      expect(sanitizeOtelKey("foo::bar")).toBe("foo__bar");
+    });
+
+    it("handles empty string", () => {
+      expect(sanitizeOtelKey("")).toBe("");
+    });
+  });
+
   // ── OTEL resource attributes ──────────────────────────────────────────────
 
   describe("OTEL resource attributes", () => {
@@ -920,7 +946,7 @@ describe("pick_experiment", () => {
       expect(call).toBeDefined();
       const attrStr = call[1];
       expect(attrStr).toContain("experiment.feat=Y");
-      expect(attrStr).toContain("experiment.feat.tag.team:infra=true");
+      expect(attrStr).toContain("experiment.feat.tag.team_infra=true");
       expect(attrStr).toContain("experiment.feat.tag.q1=true");
     });
 

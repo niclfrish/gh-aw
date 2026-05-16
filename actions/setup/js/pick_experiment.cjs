@@ -72,6 +72,19 @@ const MAX_RUN_HISTORY = 512;
  */
 
 /**
+ * Sanitize a string for use as an OTEL resource attribute key segment.
+ * Per the W3C Baggage / OTEL key syntax, keys must be tokens that do not
+ * contain `:`, `,`, `=`, whitespace, or other non-token characters.
+ * Any character outside [a-zA-Z0-9_\-.] is replaced with `_`.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+function sanitizeOtelKey(value) {
+  return value.replace(/[^a-zA-Z0-9_\-.]/g, "_");
+}
+
+/**
  * Normalize a raw spec entry (either a legacy bare array or the new object form) into
  * an ExperimentConfig object.
  *
@@ -274,7 +287,7 @@ async function writeSummary(assignments, configs, state, core) {
     }
   }
 
-  // Append optional description, hypothesis, analysis_type, guardrail metrics, tags, and issue link.
+  // Append optional description, hypothesis, analysis_type, guardrail metrics, issue link, and tags.
   const repo = process.env.GITHUB_REPOSITORY || "";
   const metadataNames = names.filter(name => configs[name]?.description || configs[name]?.hypothesis || configs[name]?.guardrail_metrics?.length || configs[name]?.issue || configs[name]?.analysis_type || configs[name]?.tags?.length);
   if (metadataNames.length > 0) {
@@ -306,6 +319,11 @@ async function writeSummary(assignments, configs, state, core) {
           lines.push(`- \`${g.name}\` ${g.threshold}`);
         }
       }
+      const tags = cfg?.tags;
+      if (tags && tags.length > 0) {
+        lines.push("");
+        lines.push(`**Tags:** ${tags.map(t => `\`${t}\``).join(", ")}`);
+      }
       if (issue) {
         lines.push("");
         if (repo) {
@@ -313,11 +331,6 @@ async function writeSummary(assignments, configs, state, core) {
         } else {
           lines.push(`Tracking issue: #${issue}`);
         }
-      }
-      const tags = cfg?.tags;
-      if (tags && tags.length > 0) {
-        lines.push("");
-        lines.push(`**Tags:** ${tags.map(t => `\`${t}\``).join(", ")}`);
       }
       lines.push("");
     }
@@ -440,7 +453,7 @@ async function main() {
       .join(",");
     const tagAttrs = Object.entries(configs)
       .filter(([, cfg]) => cfg.tags?.length)
-      .flatMap(([name, cfg]) => (cfg.tags ?? []).map(t => `experiment.${name}.tag.${t}=true`))
+      .flatMap(([name, cfg]) => (cfg.tags ?? []).map(t => `experiment.${name}.tag.${sanitizeOtelKey(t)}=true`))
       .join(",");
     const otelFull = [otelAttrs, analysisAttrs, tagAttrs].filter(Boolean).join(",");
     const existingAttrs = process.env.OTEL_RESOURCE_ATTRIBUTES || "";
@@ -452,4 +465,4 @@ async function main() {
   await writeSummary(assignments, configs, state, core);
 }
 
-module.exports = { main, pickVariant, pickVariantWeighted, loadState, saveState, recordVariant, isWithinDateWindow, normalizeConfig };
+module.exports = { main, pickVariant, pickVariantWeighted, loadState, saveState, recordVariant, isWithinDateWindow, normalizeConfig, sanitizeOtelKey };
