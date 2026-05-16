@@ -58,6 +58,13 @@ describe("pi_provider.cjs", () => {
     ]);
   });
 
+  it("resolves reflect URL from provider model", () => {
+    expect(module.resolveReflectUrl("copilot/claude-sonnet-4")).toBe("http://api-proxy:10002/reflect");
+    expect(module.resolveReflectUrl("openai/gpt-5")).toBe("http://api-proxy:10000/reflect");
+    expect(module.resolveReflectUrl("custom/provider-model")).toBe("http://api-proxy:10000/reflect");
+    expect(module.resolveReflectUrl("claude-sonnet-4")).toBe("http://api-proxy:10002/reflect");
+  });
+
   it("logs the configured provider using GH_AW_PI_MODEL during agent_start", async () => {
     process.env.GH_AW_PI_MODEL = "copilot/claude-sonnet-4";
     global.fetch = vi.fn().mockRejectedValue(new Error("network disabled"));
@@ -74,5 +81,6 @@ describe("pi_provider.cjs", () => {
     await handlers.agent_start();
 
     expect(stderrOutput.some(line => line.includes("provider=copilot model=copilot/claude-sonnet-4"))).toBe(true);
+    expect(global.fetch).toHaveBeenCalledWith("http://api-proxy:10002/reflect", expect.any(Object));
   });
 });

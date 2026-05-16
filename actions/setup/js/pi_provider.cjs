@@ -83,6 +83,22 @@ function resolveGatewayUrl(provider) {
 }
 
 /**
+ * Resolve the AWF /reflect URL to use for the active provider.
+ *
+ * For known providers, this follows the same gateway port used by the Pi model
+ * routing config. If no provider prefix is present, default to Copilot.
+ * Falls back to the api-proxy management endpoint when provider is unknown.
+ *
+ * @param {string} model
+ * @returns {string}
+ */
+function resolveReflectUrl(model) {
+  const provider = extractProviderFromModel(model) || "copilot";
+  const gatewayUrl = resolveGatewayUrl(provider);
+  return gatewayUrl ? `${gatewayUrl}/reflect` : AWF_API_PROXY_REFLECT_URL;
+}
+
+/**
  * Register a Pi provider and any aliases.
  *
  * @param {any} pi
@@ -180,6 +196,7 @@ function piProviderExtension(pi) {
   pi.on("agent_start", async () => {
     const model = getConfiguredModel();
     const provider = extractProviderFromModel(model);
+    const reflectUrl = resolveReflectUrl(model);
 
     if (provider) {
       const gatewayUrl = resolveGatewayUrl(provider);
@@ -195,7 +212,7 @@ function piProviderExtension(pi) {
     // Fetch AWF API proxy reflection data before the agent runs to capture initial proxy state.
     // This is best-effort: failures are logged but do not affect the agent session.
     await fetchAWFReflect({
-      reflectUrl: AWF_API_PROXY_REFLECT_URL,
+      reflectUrl,
       outputPath: AWF_REFLECT_OUTPUT_PATH,
       timeoutMs: AWF_REFLECT_TIMEOUT_MS,
       modelsTimeoutMs: AWF_MODELS_URL_TIMEOUT_MS,
@@ -204,10 +221,13 @@ function piProviderExtension(pi) {
   });
 
   pi.on("agent_end", async () => {
+    const model = getConfiguredModel();
+    const reflectUrl = resolveReflectUrl(model);
+
     // Fetch AWF API proxy reflection data after the agent finishes for the post-run step summary.
     // This is best-effort: failures are logged but do not affect the agent exit code.
     await fetchAWFReflect({
-      reflectUrl: AWF_API_PROXY_REFLECT_URL,
+      reflectUrl,
       outputPath: AWF_REFLECT_OUTPUT_PATH,
       timeoutMs: AWF_REFLECT_TIMEOUT_MS,
       modelsTimeoutMs: AWF_MODELS_URL_TIMEOUT_MS,
@@ -220,4 +240,5 @@ module.exports = piProviderExtension;
 module.exports.getConfiguredModel = getConfiguredModel;
 module.exports.extractProviderFromModel = extractProviderFromModel;
 module.exports.resolveGatewayUrl = resolveGatewayUrl;
+module.exports.resolveReflectUrl = resolveReflectUrl;
 module.exports.registerConfiguredProviders = registerConfiguredProviders;
