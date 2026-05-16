@@ -269,6 +269,8 @@ safe-outputs:
 
 The author of the parent issue, PR, or discussion receiving the comment is automatically preserved as an allowed mention. This means `@username` references to the issue/PR/discussion author are not neutralized when the workflow posts a reply.
 
+`@copilot` is always preserved as a default allowed mention alias and is never neutralized by mention filtering, so workflows can invoke Copilot from agent-authored comments without configuring `allowed-aliases`.
+
 #### Hide Older Comments
 
 Set `hide-older-comments: true` to minimize previous comments from the same workflow (identified by `GITHUB_WORKFLOW`) before posting new ones. Useful for status updates. Allowed reasons: `spam`, `abuse`, `off_topic`, `outdated` (default), `resolved`, `low_quality`.

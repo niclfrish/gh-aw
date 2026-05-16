@@ -84,6 +84,8 @@ on:
 
 **Note**: With default inline strategy, you cannot combine `slash_command` with `issues`, `issue_comment`, or `pull_request` as they would conflict. With `strategy: centralized`, non-slash events are preserved because slash matching is handled in the generated central trigger workflow.
 
+**`workflow_dispatch` inputs under centralized routing**: Centralized slash-command workflows are invoked by the generated router rather than by manual `workflow_dispatch` callers. To keep router-dispatched runs compatible, any `workflow_dispatch.inputs.<name>.required: true` declared in a centralized workflow's source frontmatter is normalized to `required: false` in the compiled lock file. Inputs remain available — they just are not enforced as required by the dispatch schema.
+
 **Exception for Label-Only Events**: You CAN combine `slash_command` with `issues` or `pull_request` if those events are configured for label-only triggers (`labeled` or `unlabeled` types only). This allows workflows to respond to slash commands while also reacting to label changes.
 
 ### Combining `slash_command` with `bots:`
