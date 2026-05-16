@@ -50,13 +50,14 @@ The following components and functions are exported by the `console` package:
 | `FormatError` | func | Renders a structured `CompilerError` with context |
 | `FormatErrorChain` | func | Renders a wrapped-error chain |
 | `FormatErrorWithSuggestions` | func | Error message with actionable suggestions |
+| `BannerStyle` | var | Reusable Lip Gloss style used for rendering the ASCII `gh aw` banner |
 | `ConfirmAction` | func | Interactive yes/no confirmation |
 | `ShowInteractiveList` | func | Interactive single-selection list |
 | `PromptInput` / `PromptSecretInput` | funcs | Text and secret input prompts |
 | `LogVerbose` | func | Conditional verbose logging |
 | `FormatFileSize` / `FormatNumber` | funcs | Human-readable byte and integer formatting |
 | `IsAccessibleMode` | func | Detects accessibility mode |
-| `CompilerError` / `ErrorPosition` / `TableConfig` / `TreeNode` | types | Supporting data types |
+| `CompilerError` / `ErrorPosition` / `TableConfig` / `TreeNode` / `SpinnerWrapper` | types | Supporting data types |
 
 ## Spinner Component
 
@@ -113,6 +114,15 @@ Spinners only animate in terminal environments. When output is piped or redirect
 gh aw compile workflow.md           # Spinner animates
 gh aw compile workflow.md > log.txt # Spinner disabled
 ```
+
+### `SpinnerWrapper`
+
+`SpinnerWrapper` is the exported spinner type returned by `NewSpinner`. Its methods are:
+- `Start()`
+- `Stop()`
+- `StopWithMessage(msg string)`
+- `UpdateMessage(message string)`
+- `IsEnabled() bool` (WASM build)
 
 ## ProgressBar Component
 
@@ -796,6 +806,10 @@ fmt.Fprint(os.Stderr, msg)
 ### `FormatBanner() string`
 
 Returns the `gh aw` ASCII art banner as a styled string.
+
+### `BannerStyle`
+
+`BannerStyle` is the exported Lip Gloss style used by `FormatBanner` for consistent banner rendering.
 
 ### `PrintBanner()`
 

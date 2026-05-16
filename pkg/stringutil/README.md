@@ -42,6 +42,21 @@ stringutil.ParseVersionValue(20)      // "20"
 stringutil.ParseVersionValue(20.0)    // "20"
 ```
 
+### `FormatList(items []string) string`
+
+Formats a slice of strings as a natural-language list using commas and an Oxford comma.
+
+```go
+stringutil.FormatList([]string{})                    // ""
+stringutil.FormatList([]string{"copilot"})           // "copilot"
+stringutil.FormatList([]string{"copilot", "claude"}) // "copilot and claude"
+stringutil.FormatList([]string{"a", "b", "c"})       // "a, b, and c"
+```
+
+### `NormalizeLeadingWhitespace(content string) string`
+
+Removes shared leading indentation from all non-empty lines in a multi-line string while preserving relative indentation inside the block.
+
 ### `IsPositiveInteger(s string) bool`
 
 Returns `true` if and only if `s` is a decimal integer that is strictly greater than zero, has no leading zeros, and contains no non-digit characters. Returns `false` for `""`, `"0"`, negative strings (e.g. `"-5"`), strings with leading zeros (e.g. `"007"`), and non-numeric strings.
@@ -99,6 +114,17 @@ stringutil.LockFileToMarkdown(".github/workflows/test.lock.yml")
 ## Sanitization (`sanitize.go`)
 
 These functions remove sensitive information to prevent accidental leakage in logs or error messages.
+
+### `SanitizeOptions`
+
+Configuration struct for `SanitizeName` with:
+- `PreserveSpecialChars []rune` — list of special characters to preserve (currently `.` and `_`)
+- `TrimHyphens bool` — trims leading/trailing hyphens when `true`
+- `DefaultValue string` — fallback value when sanitization results in an empty string
+
+### `SanitizeName(name string, opts *SanitizeOptions) string`
+
+Sanitizes a name for identifiers, filenames, and similar contexts. The function lowercases input, normalizes separators, removes unsupported characters, and applies behavior from `SanitizeOptions`.
 
 ### `SanitizeErrorMessage(message string) string`
 

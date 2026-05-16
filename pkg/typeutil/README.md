@@ -60,6 +60,20 @@ Safely converts any value (`float64`, `int`, `int64`, `string`) to `float64`, re
 ratio := typeutil.ConvertToFloat(jsonData["ratio"])
 ```
 
+### Lookup Helpers
+
+#### `LookupMap(m map[string]any, key string) (map[string]any, bool)`
+
+Safely reads a nested map value by key. Returns `(nil, false)` when the key is missing, `m` is nil, or the value is not a `map[string]any`.
+
+#### `LookupString(m map[string]any, key string) (string, bool)`
+
+Safely reads a string value by key. Returns `("", false)` when the key is missing, `m` is nil, or the value is not a string.
+
+#### `LookupStringPath(m map[string]any, path ...string) (string, bool)`
+
+Safely traverses nested maps and returns a terminal string value at the provided path. Returns `("", false)` when any segment is missing or has an unexpected type.
+
 ## Choosing the Right Function
 
 | Situation | Function to use |
@@ -69,6 +83,7 @@ ratio := typeutil.ConvertToFloat(jsonData["ratio"])
 | Boolean flag in a `map[string]any` | `ParseBool` |
 | Casting `uint64` counter to `int` | `SafeUint64ToInt` |
 | Numeric value from any source as float | `ConvertToFloat` |
+| Nested map lookup with type checking | `LookupMap`, `LookupString`, `LookupStringPath` |
 
 ## Usage Examples
 
