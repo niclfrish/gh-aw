@@ -62,7 +62,7 @@ history_file="/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl"
 entry_count=0
 if [ -f "$history_file" ]; then
   if ! entry_count=$(wc -l < "$history_file"); then
-    echo "warning: unable to count existing history entries; defaulting to 0"
+    echo "warning: failed to read history file line count; defaulting to entry_count=0"
     entry_count=0
   fi
 fi
@@ -245,8 +245,9 @@ Each line must be a single JSON object. Use `date` (YYYY-MM-DD) as the primary t
 Merge logic:
 - Load existing history entries from `history.jsonl` if present.
 - If mode is `incremental`: upsert today's summary by `date`.
-- If mode is `backfill`: upsert `backfill_entries[]` by `date`, then upsert today's summary (today wins for today).
+- If mode is `backfill`: upsert `backfill_entries[]` by `date`, then upsert today's summary.
 - Deduplicate by `date`, sort ascending by `date`, and rewrite the full file.
+  - For duplicate dates, the **last occurrence wins**.
 
 Recommended implementation pattern (Python):
 
@@ -259,7 +260,7 @@ def upsert_by_date(entries):
         if day:
             by_date[day] = row
         else:
-            print(f"warning: skipped history row without date at index={idx}")
+            print(f'warning: skipping history entry at index {idx} (missing required "date" field)')
     return [by_date[d] for d in sorted(by_date.keys())]
 
 merged = []
