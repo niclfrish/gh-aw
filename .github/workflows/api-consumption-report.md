@@ -60,8 +60,8 @@ Before calling `logs`, inspect the cache state to choose a collection window:
 ```bash
 history_file="/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl"
 entry_count=0
-if [ -f "$history_file" ] && [ -s "$history_file" ]; then
-  entry_count=$(awk 'END { print NR }' "$history_file")
+if [ -f "$history_file" ]; then
+  entry_count=$(grep -c '^' "$history_file" || echo 0)
 fi
 ```
 
