@@ -12,6 +12,17 @@ permissions:
   contents: read
   issues: read
   pull-requests: read
+network:
+  allowed:
+    - "*.sentry.io"
+    - "*.grafana.net"
+observability:
+  otlp:
+    endpoint:
+      - url: ${{ secrets.GH_AW_OTEL_SENTRY_ENDPOINT }}
+        headers: "${{ secrets.GH_AW_OTEL_SENTRY_HEADERS || (secrets.GH_AW_OTEL_SENTRY_AUTHORIZATION && format('Authorization={0}', secrets.GH_AW_OTEL_SENTRY_AUTHORIZATION)) }}"
+      - url: ${{ secrets.GH_AW_OTEL_GRAFANA_ENDPOINT }}
+        headers: "${{ secrets.GH_AW_OTEL_GRAFANA_HEADERS || (secrets.GH_AW_OTEL_GRAFANA_AUTHORIZATION && format('Authorization={0}', secrets.GH_AW_OTEL_GRAFANA_AUTHORIZATION)) }}"
 name: Smoke OTEL Backends
 engine:
   id: copilot
@@ -36,7 +47,6 @@ imports:
   - shared/mcp/grafana.md
   - shared/mcp/sentry.md
   - shared/otel-queries.md
-  - shared/observability-otlp.md
 ---
 
 # Smoke Test: OTEL Backends
@@ -57,9 +67,9 @@ Step 1 keeps that local OTEL infrastructure coverage by explicitly checking env 
 This workflow expects these secrets to be present:
 
 - `GH_AW_OTEL_SENTRY_ENDPOINT`
-- `GH_AW_OTEL_SENTRY_HEADERS`
+- `GH_AW_OTEL_SENTRY_HEADERS` or `GH_AW_OTEL_SENTRY_AUTHORIZATION`
 - `GH_AW_OTEL_GRAFANA_ENDPOINT`
-- `GH_AW_OTEL_GRAFANA_HEADERS`
+- `GH_AW_OTEL_GRAFANA_HEADERS` or `GH_AW_OTEL_GRAFANA_AUTHORIZATION`
 - `SENTRY_ACCESS_TOKEN`
 - `GRAFANA_URL`
 - `GRAFANA_SERVICE_ACCOUNT_TOKEN`
