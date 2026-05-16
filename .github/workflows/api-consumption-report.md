@@ -61,7 +61,7 @@ Before calling `logs`, inspect the cache state to choose a collection window:
 history_file="/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl"
 entry_count=0
 if [ -f "$history_file" ]; then
-  entry_count=$(grep -c '^' "$history_file" || echo 0)
+  entry_count=$(awk 'END { print NR }' "$history_file")
 fi
 ```
 
@@ -79,7 +79,7 @@ logs(start_date="-1d")
 logs(start_date="-90d")
 ```
 
-Record which mode you used (`incremental` vs `backfill`) and the chosen `start_date` in the final cache status section (Step 6, "Cache Memory Status").
+Record which mode you used (`incremental` vs `backfill`) and the chosen `start_date` in Step 6.
 
 This downloads one directory per run to `/tmp/gh-aw/aw-mcp/logs/`. Each run directory contains:
 - `aw_info.json` — engine, workflow name, status, tokens, cost, duration
@@ -151,7 +151,7 @@ Save the aggregated day-summary to:
 /tmp/gh-aw/python/data/today.json
 ```
 
-When running in `backfill` mode, also compute **daily summaries grouped by UTC date** for every day present in the fetched window, using the same metric schema as `today.json`. Persist this collection for Step 3 at:
+When running in `backfill` mode, also compute **daily summaries grouped by UTC date** for every day present in the fetched window, using the same metric schema as `today.json`. Persist this collection for the merge operation below at:
 
 ```
 /tmp/gh-aw/python/data/backfill_entries.json
