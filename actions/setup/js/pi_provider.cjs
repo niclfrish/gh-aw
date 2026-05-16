@@ -83,19 +83,15 @@ function resolveGatewayUrl(provider) {
 }
 
 /**
- * Resolve the AWF /reflect URL to use for the active provider.
+ * Resolve the AWF /reflect URL.
  *
- * For known providers, this follows the same gateway port used by the Pi model
- * routing config. If no provider prefix is present, default to Copilot.
- * Falls back to the api-proxy management endpoint when provider is unknown.
+ * /reflect is exposed on the api-proxy management port and is not provider-specific.
  *
  * @param {string} model
  * @returns {string}
  */
 function resolveReflectUrl(model) {
-  const provider = extractProviderFromModel(model) || "copilot";
-  const gatewayUrl = resolveGatewayUrl(provider);
-  return gatewayUrl ? `${gatewayUrl}/reflect` : AWF_API_PROXY_REFLECT_URL;
+  return AWF_API_PROXY_REFLECT_URL;
 }
 
 /**
