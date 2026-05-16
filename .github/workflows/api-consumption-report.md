@@ -61,11 +61,14 @@ Before calling `logs`, inspect the cache state to choose a collection window:
 history_file="/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl"
 entry_count=0
 if [ -f "$history_file" ]; then
-  entry_count=$(wc -l < "$history_file" 2>/dev/null || echo 0)
+  if ! entry_count=$(wc -l < "$history_file"); then
+    echo "warning: unable to count existing history entries; defaulting to 0"
+    entry_count=0
+  fi
 fi
 ```
 
-Use the `agentic-workflows` MCP `logs` tool with this rule (30 entries = roughly 30 days of daily points, enough for stable 7-day and 30-day trend visuals):
+Use the `agentic-workflows` MCP `logs` tool with this rule (assuming one deduplicated row per day after Step 3 merge; 30 entries is roughly 30 days of daily points, enough for stable 7-day and 30-day trend visuals):
 
 - If `entry_count >= 30` (history is already rich): collect only incremental data:
 
@@ -249,13 +252,14 @@ Recommended implementation pattern (Python):
 
 ```python
 def upsert_by_date(entries):
+    # Last-write-wins by date: later rows overwrite earlier rows with same date.
     by_date = {}
-    for row in entries:
+    for idx, row in enumerate(entries):
         day = row.get("date")
         if day:
             by_date[day] = row
         else:
-            print("warning: skipped history row without date")
+            print(f"warning: skipped history row without date at index={idx}")
     return [by_date[d] for d in sorted(by_date.keys())]
 
 merged = []
