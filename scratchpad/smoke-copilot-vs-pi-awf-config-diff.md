@@ -17,7 +17,15 @@ Copilot-specific env present in `smoke-copilot.lock.yml` but not in `smoke-pi.lo
 - `GITHUB_MCP_SERVER_TOKEN` (`smoke-copilot.lock.yml:1811`)
 - `COPILOT_AGENT_RUNNER_TYPE` (`smoke-copilot.lock.yml:1797`)
 - `GITHUB_COPILOT_INTEGRATION_ID` (`smoke-copilot.lock.yml:1809`)
-- Also present only for copilot execute path: `AWF_REFLECT_ENABLED`, `COPILOT_API_KEY`, `COPILOT_MODEL`, `GITHUB_API_URL`, `GITHUB_HEAD_REF`, `GITHUB_REF_NAME`, `GITHUB_SERVER_URL`, `XDG_CONFIG_HOME`
+- Also present only for copilot execute path:
+  - `AWF_REFLECT_ENABLED`
+  - `COPILOT_API_KEY`
+  - `COPILOT_MODEL`
+  - `GITHUB_API_URL`
+  - `GITHUB_HEAD_REF`
+  - `GITHUB_REF_NAME`
+  - `GITHUB_SERVER_URL`
+  - `XDG_CONFIG_HOME`
 
 Pi-specific env present in `smoke-pi.lock.yml` but not in `smoke-copilot.lock.yml`:
 
