@@ -55,11 +55,31 @@ Every day, analyse the **last 24 hours** of agentic workflow runs to understand:
 
 ## Step 1 — Collect Logs via MCP
 
-Use the `agentic-workflows` MCP `logs` tool:
+Before calling `logs`, inspect the cache state to choose a collection window:
+
+```bash
+history_file="/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl"
+entry_count=0
+if [ -f "$history_file" ] && [ -s "$history_file" ]; then
+  entry_count=$(wc -l < "$history_file")
+fi
+```
+
+Use the `agentic-workflows` MCP `logs` tool with this rule:
+
+- If `entry_count >= 30` (history is already rich): collect only incremental data:
 
 ```
 logs(start_date="-1d")
 ```
+
+- If `entry_count < 30` (first run, cache miss, or sparse history): run a one-time backfill window:
+
+```
+logs(start_date="-90d")
+```
+
+Record which mode you used (`incremental` vs `backfill`) and the chosen `start_date` in the final cache status section.
 
 This downloads one directory per run to `/tmp/gh-aw/aw-mcp/logs/`. Each run directory contains:
 - `aw_info.json` — engine, workflow name, status, tokens, cost, duration
@@ -111,7 +131,7 @@ For every run directory under `/tmp/gh-aw/aw-mcp/logs/`, extract from **both** `
 
 The `github_rate_limit_usage.core_consumed` field represents the **actual GitHub REST API quota** consumed by the run (computed from `x-ratelimit-*` response headers). Use this value — not safe-output counts — for REST API consumption metrics.
 
-Compute for today's dataset:
+Compute for today's dataset (UTC day = report date):
 
 | Metric | How |
 |--------|-----|
@@ -130,6 +150,8 @@ Save the aggregated day-summary to:
 ```
 /tmp/gh-aw/python/data/today.json
 ```
+
+When running in `backfill` mode, also compute **daily summaries grouped by UTC date** for every day present in the fetched window, using the same metric schema as `today.json`. Keep these in memory for Step 3 as `backfill_entries[]`.
 
 Example structure:
 
@@ -166,7 +188,7 @@ else
 fi
 ```
 
-Append today's summary to the rolling history file:
+Update the rolling history file:
 
 ```
 /tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl
@@ -193,7 +215,13 @@ Each line must be a single JSON object. Use `date` (YYYY-MM-DD) as the primary t
 }
 ```
 
-Implement a **90-day retention policy**: after appending, prune any lines whose `date` is older than 90 days and rewrite the file.
+Merge logic:
+- Load existing history entries from `history.jsonl` if present.
+- If mode is `incremental`: upsert today's summary by `date`.
+- If mode is `backfill`: upsert `backfill_entries[]` by `date`, then upsert today's summary (today wins for today).
+- Deduplicate by `date`, sort ascending by `date`, and rewrite the full file.
+
+Implement a **90-day retention policy** after merge: prune any lines whose `date` is older than 90 days and rewrite the file.
 
 Also write a metadata file:
 
@@ -420,6 +448,8 @@ Create a discussion with the following structure. Replace placeholders with real
 
 - **Location**: `/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl`
 - **Cache restored from previous run**: {yes (N entries) / no (first run)}
+- **Collection mode**: {incremental / backfill}
+- **Logs start_date used**: {-1d / -90d}
 - **Data points stored**: {data_points}
 - **Earliest entry**: {earliest_date}
 - **Retention policy**: 90 days
