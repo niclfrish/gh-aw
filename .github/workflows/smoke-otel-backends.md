@@ -14,6 +14,7 @@ permissions:
   pull-requests: read
 network:
   allowed:
+    - defaults
     - "*.sentry.io"
     - "*.grafana.net"
 observability:
