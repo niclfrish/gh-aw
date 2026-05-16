@@ -159,8 +159,8 @@
       }
     },
     {
-      "run_id": "25953762391",
-      "timestamp": "2026-05-16T05:28:38.354Z",
+      "run_id": "25953787848",
+      "timestamp": "2026-05-16T05:28:57.619Z",
       "assignments": {
         "caveman": "no",
         "subagent_model": "small"
