@@ -287,7 +287,7 @@ async function writeSummary(assignments, configs, state, core) {
     }
   }
 
-  // Append optional description, hypothesis, analysis_type, guardrail metrics, issue link, and tags.
+  // Append optional description, hypothesis, analysis_type, guardrail metrics, tags, and issue link.
   const repo = process.env.GITHUB_REPOSITORY || "";
   const metadataNames = names.filter(name => configs[name]?.description || configs[name]?.hypothesis || configs[name]?.guardrail_metrics?.length || configs[name]?.issue || configs[name]?.analysis_type || configs[name]?.tags?.length);
   if (metadataNames.length > 0) {
