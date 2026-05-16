@@ -9,6 +9,7 @@ const mockCore = {
   info: vi.fn(),
   warning: vi.fn(),
   error: vi.fn(),
+  notice: vi.fn(),
   setFailed: vi.fn(),
   setOutput: vi.fn(),
   exportVariable: vi.fn(),
@@ -553,6 +554,120 @@ describe("pick_experiment", () => {
       const rawCall = mockCore.summary.addRaw.mock.calls[0]?.[0] ?? "";
       expect(rawCall).not.toContain("📊 Sampling Progress");
     });
+
+    it("renders analysis_type in step summary when analysis_type field is set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"], analysis_type: "mann_whitney" },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      const rawCall = mockCore.summary.addRaw.mock.calls[0]?.[0] ?? "";
+      expect(rawCall).toContain("**Analysis type:** `mann_whitney`");
+    });
+
+    it("renders tags in step summary when tags field is set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"], tags: ["team:infra", "q1-2026"] },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      const rawCall = mockCore.summary.addRaw.mock.calls[0]?.[0] ?? "";
+      expect(rawCall).toContain("**Tags:**");
+      expect(rawCall).toContain("`team:infra`");
+      expect(rawCall).toContain("`q1-2026`");
+    });
+
+    it("does not render Tags section when tags is absent", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"] },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      const rawCall = mockCore.summary.addRaw.mock.calls[0]?.[0] ?? "";
+      expect(rawCall).not.toContain("**Tags:**");
+    });
+
+    it("emits core.notice with discussion number when allReady and notify.discussion is set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      // Pre-populate so both variants are already at min_samples.
+      const state = { counts: { style: { A: 10, B: 10 } } };
+      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"], min_samples: 10, notify: { discussion: 42 } },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      expect(mockCore.notice).toHaveBeenCalledWith("EXPERIMENT_READY: name=style discussion=42", { title: "Experiment style ready for analysis" });
+    });
+
+    it("emits core.notice with issue number when allReady and notify.issue is set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      const state = { counts: { style: { A: 10, B: 10 } } };
+      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"], min_samples: 10, notify: { issue: 99 } },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      expect(mockCore.notice).toHaveBeenCalledWith("EXPERIMENT_READY: name=style issue=99", { title: "Experiment style ready for analysis" });
+    });
+
+    it("does not emit core.notice when not allReady", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      // Only 5 runs per variant, below min_samples of 10.
+      const state = { counts: { style: { A: 5, B: 5 } } };
+      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"], min_samples: 10, notify: { discussion: 42 } },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      expect(mockCore.notice).not.toHaveBeenCalled();
+    });
+
+    it("includes notification note in summary when allReady and notify.discussion is set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      const state = { counts: { style: { A: 10, B: 10 } } };
+      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"], min_samples: 10, notify: { discussion: 7 } },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      const rawCall = mockCore.summary.addRaw.mock.calls[0]?.[0] ?? "";
+      expect(rawCall).toContain("🔔 Notification will be sent to discussion #7");
+    });
   });
 
   // ── pickVariantWeighted ────────────────────────────────────────────────────
@@ -751,6 +866,60 @@ describe("pick_experiment", () => {
       await main();
 
       expect(mockCore.exportVariable).not.toHaveBeenCalled();
+    });
+
+    it("includes analysis_type in OTEL resource attributes when set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      fs.writeFileSync(stateFile, JSON.stringify({ counts: { feat: { X: 1, Y: 0 } }, runs: [] }), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        feat: { variants: ["X", "Y"], analysis_type: "mann_whitney" },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.OTEL_RESOURCE_ATTRIBUTES;
+
+      await main();
+
+      const call = mockCore.exportVariable.mock.calls.find(c => c[0] === "OTEL_RESOURCE_ATTRIBUTES");
+      expect(call).toBeDefined();
+      const attrStr = call[1];
+      expect(attrStr).toContain("experiment.feat=Y");
+      expect(attrStr).toContain("experiment.feat.analysis_type=mann_whitney");
+    });
+
+    it("includes tag attributes in OTEL resource attributes when tags are set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      fs.writeFileSync(stateFile, JSON.stringify({ counts: { feat: { X: 1, Y: 0 } }, runs: [] }), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        feat: { variants: ["X", "Y"], tags: ["team:infra", "q1"] },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.OTEL_RESOURCE_ATTRIBUTES;
+
+      await main();
+
+      const call = mockCore.exportVariable.mock.calls.find(c => c[0] === "OTEL_RESOURCE_ATTRIBUTES");
+      expect(call).toBeDefined();
+      const attrStr = call[1];
+      expect(attrStr).toContain("experiment.feat=Y");
+      expect(attrStr).toContain("experiment.feat.tag.team:infra=true");
+      expect(attrStr).toContain("experiment.feat.tag.q1=true");
+    });
+
+    it("omits analysis_type from OTEL when not set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      fs.writeFileSync(stateFile, JSON.stringify({ counts: { feat: { X: 1, Y: 0 } }, runs: [] }), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({ feat: ["X", "Y"] });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.OTEL_RESOURCE_ATTRIBUTES;
+
+      await main();
+
+      const call = mockCore.exportVariable.mock.calls.find(c => c[0] === "OTEL_RESOURCE_ATTRIBUTES");
+      expect(call).toBeDefined();
+      expect(call[1]).toBe("experiment.feat=Y");
     });
   });
 });

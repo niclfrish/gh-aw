@@ -250,6 +250,15 @@ async function writeSummary(assignments, configs, state, core) {
       const allReady = variants.every(v => (counts[v] || 0) >= minSamples);
       if (allReady) {
         lines.push(`**${name}** ✅ Ready for analysis`);
+        // Emit structured notification signal for downstream consumers
+        const notifyCfg = configs[name]?.notify;
+        if (notifyCfg?.discussion) {
+          core.notice(`EXPERIMENT_READY: name=${name} discussion=${notifyCfg.discussion}`, { title: `Experiment ${name} ready for analysis` });
+          lines.push(`🔔 Notification will be sent to discussion #${notifyCfg.discussion}`);
+        }
+        if (notifyCfg?.issue) {
+          core.notice(`EXPERIMENT_READY: name=${name} issue=${notifyCfg.issue}`, { title: `Experiment ${name} ready for analysis` });
+        }
       } else {
         lines.push(`**${name}** (target: ${minSamples} per variant)`);
       }
@@ -264,9 +273,9 @@ async function writeSummary(assignments, configs, state, core) {
     }
   }
 
-  // Append optional description, hypothesis, guardrail metrics, and issue link.
+  // Append optional description, hypothesis, analysis_type, guardrail metrics, tags, and issue link.
   const repo = process.env.GITHUB_REPOSITORY || "";
-  const metadataNames = names.filter(name => configs[name]?.description || configs[name]?.hypothesis || configs[name]?.guardrail_metrics?.length || configs[name]?.issue);
+  const metadataNames = names.filter(name => configs[name]?.description || configs[name]?.hypothesis || configs[name]?.guardrail_metrics?.length || configs[name]?.issue || configs[name]?.analysis_type || configs[name]?.tags?.length);
   if (metadataNames.length > 0) {
     lines.push("### Experiment Details");
     lines.push("");
@@ -285,6 +294,10 @@ async function writeSummary(assignments, configs, state, core) {
         lines.push("");
         lines.push(`**Hypothesis:** ${hypothesis}`);
       }
+      if (cfg?.analysis_type) {
+        lines.push("");
+        lines.push(`**Analysis type:** \`${cfg.analysis_type}\``);
+      }
       if (guardrails && guardrails.length > 0) {
         lines.push("");
         lines.push("**Guardrail metrics:**");
@@ -299,6 +312,11 @@ async function writeSummary(assignments, configs, state, core) {
         } else {
           lines.push(`Tracking issue: #${issue}`);
         }
+      }
+      const tags = cfg?.tags;
+      if (tags && tags.length > 0) {
+        lines.push("");
+        lines.push(`**Tags:** ${tags.map(t => `\`${t}\``).join(", ")}`);
       }
       lines.push("");
     }
@@ -415,9 +433,18 @@ async function main() {
     const otelAttrs = Object.entries(assignments)
       .map(([name, variant]) => `experiment.${name}=${variant}`)
       .join(",");
+    const analysisAttrs = Object.entries(configs)
+      .filter(([, cfg]) => cfg.analysis_type)
+      .map(([name, cfg]) => `experiment.${name}.analysis_type=${cfg.analysis_type}`)
+      .join(",");
+    const tagAttrs = Object.entries(configs)
+      .filter(([, cfg]) => cfg.tags?.length)
+      .flatMap(([name, cfg]) => (cfg.tags ?? []).map(t => `experiment.${name}.tag.${t}=true`))
+      .join(",");
+    const otelFull = [otelAttrs, analysisAttrs, tagAttrs].filter(Boolean).join(",");
     const existingAttrs = process.env.OTEL_RESOURCE_ATTRIBUTES || "";
-    core.exportVariable("OTEL_RESOURCE_ATTRIBUTES", existingAttrs ? `${existingAttrs},${otelAttrs}` : otelAttrs);
-    core.info(`OTEL resource attributes set: ${otelAttrs}`);
+    core.exportVariable("OTEL_RESOURCE_ATTRIBUTES", existingAttrs ? `${existingAttrs},${otelFull}` : otelFull);
+    core.info(`OTEL resource attributes set: ${otelFull}`);
   }
 
   // Write step summary.
