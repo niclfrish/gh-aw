@@ -1,3 +1,3 @@
 # Obsessive Committer Log
 
-Divergence point 1.
+Divergence reconciled. All history is correct.
