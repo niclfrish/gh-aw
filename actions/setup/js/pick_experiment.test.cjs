@@ -652,6 +652,23 @@ describe("pick_experiment", () => {
       expect(mockCore.notice).not.toHaveBeenCalled();
     });
 
+    it("includes notification note in summary when allReady and notify.issue is set", async () => {
+      const stateFile = path.join(tmpDir, "state.json");
+      const state = { counts: { style: { A: 10, B: 10 } } };
+      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2), "utf8");
+      process.env.GH_AW_EXPERIMENT_SPEC = JSON.stringify({
+        style: { variants: ["A", "B"], min_samples: 10, notify: { issue: 55 } },
+      });
+      process.env.GH_AW_EXPERIMENT_STATE_FILE = stateFile;
+      process.env.GH_AW_EXPERIMENT_STATE_DIR = tmpDir;
+      delete process.env.GITHUB_REPOSITORY;
+
+      await main();
+
+      const rawCall = mockCore.summary.addRaw.mock.calls[0]?.[0] ?? "";
+      expect(rawCall).toContain("🔔 Notification will be sent to issue #55");
+    });
+
     it("includes notification note in summary when allReady and notify.discussion is set", async () => {
       const stateFile = path.join(tmpDir, "state.json");
       const state = { counts: { style: { A: 10, B: 10 } } };

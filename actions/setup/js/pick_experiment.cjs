@@ -258,6 +258,7 @@ async function writeSummary(assignments, configs, state, core) {
         }
         if (notifyCfg?.issue) {
           core.notice(`EXPERIMENT_READY: name=${name} issue=${notifyCfg.issue}`, { title: `Experiment ${name} ready for analysis` });
+          lines.push(`🔔 Notification will be sent to issue #${notifyCfg.issue}`);
         }
       } else {
         lines.push(`**${name}** (target: ${minSamples} per variant)`);
