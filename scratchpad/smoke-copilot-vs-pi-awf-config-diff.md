@@ -5,6 +5,8 @@ This note compares:
 - `/home/runner/work/gh-aw/gh-aw/.github/workflows/smoke-copilot.lock.yml`
 - `/home/runner/work/gh-aw/gh-aw/.github/workflows/smoke-pi.lock.yml`
 
+Line references below are from the current lockfile snapshot in this branch and may shift after future workflow recompiles.
+
 ## Top-level workflow env
 
 No differences were found in top-level `env:`. Both workflows set the same OTEL/GH_AW telemetry variables.
