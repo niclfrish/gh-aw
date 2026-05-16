@@ -61,7 +61,7 @@ Before calling `logs`, inspect the cache state to choose a collection window:
 history_file="/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl"
 entry_count=0
 if [ -f "$history_file" ] && [ -s "$history_file" ]; then
-  entry_count=$(wc -l < "$history_file")
+  entry_count=$(awk 'END { print NR }' "$history_file")
 fi
 ```
 
@@ -79,7 +79,7 @@ logs(start_date="-1d")
 logs(start_date="-90d")
 ```
 
-Record which mode you used (`incremental` vs `backfill`) and the chosen `start_date` in the final cache status section.
+Record which mode you used (`incremental` vs `backfill`) and the chosen `start_date` in the final cache status section (Step 6, "Cache Memory Status").
 
 This downloads one directory per run to `/tmp/gh-aw/aw-mcp/logs/`. Each run directory contains:
 - `aw_info.json` — engine, workflow name, status, tokens, cost, duration
@@ -151,7 +151,31 @@ Save the aggregated day-summary to:
 /tmp/gh-aw/python/data/today.json
 ```
 
-When running in `backfill` mode, also compute **daily summaries grouped by UTC date** for every day present in the fetched window, using the same metric schema as `today.json`. Keep these in memory for Step 3 as `backfill_entries[]`.
+When running in `backfill` mode, also compute **daily summaries grouped by UTC date** for every day present in the fetched window, using the same metric schema as `today.json`. Persist this collection for Step 3 at:
+
+```
+/tmp/gh-aw/python/data/backfill_entries.json
+```
+
+Structure:
+
+```json
+[
+  {
+    "date": "2024-01-14",
+    "recorded_at": "2024-01-14-23-59-59",
+    "total_runs": 40,
+    "successful_runs": 38,
+    "failed_runs": 2,
+    "success_rate_pct": 95.0,
+    "github_api_calls": 4600,
+    "github_safe_output_calls": 9,
+    "github_api_by_workflow": [],
+    "avg_duration_s": 280,
+    "p95_duration_s": 820
+  }
+]
+```
 
 Example structure:
 
@@ -220,6 +244,25 @@ Merge logic:
 - If mode is `incremental`: upsert today's summary by `date`.
 - If mode is `backfill`: upsert `backfill_entries[]` by `date`, then upsert today's summary (today wins for today).
 - Deduplicate by `date`, sort ascending by `date`, and rewrite the full file.
+
+Recommended implementation pattern (Python):
+
+```python
+def upsert_by_date(entries):
+    by_date = {}
+    for row in entries:
+        day = row.get("date")
+        if day:
+            by_date[day] = row
+    return [by_date[d] for d in sorted(by_date.keys())]
+
+merged = []
+merged.extend(existing_history_entries)
+if mode == "backfill":
+    merged.extend(backfill_entries)
+merged.append(today_summary)
+merged = upsert_by_date(merged)
+```
 
 Implement a **90-day retention policy** after merge: prune any lines whose `date` is older than 90 days and rewrite the file.
 
