@@ -61,11 +61,11 @@ Before calling `logs`, inspect the cache state to choose a collection window:
 history_file="/tmp/gh-aw/cache-memory/trending/api-consumption/history.jsonl"
 entry_count=0
 if [ -f "$history_file" ]; then
-  entry_count=$(awk 'END { print NR }' "$history_file")
+  entry_count=$(wc -l < "$history_file" 2>/dev/null || echo 0)
 fi
 ```
 
-Use the `agentic-workflows` MCP `logs` tool with this rule:
+Use the `agentic-workflows` MCP `logs` tool with this rule (30 entries = roughly 30 days of daily points, enough for stable 7-day and 30-day trend visuals):
 
 - If `entry_count >= 30` (history is already rich): collect only incremental data:
 
@@ -79,7 +79,7 @@ logs(start_date="-1d")
 logs(start_date="-90d")
 ```
 
-Record which mode you used (`incremental` vs `backfill`) and the chosen `start_date` in Step 6.
+Record which mode you used (`incremental` vs `backfill`) and the chosen `start_date` in Step 6 (the discussion "Cache Memory Status" details block).
 
 This downloads one directory per run to `/tmp/gh-aw/aw-mcp/logs/`. Each run directory contains:
 - `aw_info.json` — engine, workflow name, status, tokens, cost, duration
@@ -254,12 +254,15 @@ def upsert_by_date(entries):
         day = row.get("date")
         if day:
             by_date[day] = row
+        else:
+            print("warning: skipped history row without date")
     return [by_date[d] for d in sorted(by_date.keys())]
 
 merged = []
 merged.extend(existing_history_entries)
 if mode == "backfill":
     merged.extend(backfill_entries)
+# Append today last so today's data explicitly wins on same-date collisions.
 merged.append(today_summary)
 merged = upsert_by_date(merged)
 ```
