@@ -21,7 +21,7 @@ jobs:
   work:
     runs-on: ubuntu-latest
 `
-	require.NoError(t, os.WriteFile(workflowPath, []byte(content), 0644), "Should write test workflow file")
+	require.NoError(t, os.WriteFile(workflowPath, []byte(content), 0o644), "Should write test workflow file")
 
 	workflow, err := loadParsedWorkflow(workflowPath)
 	require.NoError(t, err, "Should load YAML workflow")
@@ -43,7 +43,7 @@ permissions:
 
 # Worker
 `
-	require.NoError(t, os.WriteFile(workflowPath, []byte(content), 0644), "Should write test markdown workflow")
+	require.NoError(t, os.WriteFile(workflowPath, []byte(content), 0o644), "Should write test markdown workflow")
 
 	workflow, err := loadParsedWorkflow(workflowPath)
 	require.NoError(t, err, "Should load markdown workflow frontmatter")
@@ -54,7 +54,7 @@ permissions:
 func TestLoadParsedWorkflow_FromMarkdownWithoutFrontmatter(t *testing.T) {
 	tmpDir := t.TempDir()
 	workflowPath := filepath.Join(tmpDir, "worker.md")
-	require.NoError(t, os.WriteFile(workflowPath, []byte("# No frontmatter"), 0644), "Should write markdown without frontmatter")
+	require.NoError(t, os.WriteFile(workflowPath, []byte("# No frontmatter"), 0o644), "Should write markdown without frontmatter")
 
 	workflow, err := loadParsedWorkflow(workflowPath)
 	require.NoError(t, err, "Should not error when frontmatter is missing")
@@ -64,7 +64,7 @@ func TestLoadParsedWorkflow_FromMarkdownWithoutFrontmatter(t *testing.T) {
 func TestLoadParsedWorkflow_UnsupportedExtension(t *testing.T) {
 	tmpDir := t.TempDir()
 	workflowPath := filepath.Join(tmpDir, "worker.txt")
-	require.NoError(t, os.WriteFile(workflowPath, []byte("text"), 0644), "Should write file with unsupported extension")
+	require.NoError(t, os.WriteFile(workflowPath, []byte("text"), 0o644), "Should write file with unsupported extension")
 
 	workflow, err := loadParsedWorkflow(workflowPath)
 	require.Error(t, err, "Should fail for unsupported extension")

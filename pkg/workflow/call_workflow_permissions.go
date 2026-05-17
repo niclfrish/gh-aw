@@ -70,7 +70,7 @@ func extractCallWorkflowPermissions(workflowName, markdownPath string) (*Permiss
 	}
 
 	if fileResult.mdExists {
-		return extractPermissionsFromMDFile(fileResult.mdPath)
+		return extractPermissionsFromWorkflowSource(fileResult.mdPath)
 	}
 
 	// No file found — return nil so the caller omits the permissions block.
@@ -91,22 +91,22 @@ func extractPermissionsFromYAMLFile(filePath string) (*Permissions, error) {
 	return perms, nil
 }
 
-// extractPermissionsFromMDFile reads a .md workflow source and uses the frontmatter-level
-// permissions field as a proxy for the job permissions that will be generated when the
-// worker is compiled.
-func extractPermissionsFromMDFile(mdPath string) (*Permissions, error) {
-	workflow, err := loadParsedWorkflow(mdPath)
+// extractPermissionsFromWorkflowSource reads a workflow source file and extracts permissions.
+// For Markdown sources, it uses frontmatter-level permissions as a proxy for the job
+// permissions that will be generated when the worker is compiled.
+func extractPermissionsFromWorkflowSource(workflowPath string) (*Permissions, error) {
+	workflow, err := loadParsedWorkflow(workflowPath)
 	if err != nil {
 		return nil, err
 	}
 
 	permsValue, hasPerms := workflow["permissions"]
 	if !hasPerms {
-		callWorkflowPermissionsLog.Printf("No permissions in frontmatter of %s", mdPath)
+		callWorkflowPermissionsLog.Printf("No permissions in workflow source %s", workflowPath)
 		return nil, nil
 	}
 
 	perms := NewPermissionsParserFromValue(permsValue).ToPermissions()
-	callWorkflowPermissionsLog.Printf("Extracted permissions from .md source %s", mdPath)
+	callWorkflowPermissionsLog.Printf("Extracted permissions from workflow source %s", workflowPath)
 	return perms, nil
 }

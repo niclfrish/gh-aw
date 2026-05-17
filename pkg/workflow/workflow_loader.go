@@ -17,6 +17,9 @@ var workflowLoaderLog = logger.New("workflow:workflow_loader")
 // For .yml/.yaml files, this returns the parsed YAML workflow.
 // For .md files, this returns parsed frontmatter (or an empty map when
 // frontmatter is absent/invalid).
+//
+// Callers are responsible for passing trusted, repository-bounded paths
+// (for example from findWorkflowFile()).
 func loadParsedWorkflow(workflowPath string) (map[string]any, error) {
 	ext := strings.ToLower(filepath.Ext(workflowPath))
 
@@ -31,16 +34,23 @@ func loadParsedWorkflow(workflowPath string) (map[string]any, error) {
 }
 
 func loadParsedMarkdownWorkflow(mdPath string) (map[string]any, error) {
-	// mdPath originates from findWorkflowFile(), which validates paths via
-	// isPathWithinDir() to prevent directory traversal before returning them.
-	content, err := os.ReadFile(mdPath) // #nosec G304 -- path pre-validated by findWorkflowFile() via isPathWithinDir()
+	absPath, err := filepath.Abs(mdPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve workflow path %s: %w", mdPath, err)
+	}
+
+	content, err := os.ReadFile(absPath) // #nosec G304 -- callers must validate repository-bounded paths via findWorkflowFile
 	if err != nil {
 		return nil, fmt.Errorf("failed to read workflow source %s: %w", mdPath, err)
 	}
 
 	result, err := parser.ExtractFrontmatterFromContent(string(content))
-	if err != nil || result == nil {
-		workflowLoaderLog.Printf("Failed to extract frontmatter from %s: %v", mdPath, err)
+	if err != nil {
+		workflowLoaderLog.Printf("Failed to parse frontmatter from %s: %v", mdPath, err)
+		return make(map[string]any), nil
+	}
+	if result == nil {
+		workflowLoaderLog.Printf("No frontmatter found in %s", mdPath)
 		return make(map[string]any), nil
 	}
 
