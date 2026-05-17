@@ -7,9 +7,11 @@ observability:
   otlp:
     endpoint:
       - url: ${{ secrets.GH_AW_OTEL_SENTRY_ENDPOINT }}
-        headers: ${{ secrets.GH_AW_OTEL_SENTRY_HEADERS }}
+        headers:
+          Authorization: ${{ secrets.GH_AW_OTEL_SENTRY_AUTHORIZATION }}
       - url: ${{ secrets.GH_AW_OTEL_GRAFANA_ENDPOINT }}
-        headers: ${{ secrets.GH_AW_OTEL_GRAFANA_HEADERS }}
+        headers:
+          Authorization: ${{ secrets.GH_AW_OTEL_GRAFANA_AUTHORIZATION }}
 ---
 
 ## Required secrets
@@ -17,6 +19,6 @@ observability:
 Consumers of this shared import must provision the following secrets:
 
 - `GH_AW_OTEL_SENTRY_ENDPOINT`
-- `GH_AW_OTEL_SENTRY_HEADERS`
+- `GH_AW_OTEL_SENTRY_AUTHORIZATION`
 - `GH_AW_OTEL_GRAFANA_ENDPOINT`
-- `GH_AW_OTEL_GRAFANA_HEADERS`
+- `GH_AW_OTEL_GRAFANA_AUTHORIZATION`

@@ -13,7 +13,7 @@ import (
 	"github.com/github/gh-aw/pkg/workflow"
 )
 
-func TestCompileWorkflowWithSharedObservabilityOTLPImport_UsesHeadersSecrets(t *testing.T) {
+func TestCompileWorkflowWithSharedObservabilityOTLPImport_UsesAuthorizationSecrets(t *testing.T) {
 	tempDir := testutil.TempDir(t, "test-*")
 	sharedDir := filepath.Join(tempDir, "shared")
 	if err := os.MkdirAll(sharedDir, 0o755); err != nil {
@@ -65,20 +65,20 @@ imports:
 	}
 
 	compiled := string(lockFileContent)
-	if !strings.Contains(compiled, "OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.GH_AW_OTEL_SENTRY_HEADERS }}") {
-		t.Error("Expected compiled workflow to wire OTEL_EXPORTER_OTLP_HEADERS to GH_AW_OTEL_SENTRY_HEADERS")
+	if !strings.Contains(compiled, "OTEL_EXPORTER_OTLP_HEADERS: Authorization=${{ secrets.GH_AW_OTEL_SENTRY_AUTHORIZATION }}") {
+		t.Error("Expected compiled workflow to wire OTEL_EXPORTER_OTLP_HEADERS to GH_AW_OTEL_SENTRY_AUTHORIZATION")
 	}
-	if !strings.Contains(compiled, `"headers":"${{ secrets.GH_AW_OTEL_SENTRY_HEADERS }}"`) {
-		t.Error("Expected compiled workflow to wire the Sentry endpoint entry to GH_AW_OTEL_SENTRY_HEADERS")
+	if !strings.Contains(compiled, `"headers":"Authorization=${{ secrets.GH_AW_OTEL_SENTRY_AUTHORIZATION }}"`) {
+		t.Error("Expected compiled workflow to wire the Sentry endpoint entry to GH_AW_OTEL_SENTRY_AUTHORIZATION")
 	}
-	if !strings.Contains(compiled, `"headers":"${{ secrets.GH_AW_OTEL_GRAFANA_HEADERS }}"`) {
-		t.Error("Expected compiled workflow to wire the Grafana endpoint entry to GH_AW_OTEL_GRAFANA_HEADERS")
+	if !strings.Contains(compiled, `"headers":"Authorization=${{ secrets.GH_AW_OTEL_GRAFANA_AUTHORIZATION }}"`) {
+		t.Error("Expected compiled workflow to wire the Grafana endpoint entry to GH_AW_OTEL_GRAFANA_AUTHORIZATION")
 	}
-	if strings.Contains(compiled, "GH_AW_OTEL_SENTRY_AUTHORIZATION") {
-		t.Error("Compiled workflow should not reference deprecated GH_AW_OTEL_SENTRY_AUTHORIZATION secret")
+	if strings.Contains(compiled, "GH_AW_OTEL_SENTRY_HEADERS") {
+		t.Error("Compiled workflow should not reference deprecated GH_AW_OTEL_SENTRY_HEADERS secret")
 	}
-	if strings.Contains(compiled, "GH_AW_OTEL_GRAFANA_AUTHORIZATION") {
-		t.Error("Compiled workflow should not reference deprecated GH_AW_OTEL_GRAFANA_AUTHORIZATION secret")
+	if strings.Contains(compiled, "GH_AW_OTEL_GRAFANA_HEADERS") {
+		t.Error("Compiled workflow should not reference deprecated GH_AW_OTEL_GRAFANA_HEADERS secret")
 	}
 }
 
