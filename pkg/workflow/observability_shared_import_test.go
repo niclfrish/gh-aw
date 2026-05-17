@@ -20,7 +20,11 @@ func TestCompileWorkflowWithSharedObservabilityOTLPImport_UsesHeadersSecrets(t *
 		t.Fatalf("Failed to create shared directory: %v", err)
 	}
 
-	sharedSourcePath := filepath.Join("..", "..", ".github", "workflows", "shared", "observability-otlp.md")
+	repoRoot, err := findRepoRootForTest()
+	if err != nil {
+		t.Fatalf("Failed to find repo root: %v", err)
+	}
+	sharedSourcePath := filepath.Join(repoRoot, ".github", "workflows", "shared", "observability-otlp.md")
 	sharedContent, err := os.ReadFile(sharedSourcePath)
 	if err != nil {
 		t.Fatalf("Failed to read shared observability import: %v", err)
@@ -61,16 +65,38 @@ imports:
 	}
 
 	compiled := string(lockFileContent)
-	if !strings.Contains(compiled, "GH_AW_OTEL_SENTRY_HEADERS") {
-		t.Error("Expected compiled workflow to reference GH_AW_OTEL_SENTRY_HEADERS")
+	if !strings.Contains(compiled, "OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.GH_AW_OTEL_SENTRY_HEADERS }}") {
+		t.Error("Expected compiled workflow to wire OTEL_EXPORTER_OTLP_HEADERS to GH_AW_OTEL_SENTRY_HEADERS")
 	}
-	if !strings.Contains(compiled, "GH_AW_OTEL_GRAFANA_HEADERS") {
-		t.Error("Expected compiled workflow to reference GH_AW_OTEL_GRAFANA_HEADERS")
+	if !strings.Contains(compiled, `"headers":"${{ secrets.GH_AW_OTEL_SENTRY_HEADERS }}"`) {
+		t.Error("Expected compiled workflow to wire the Sentry endpoint entry to GH_AW_OTEL_SENTRY_HEADERS")
+	}
+	if !strings.Contains(compiled, `"headers":"${{ secrets.GH_AW_OTEL_GRAFANA_HEADERS }}"`) {
+		t.Error("Expected compiled workflow to wire the Grafana endpoint entry to GH_AW_OTEL_GRAFANA_HEADERS")
 	}
 	if strings.Contains(compiled, "GH_AW_OTEL_SENTRY_AUTHORIZATION") {
 		t.Error("Compiled workflow should not reference deprecated GH_AW_OTEL_SENTRY_AUTHORIZATION secret")
 	}
 	if strings.Contains(compiled, "GH_AW_OTEL_GRAFANA_AUTHORIZATION") {
 		t.Error("Compiled workflow should not reference deprecated GH_AW_OTEL_GRAFANA_AUTHORIZATION secret")
+	}
+}
+
+func findRepoRootForTest() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", os.ErrNotExist
+		}
+		dir = parent
 	}
 }
