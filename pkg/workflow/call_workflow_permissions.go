@@ -2,10 +2,8 @@ package workflow
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/github/gh-aw/pkg/logger"
-	"github.com/github/gh-aw/pkg/parser"
 )
 
 var callWorkflowPermissionsLog = logger.New("workflow:call_workflow_permissions")
@@ -83,7 +81,7 @@ func extractCallWorkflowPermissions(workflowName, markdownPath string) (*Permiss
 // extractPermissionsFromYAMLFile reads a .lock.yml or .yml workflow file, parses it,
 // and returns the merged permissions from all its jobs.
 func extractPermissionsFromYAMLFile(filePath string) (*Permissions, error) {
-	workflow, err := readWorkflowYAML(filePath)
+	workflow, err := loadParsedWorkflow(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -97,20 +95,12 @@ func extractPermissionsFromYAMLFile(filePath string) (*Permissions, error) {
 // permissions field as a proxy for the job permissions that will be generated when the
 // worker is compiled.
 func extractPermissionsFromMDFile(mdPath string) (*Permissions, error) {
-	// mdPath originates from findWorkflowFile(), which validates paths via
-	// isPathWithinDir() to prevent directory traversal before returning them.
-	content, err := os.ReadFile(mdPath) // #nosec G304 -- path pre-validated by findWorkflowFile() via isPathWithinDir()
+	workflow, err := loadParsedWorkflow(mdPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read workflow source %s: %w", mdPath, err)
+		return nil, err
 	}
 
-	result, err := parser.ExtractFrontmatterFromContent(string(content))
-	if err != nil || result == nil {
-		callWorkflowPermissionsLog.Printf("Failed to extract frontmatter from %s: %v", mdPath, err)
-		return nil, nil
-	}
-
-	permsValue, hasPerms := result.Frontmatter["permissions"]
+	permsValue, hasPerms := workflow["permissions"]
 	if !hasPerms {
 		callWorkflowPermissionsLog.Printf("No permissions in frontmatter of %s", mdPath)
 		return nil, nil

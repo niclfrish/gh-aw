@@ -42,7 +42,7 @@ func extractCallWorkflowSecrets(workflowName, markdownPath string) ([]string, er
 // extractSecretsFromWorkflowFile parses a .lock.yml or .yml workflow file and returns
 // the secret names declared in its on.workflow_call.secrets section.
 func extractSecretsFromWorkflowFile(filePath string) ([]string, error) {
-	workflow, err := readWorkflowYAML(filePath)
+	workflow, err := loadParsedWorkflow(filePath)
 	if err != nil {
 		return nil, err
 	}

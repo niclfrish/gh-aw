@@ -182,7 +182,7 @@ func (c *Compiler) validateCallWorkflow(data *WorkflowData, workflowPath string)
 // extractWorkflowCallInputs parses a workflow file and extracts the workflow_call inputs schema.
 // Returns a map of input definitions that can be used to generate MCP tool schemas.
 func extractWorkflowCallInputs(workflowPath string) (map[string]any, error) {
-	workflow, err := readWorkflowYAML(workflowPath)
+	workflow, err := loadParsedWorkflow(workflowPath)
 	if err != nil {
 		return nil, err
 	}
@@ -193,39 +193,12 @@ func extractWorkflowCallInputs(workflowPath string) (map[string]any, error) {
 // extractMDWorkflowCallInputs reads a .md workflow file's frontmatter and extracts
 // the workflow_call inputs schema, mirroring extractWorkflowCallInputs for .md sources.
 func extractMDWorkflowCallInputs(mdPath string) (map[string]any, error) {
-	content, err := os.ReadFile(mdPath) // #nosec G304 -- mdPath is validated via isPathWithinDir in findWorkflowFile
+	workflow, err := loadParsedWorkflow(mdPath)
 	if err != nil {
 		return nil, err
 	}
-	result, err := parser.ExtractFrontmatterFromContent(string(content))
-	if err != nil || result == nil {
-		return make(map[string]any), nil
-	}
-	onSection, hasOn := result.Frontmatter["on"]
-	if !hasOn {
-		return make(map[string]any), nil
-	}
-	onMap, ok := onSection.(map[string]any)
-	if !ok {
-		return make(map[string]any), nil
-	}
-	workflowCall, hasWorkflowCall := onMap["workflow_call"]
-	if !hasWorkflowCall {
-		return make(map[string]any), nil
-	}
-	workflowCallMap, ok := workflowCall.(map[string]any)
-	if !ok {
-		return make(map[string]any), nil
-	}
-	inputs, hasInputs := workflowCallMap["inputs"]
-	if !hasInputs {
-		return make(map[string]any), nil
-	}
-	inputsMap, ok := inputs.(map[string]any)
-	if !ok {
-		return make(map[string]any), nil
-	}
-	return inputsMap, nil
+
+	return extractWorkflowCallInputsFromParsed(workflow), nil
 }
 
 // extractWorkflowCallInputsFromParsed extracts workflow_call inputs from an already-parsed
