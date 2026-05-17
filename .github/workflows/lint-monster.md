@@ -41,7 +41,6 @@ steps:
         --repo "${{ github.repository }}" \
         --state open \
         --json number \
-        --limit 5 \
         -- "in:title \"[lint-monster]\" created:>=${CUTOFF}" \
         | jq 'length')
       if [ "${RECENT:-0}" -gt 0 ]; then
@@ -128,7 +127,7 @@ Convert fused guidance into clear, actionable instructions that Copilot can exec
 ## Required flow
 
 1. If `/tmp/gh-aw/agent/lint-clean.flag` exists, call `noop` and stop.
-2. Group findings from `/tmp/gh-aw/agent/lint-diagnostics.txt` into distinct sets and select the **single highest-priority group** (for example the subsystem/path prefix with the most findings or most critical rule).
+2. Group findings from `/tmp/gh-aw/agent/lint-diagnostics.txt` into distinct sets and select the **single highest-priority group** (the group with the most findings).
 3. For the selected group:
    - Create one issue summarizing findings (paths, representative diagnostics, expected outcome).
    - Include a concise remediation checklist using fused skill guidance.
