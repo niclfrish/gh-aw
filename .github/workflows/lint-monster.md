@@ -1,7 +1,7 @@
 ---
 emoji: "🧌"
 name: LintMonster
-description: Daily workflow that runs custom linters, groups findings, and launches up to three Copilot agent sessions to fix lint issues
+description: Daily workflow that runs custom linters, groups findings, and launches a single Copilot agent session to fix lint issues
 on:
   schedule: daily
   workflow_dispatch:
@@ -29,9 +29,29 @@ tools:
 steps:
   - name: Run custom lint pre-check
     id: lint_scan
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     run: |
       set -euo pipefail
       mkdir -p /tmp/gh-aw/agent
+
+      # Skip if recent open lint-monster issues exist (within last 24h)
+      CUTOFF=$(date -u -d '24 hours ago' '+%Y-%m-%d')
+      RECENT=$(gh search issues \
+        --repo "${{ github.repository }}" \
+        --state open \
+        --json number \
+        --limit 5 \
+        -- "in:title \"[lint-monster]\" created:>=${CUTOFF}" \
+        | jq 'length')
+      if [ "${RECENT:-0}" -gt 0 ]; then
+        : > /tmp/gh-aw/agent/lint-diagnostics.txt
+        : > /tmp/gh-aw/agent/skill-index.txt
+        touch /tmp/gh-aw/agent/lint-clean.flag
+        echo "Skipping: found ${RECENT} open [lint-monster] issues created since ${CUTOFF}"
+        exit 0
+      fi
+
       rm -f /tmp/gh-aw/agent/lint-clean.flag
 
       if make golint-custom > /tmp/gh-aw/agent/golint-custom.log 2>&1; then
@@ -56,9 +76,9 @@ safe-outputs:
     expires: 7d
     title-prefix: "[lint-monster] "
     labels: [automation, lint, cookie]
-    max: 3
+    max: 1
   assign-to-agent:
-    max: 3
+    max: 1
     target: "*"
     allowed: [copilot]
   create-discussion:
@@ -81,7 +101,7 @@ You are **LintMonster**, a daily custom-linter remediation orchestrator.
 
 ## Mission
 
-Use the pre-check lint output from `make golint-custom`. If lint is clean, do nothing. If lint issues exist, group them and launch up to three Copilot agent sessions to resolve the groups.
+Use the pre-check lint output from `make golint-custom`. If lint is clean, do nothing. If lint issues exist, group them and launch a single Copilot agent session to resolve the highest-priority group.
 
 ## Runtime Inputs
 
@@ -108,21 +128,20 @@ Convert fused guidance into clear, actionable instructions that Copilot can exec
 ## Required flow
 
 1. If `/tmp/gh-aw/agent/lint-clean.flag` exists, call `noop` and stop.
-2. Group findings from `/tmp/gh-aw/agent/lint-diagnostics.txt` into **at most three** distinct sets (for example by subsystem/path prefix).
-3. For each selected group:
+2. Group findings from `/tmp/gh-aw/agent/lint-diagnostics.txt` into distinct sets and select the **single highest-priority group** (for example the subsystem/path prefix with the most findings or most critical rule).
+3. For the selected group:
    - Create one issue summarizing findings (paths, representative diagnostics, expected outcome).
    - Include a concise remediation checklist using fused skill guidance.
    - Assign the created issue to Copilot using `assign_to_agent`.
-4. If at least one assignment succeeded, create one discussion report containing:
+4. If the assignment succeeded, create one discussion report containing:
    - Daily lint scan summary
-   - Group definitions and finding counts
-   - Issues created and agent assignments
-   - Any groups skipped and why
-5. If no assignments were made, call `noop` with a short reason.
+   - Group definition and finding count
+   - Issue created and agent assignment
+   - Any groups deferred and why
+5. If no assignment was made, call `noop` with a short reason.
 
 ## Output rules
 
-- Launch **no more than three** agent sessions total.
-- Never assign the same group twice.
+- Launch **no more than one** agent session total.
 - Always use safe outputs for issue creation, assignment, and discussion creation.
-- Final action must be `create_discussion` when agents were launched, otherwise `noop`.
+- Final action must be `create_discussion` when an agent was launched, otherwise `noop`.
