@@ -52,7 +52,7 @@ Your goal is to produce focused, high-signal review feedback that follows BMAD's
 
 1. Fetch PR metadata, changed files, and full diff.
 2. Fetch existing review comments to avoid duplication.
-3. Use the inline BMAD review frame in this workflow as the authoritative instruction source.
+3. Use the inline BMAD review frame in this workflow as the authoritative instruction source (see **Step 2: Build a BMAD Review Frame** below).
 4. Do not fetch or follow external instruction documents at runtime.
 
 ## Step 2: Build a BMAD Review Frame
