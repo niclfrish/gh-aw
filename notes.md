@@ -27,6 +27,17 @@ Across 8 consecutive runs (2026-05-06 → 2026-05-16), conversation transcripts 
 - Workflow fingerprint: Agentic Commands + Q = 26 firings (52%) — same concentration as May 13 but spread across 2 agent branches instead of 4
 - Notable: both top branches got Copilot success runs AND a 5-fire gate burst at the success timestamp — sweep-after-success pattern
 
+## Run: 2026-05-17
+
+- 92% action_required (46/50) — identical share to 2026-05-16 (two-day-in-a-row run-stuck pattern)
+- 6 active branches; queue is flatter than yesterday: top branch (scan-repeated-permission-denied-issues) holds only 11 of 50 (22%), no branch dominates
+- 4 success runs are all real Copilot agent sessions on 4 distinct PR branches — every "investigate-safe-output*" branch + the agentic-workflow + the comment-addressing run on PR #32759 all completed
+- Copilot agent duration spread: 8 / 11 / 15 / 20 min (avg 13.5 min) — wider than recent days but all in the >5-min "high-success" band per [historical_trend_regression strategy](session-analysis-strategies.json)
+- Workflow fingerprint: Agentic Commands + Q = 24 firings (48%) — concentration relaxed slightly vs May-13/16
+- 0 spec-orphans: only 2 in-progress runs system-wide and both on `main` (this workflow + Failure Investigator). The 3 chaos/* PRs from 05:54 have no assignee but zero in-progress gates, so they don't trip escalation. The `docs/update-dictation-glossary-*` PR is brand-new (06:37) and below the 1h waiting threshold.
+- Notable: 3 of 4 success runs were close-paired (within ~6 min) with their `action_required` gate bursts on the same branch — same sweep-after-success pattern as 05-16 but tighter time spacing
+- data_quality stays `infrastructure-only` for the 9th consecutive run (2026-05-06 → 2026-05-17). Conversation logs dir empty again.
+
 ## Open Action Items
 
 - [ ] Investigate why conversation transcripts have never been delivered to /tmp/gh-aw/session-data/logs/
