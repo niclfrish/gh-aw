@@ -14,6 +14,7 @@ import (
 	pathpkg "path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/cli/go-gh/v2"
 	"github.com/cli/go-gh/v2/pkg/api"
@@ -519,7 +520,7 @@ func downloadFileViaRawURL(owner, repo, filePath, ref string) ([]byte, error) {
 	remoteLog.Printf("Attempting raw URL download: %s", rawURL)
 
 	// Use a client with a timeout to prevent indefinite hangs on slow/unresponsive hosts.
-	rawClient := &http.Client{Timeout: constants.DefaultHTTPClientTimeout}
+	rawClient := &http.Client{Timeout: 30 * time.Second}
 
 	// #nosec G107 -- rawURL is constructed from workflow import configuration authored by
 	// the developer; the owner, repo, filePath, and ref are user-supplied workflow spec fields.

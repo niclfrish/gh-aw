@@ -14,8 +14,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/github/gh-aw/pkg/constants"
 )
 
 // createMockMCPRegistry creates a mock MCP registry server for testing
@@ -240,7 +238,7 @@ This is a test workflow for MCP server integration.
 			addCmd.Dir = setup.tempDir
 
 			// Set a timeout for each server addition
-			timeout := constants.DefaultHTTPClientTimeout
+			timeout := 30 * time.Second
 			addCmd.Env = os.Environ()
 
 			done := make(chan error, 1)
