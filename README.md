@@ -14,6 +14,16 @@ Here are some pointers to get you started in using this tool.
 
 Write agentic workflows in natural language markdown, and run them in GitHub Actions.
 
+**Last updated:** 2026-05-17  
+**RSS feed:** [github.github.com/gh-aw/blog/rss.xml](https://github.github.com/gh-aw/blog/rss.xml)
+
+**Find us (sameAs):**
+- [GitHub repository](https://github.com/github/gh-aw)
+- [GitHub organization](https://github.com/github)
+- [GitHub CLI extension listing](https://github.com/topics/gh-extension)
+
+<!-- GitHub repository README pages do not support custom canonical meta tags. -->
+
 > [!NOTE]
 > **Releases 0.68.4 through 0.71.3 are being retired** due to a bug that impacts billing. If you are running one of these versions, please upgrade to the latest release as soon as possible.
 
