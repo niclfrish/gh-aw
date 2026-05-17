@@ -1,6 +1,7 @@
 ---
 tools:
   cache-memory:
+    key: agentdb-${{ env.GH_AW_WORKFLOW_ID_SANITIZED }}
 steps:
   - name: Ensure AgentDB cache path
     run: mkdir -p /tmp/gh-aw/cache-memory/agentdb
