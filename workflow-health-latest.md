@@ -1,31 +1,40 @@
-# Workflow Health — 2026-05-16T05:35Z
+# Workflow Health — 2026-05-17T05:41Z
 
-Score: 64/100 (→ stable). 229 workflows. Run: §25953979404
+Score: 67/100 (↑ from 64). 229 workflows. Run: §25982599702
 
 ## KEY FINDINGS
 
-### Today's New Issues (May 16)
-- **AWF Firewall v0.25.47 broken** (#32522): CONTAINED — `oidc-token-provider-base` module missing in Node bundle. PR #32503 closed without merging; main is unaffected. Smoke gate worked as designed. ✅
-- **Smoke cluster failure at 01:00-01:02Z**: All smokes (Claude, Copilot, Gemini, OTEL, Agent Container, OTEL Backends) failed — root cause was AWF firewall v0.25.47 image on PR #32503. Now closed. Recovery in progress (Smoke OTEL ✅ at 05:28Z).
-- **Smoke Codex failed** (#32561): still open (May 16)
-- **Smoke Pi failed** (#32553): still open (May 16)
-- **AW Compat**: 18/19 repos green, 1 hard failure (microsoft/aspire) — #32526
-- **Open [aw] failure issues**: 19 (down from 30+ post-May 14 mass event)
+### Today's New Issues (May 17)
+- **Sergo - Serena Go Expert failed** (#32755): open
+- **Step Name Alignment failed** (#32754): open
+- **Linter Miner failed** (#32748): open
+- **Daily Compiler Quality Check failed** (#32736): engine failure after completing work
+- **Outcome Collector failed** (#32728): open
+- **Daily Observability Report failed** (#32717): ET budget exhausted (80M limit)
+
+### 🎉 Resolved Since May 16
+- **PR-review cluster #31724 CLOSED** ✅ — trigger gates fixed for 8 workflows (Q, Agentic Commands, CGO, CJS, Smoke CI, Doc Build-Deploy, AI Moderator, Content Moderation). Was ~272 wasted runs/day at 0% success.
 
 ### Persistent Issues (Unchanged)
-- **CGO/CJS regression** (#29669): failing every push to main (P1)
-- **Daily Fact parse failures** (#31432, #31524): still open (P2)
-- **PR-review cluster waste** (#31724): ~272 wasted runs/day at 0% (P2, highest ROI fix)
-- **MCP gateway session timeout** (#23153): still open (P2)
-- **Performance Regression** (#30180): still open (P2)
+- **CGO/CJS regression** (#29669): still open, failing on every push (P1)
+- **Smoke CI** (#32690): still open (P1)
+- **Codex OPENAI_API_KEY sandbox exclusion** (#32446): P1
+- **MCP gateway session timeout** (#23153): P2
+- **Performance Regression** (#30180): P2
+- **[aw-compat] Cross-repo warnings** (#32528): P2
+
+### Systemic Patterns
+- **ET budget exhaustion**: Multiple daily workflows hitting token limits (Daily Observability Report at 80M)
+- **Engine failure after completion**: Workflow completes but safe-output not sent (#32736)
+
+### Open [aw] failures
+21 open (↑2 from 19 on May 16; PR cluster fix reduces future waste)
 
 ### Actions Taken This Run
 - Added comment to dashboard issue #29109
 - Updated shared memory
 
 ### Trends
-- Score: 64/100 (→ stable, day 2 post-recovery)
-- Open [aw] failures: 19 (↓ from 30+ on May 14 peak; recovering)
-- AWF firewall issue: isolated, contained by smoke gate ✅
-- No new P0 cascading failures
-- 229 workflows (stable)
+- Score: 67/100 (↑3 from PR-review cluster fix)
+- PR-review cluster: RESOLVED ✅ (~272 wasted runs/day eliminated)
+- Top performers stable: Issue Monster, PR Sous Chef, Daily Semgrep, CI

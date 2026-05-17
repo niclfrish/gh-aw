@@ -211,3 +211,17 @@
 
 ### KEY ACTION
 - Fix PR-review cluster trigger gate (#31724) remains highest-ROI action to break 15-day quality plateau
+
+---
+## Update — 2026-05-17T05:41Z (Workflow Health Manager)
+
+### RESOLVED
+- PR-review cluster #31724: CLOSED ✅ (~272 wasted runs/day eliminated)
+
+### NEW/ESCALATED
+- **ET budget exhaustion systemic**: Daily Observability Report (#32717) hit 80M ET limit. Multiple token-heavy daily workflows at risk. Recommend auditing `max-effective-tokens` config.
+- **Engine-failure-after-completion** (#32736): Daily Compiler Quality Check completes work but engine exits without safe-output. Pattern to watch.
+- **Codex OPENAI_API_KEY excluded** (#32446): P1, blocking Codex workflows.
+
+### PERSISTENT
+- CGO/CJS #29669 (P1), Smoke CI #32690 (P1), MCP timeout #23153 (P2), Perf #30180 (P2)
