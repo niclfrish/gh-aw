@@ -316,8 +316,9 @@ async function main(config = {}, githubClient = null) {
 
     // Resolve temporary project ID if present
     const projectStr = effectiveProjectUrl.trim();
-    if (isTemporaryId(projectStr)) {
-      const normalizedId = normalizeTemporaryId(projectStr);
+    const projectWithoutHash = projectStr.startsWith("#") ? projectStr.substring(1) : projectStr;
+    if (isTemporaryId(projectWithoutHash)) {
+      const normalizedId = normalizeTemporaryId(projectWithoutHash);
       const resolved = temporaryIdMap instanceof Map ? temporaryIdMap.get(normalizedId) : resolvedTemporaryIds[normalizedId];
       if (resolved && typeof resolved === "object" && "projectUrl" in resolved && resolved.projectUrl) {
         core.info(`Resolved temporary project ID ${projectStr} to ${resolved.projectUrl}`);
