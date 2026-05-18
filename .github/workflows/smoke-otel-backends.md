@@ -65,7 +65,7 @@ This workflow expects these secrets to be present:
 - `GH_AW_OTEL_DATADOG_ENDPOINT`
 - `GH_AW_OTEL_DATADOG_API_KEY`
 - `DD_API_KEY`
-- `DD_APP_KEY`
+- `DD_APPLICATION_KEY`
 - `DD_SITE` (optional)
 - `SENTRY_ACCESS_TOKEN`
 - `GRAFANA_URL`
