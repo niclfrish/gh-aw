@@ -16,7 +16,11 @@ gh-aw frontmatter schema. It exists solely to achieve 100% schema feature covera
 
 ## What `disable-model-invocation` Does
 
-Controls whether the custom agent disables additional model invocation.
+This field is for **custom agent files** (`.github/agents/*.agent.md`).
+
+When set to `true`, the custom agent runtime will not make additional model calls.
+In `gh-aw`, this key is accepted/validated for compatibility (and with included agent files),
+but it is not interpreted by the workflow compiler itself.
 
 ## Task
 
