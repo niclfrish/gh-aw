@@ -153,14 +153,15 @@ function registerPredefinedTools(server, tools, config, registerTool, normalizeT
     if (Object.keys(config).find(configKey => normalizeTool(configKey) === tool.name)) {
       let toolToRegister = tool;
       const safetyWarning = toolSafetyWarnings[tool.name];
+      const isCreatePullRequestTool = tool.name === "create_pull_request" && config.create_pull_request;
       // Enrich create_pull_request tool description when target-repo is configured
-      if (safetyWarning || (tool.name === "create_pull_request" && config.create_pull_request)) {
+      if (safetyWarning || isCreatePullRequestTool) {
         toolToRegister = JSON.parse(JSON.stringify(tool));
         if (safetyWarning) {
           toolToRegister.description += safetyWarning;
         }
       }
-      if (tool.name === "create_pull_request" && config.create_pull_request) {
+      if (isCreatePullRequestTool) {
         const targetRepo = config.create_pull_request["target-repo"];
         if (targetRepo) {
           // Validate the configured target-repo against the allowed-repos list

@@ -59,6 +59,20 @@ function createHandlers(server, appendSafeOutput, config = {}) {
   };
 
   /**
+   * @param {{title?: unknown, body?: unknown}} entry
+   * @returns {string}
+   */
+  const resolveIssueProbeTitle = entry => {
+    if (typeof entry.title === "string" && entry.title.trim()) {
+      return entry.title;
+    }
+    if (typeof entry.body === "string" && entry.body.trim()) {
+      return entry.body;
+    }
+    return "Agent Output";
+  };
+
+  /**
    * @param {string} error
    * @returns {{content: Array<{type: "text", text: string}>, isError: true}}
    */
@@ -301,7 +315,7 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    * @returns {string|null}
    */
   const validateCreateIssueIntent = entry => {
-    const rawResolvedTitle = typeof entry.title === "string" && entry.title.trim() ? entry.title : typeof entry.body === "string" && entry.body.trim() ? entry.body : "Agent Output";
+    const rawResolvedTitle = resolveIssueProbeTitle(entry);
     const body = normalizeProbeValue(entry.body);
 
     if (isTrivialProbeValue(rawResolvedTitle) && (body === "" || isTrivialProbeValue(body))) {
