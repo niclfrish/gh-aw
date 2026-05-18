@@ -1,0 +1,31 @@
+{
+  "date": "2026-05-18",
+  "files_analyzed": {
+    "documentation": [
+      "docs/src/content/docs/guides/network-configuration.md",
+      "docs/src/content/docs/blog/2026-01-13-meet-the-workflows-issue-management.md"
+    ],
+    "messages": [
+      ".github/workflows/smoke-workflow-call.md",
+      ".github/workflows/necromancer.md"
+    ],
+    "validation": ["pkg/workflow/validation_helpers.go"]
+  },
+  "overall_quality": "professional",
+  "quality_highlights": [
+    "network-configuration.md - excellent troubleshooting section with log output and inline remediation arrows",
+    "smoke-workflow-call.md - consistent emoji conventions and contextual status messages"
+  ],
+  "single_file_improvements": [
+    {
+      "file": "docs/src/content/docs/guides/network-configuration.md",
+      "priority": "high",
+      "issue": "Security Best Practices tips 1 and 4 conflict: 'Start minimal' vs 'Start with defaults'. Users may omit required defaults ecosystem."
+    },
+    {
+      "file": ".github/workflows/necromancer.md",
+      "priority": "medium",
+      "issue": "run-failure uses warning emoji (warning) instead of failure emoji (red X), inconsistent with other workflows like smoke-workflow-call"
+    }
+  ]
+}
