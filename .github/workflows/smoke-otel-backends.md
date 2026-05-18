@@ -37,7 +37,7 @@ imports:
   - shared/mcp/grafana.md
   - shared/mcp/sentry.md
   - shared/otel-queries.md
-  - shared/otlp-sentry-grafana-datadog.md
+  - shared/otlp-backends.md
 ---
 
 # Smoke OTEL
@@ -66,7 +66,6 @@ This workflow expects these secrets to be present:
 - `GH_AW_OTEL_DATADOG_API_KEY`
 - `DD_API_KEY`
 - `DD_APPLICATION_KEY`
-- `DD_SITE` (optional)
 - `SENTRY_ACCESS_TOKEN`
 - `GRAFANA_URL`
 - `GRAFANA_SERVICE_ACCOUNT_TOKEN`
