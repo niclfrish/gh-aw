@@ -1,14 +1,5 @@
 [
   {
-    "date": "2026-04-13",
-    "workflow_name": "Contribution Check",
-    "workflow_file": "",
-    "runs_audited": 2,
-    "total_tokens_analyzed": 5627252,
-    "estimated_savings_per_run": 1300000,
-    "recommendations_count": 4
-  },
-  {
     "date": "2026-04-14",
     "workflow_name": "Auto-Triage Issues",
     "workflow_file": "auto-triage-issues",
@@ -267,6 +258,15 @@
     "runs_audited": 1,
     "total_tokens_analyzed": 10653907,
     "estimated_savings_per_run": 3000000,
+    "recommendations_count": 4
+  },
+  {
+    "date": "2026-05-18",
+    "workflow_name": "Matt Pocock Skills Reviewer",
+    "workflow_file": "mattpocock-skills-reviewer",
+    "runs_audited": 10,
+    "total_tokens_analyzed": 4633319,
+    "estimated_savings_per_run": 90000,
     "recommendations_count": 4
   }
 ]
