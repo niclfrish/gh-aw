@@ -15,6 +15,9 @@ permissions:
 tracker-id: daily-compiler-threat-spec-optimizer
 engine: copilot
 strict: true
+sandbox:
+  agent:
+    version: v0.25.46
 
 imports:
   - uses: shared/daily-audit-base.md
