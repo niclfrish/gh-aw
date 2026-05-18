@@ -855,6 +855,20 @@ describe("safe_outputs_handlers", () => {
       expect(mockAppendSafeOutput).not.toHaveBeenCalled();
     });
 
+    it("should reject obvious exploratory test payloads before recording a PR branch update intent", async () => {
+      const result = await handlers.pushToPullRequestBranchHandler({
+        branch: "docs/pr-17198-test-from-main-1853f10f924372d4",
+        message: "test",
+      });
+
+      expect(result.isError).toBe(true);
+      const responseData = JSON.parse(result.content[0].text);
+      expect(responseData.result).toBe("error");
+      expect(responseData.error).toContain("Refusing to record an exploratory pull request branch update");
+      expect(responseData.error).toContain("noop or report_incomplete");
+      expect(mockAppendSafeOutput).not.toHaveBeenCalled();
+    });
+
     it("should include helpful details in error response", async () => {
       const args = {
         branch: "test-branch",
@@ -1266,6 +1280,17 @@ describe("safe_outputs_handlers", () => {
 
       expect(() => handlers.addCommentHandler({ body: longBody })).toThrow();
     });
+
+    it("should reject obvious exploratory placeholder comments before recording them", () => {
+      const result = handlers.addCommentHandler({ body: "test" });
+
+      expect(result.isError).toBe(true);
+      const responseData = JSON.parse(result.content[0].text);
+      expect(responseData.result).toBe("error");
+      expect(responseData.error).toContain("Refusing to record an exploratory comment");
+      expect(responseData.error).toContain("noop or report_incomplete");
+      expect(mockAppendSafeOutput).not.toHaveBeenCalled();
+    });
   });
 
   describe("createIssueHandler", () => {
@@ -1338,6 +1363,17 @@ describe("safe_outputs_handlers", () => {
           },
         })
       ).toThrow("deduplicate-by-title");
+    });
+
+    it("should reject obvious exploratory placeholder issues before recording them", () => {
+      const result = handlers.createIssueHandler({ title: "test", body: "test" });
+
+      expect(result.isError).toBe(true);
+      const responseData = JSON.parse(result.content[0].text);
+      expect(responseData.result).toBe("error");
+      expect(responseData.error).toContain("Refusing to record an exploratory issue");
+      expect(responseData.error).toContain("noop or report_incomplete");
+      expect(mockAppendSafeOutput).not.toHaveBeenCalled();
     });
   });
 
@@ -1508,9 +1544,7 @@ describe("safe_outputs_handlers", () => {
       expect(result).toHaveProperty("content");
       const data = JSON.parse(result.content[0].text);
       expect(data.result).toBe("success");
-      expect(mockAppendSafeOutput).toHaveBeenCalledWith(
-        expect.objectContaining({ type: "submit_pull_request_review", body: "Looks good!" })
-      );
+      expect(mockAppendSafeOutput).toHaveBeenCalledWith(expect.objectContaining({ type: "submit_pull_request_review", body: "Looks good!" }));
     });
 
     it("should write entry and return success when body is empty but inline comments were buffered", () => {
@@ -1533,9 +1567,7 @@ describe("safe_outputs_handlers", () => {
     });
 
     it("should throw MCP error when body is whitespace-only and no inline comments were buffered", () => {
-      expect(() => handlers.submitPullRequestReviewHandler({ body: "   ", event: "COMMENT" })).toThrow(
-        expect.objectContaining({ code: -32602 })
-      );
+      expect(() => handlers.submitPullRequestReviewHandler({ body: "   ", event: "COMMENT" })).toThrow(expect.objectContaining({ code: -32602 }));
     });
 
     it("should throw MCP error when event is REQUEST_CHANGES and body is empty", () => {
@@ -1574,9 +1606,7 @@ describe("safe_outputs_handlers", () => {
       const result = handlers.submitPullRequestReviewHandler({ body: "LGTM" });
       const data = JSON.parse(result.content[0].text);
       expect(data.result).toBe("success");
-      expect(mockAppendSafeOutput).toHaveBeenCalledWith(
-        expect.objectContaining({ type: "submit_pull_request_review" })
-      );
+      expect(mockAppendSafeOutput).toHaveBeenCalledWith(expect.objectContaining({ type: "submit_pull_request_review" }));
     });
     it("should reset inline comment counter after a successful submit, allowing a second review to guard correctly", () => {
       // First review: submit with a body (succeeds, resets counter)
@@ -1584,9 +1614,7 @@ describe("safe_outputs_handlers", () => {
       handlers.submitPullRequestReviewHandler({ event: "COMMENT", body: "First review" });
 
       // Counter is now reset to 0. A second empty-body submit should be rejected.
-      expect(() => handlers.submitPullRequestReviewHandler({ event: "COMMENT" })).toThrow(
-        expect.objectContaining({ code: -32602 })
-      );
+      expect(() => handlers.submitPullRequestReviewHandler({ event: "COMMENT" })).toThrow(expect.objectContaining({ code: -32602 }));
     });
 
     it("should throw MCP error when event is an invalid value", () => {
@@ -1621,9 +1649,7 @@ describe("safe_outputs_handlers", () => {
       expect(result).toHaveProperty("content");
       const data = JSON.parse(result.content[0].text);
       expect(data.result).toBe("success");
-      expect(mockAppendSafeOutput).toHaveBeenCalledWith(
-        expect.objectContaining({ type: "create_pull_request_review_comment", path: "src/foo.js" })
-      );
+      expect(mockAppendSafeOutput).toHaveBeenCalledWith(expect.objectContaining({ type: "create_pull_request_review_comment", path: "src/foo.js" }));
     });
 
     it("should allow empty-body submit after buffering a comment", () => {
@@ -1640,9 +1666,7 @@ describe("safe_outputs_handlers", () => {
       });
       expect(() => handlers.createPullRequestReviewCommentHandler({ path: "src/foo.js", line: 1, body: "nit" })).toThrow();
       // Counter was NOT incremented, so empty-body submit should still be rejected
-      expect(() => handlers.submitPullRequestReviewHandler({ event: "COMMENT" })).toThrow(
-        expect.objectContaining({ code: -32602, message: expect.stringContaining("review body is empty") })
-      );
+      expect(() => handlers.submitPullRequestReviewHandler({ event: "COMMENT" })).toThrow(expect.objectContaining({ code: -32602, message: expect.stringContaining("review body is empty") }));
     });
   });
 });

@@ -32,7 +32,48 @@ const { parseDeduplicateByTitle, normalizeTitleForDedup, findDuplicateByTitle } 
  */
 function createHandlers(server, appendSafeOutput, config = {}) {
   const TOKEN_THRESHOLD = 16000;
-  const trivialPRProbeValues = new Set(["test", "testing", "test no base", "probe", "placeholder", "dummy", "temp", "temporary", "todo", "tbd", "wip", "example"]);
+  const trivialProbeValues = new Set(["test", "testing", "test no base", "probe", "placeholder", "dummy", "temp", "temporary", "todo", "tbd", "wip", "example"]);
+
+  /**
+   * @param {unknown} value
+   * @returns {string}
+   */
+  const normalizeProbeValue = value => {
+    if (typeof value !== "string") return "";
+    return value.trim().toLowerCase().replace(/\s+/g, " ");
+  };
+
+  /**
+   * @param {unknown} value
+   * @returns {boolean}
+   */
+  const isTrivialProbeValue = value => trivialProbeValues.has(normalizeProbeValue(value));
+
+  /**
+   * @param {unknown} value
+   * @returns {boolean}
+   */
+  const looksLikeExploratoryBranch = value => {
+    const branch = normalizeProbeValue(value);
+    return branch.includes("test-from-main") || trivialProbeValues.has(branch) || branch.includes("probe");
+  };
+
+  /**
+   * @param {string} error
+   * @returns {{content: Array<{type: "text", text: string}>, isError: true}}
+   */
+  const buildIntentErrorResponse = error => ({
+    content: [
+      {
+        type: "text",
+        text: JSON.stringify({
+          result: "error",
+          error,
+        }),
+      },
+    ],
+    isError: true,
+  });
 
   /**
    * Detect and offload large string fields to files.
@@ -232,19 +273,14 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    * @returns {string|null}
    */
   const validateCreatePullRequestIntent = entry => {
-    const normalize = value => {
-      if (typeof value !== "string") return "";
-      return value.trim().toLowerCase().replace(/\s+/g, " ");
-    };
+    const title = normalizeProbeValue(entry.title);
+    const body = normalizeProbeValue(entry.body);
+    const branch = normalizeProbeValue(entry.branch);
 
-    const title = normalize(entry.title);
-    const body = normalize(entry.body);
-    const branch = normalize(entry.branch);
-
-    const looksLikeProbeTitle = trivialPRProbeValues.has(title);
-    const looksLikeProbeBody = trivialPRProbeValues.has(body);
+    const looksLikeProbeTitle = trivialProbeValues.has(title);
+    const looksLikeProbeBody = trivialProbeValues.has(body);
     const looksLikeTestFromMainBranch = branch.includes("test-from-main");
-    const looksLikeProbeBranch = looksLikeTestFromMainBranch || branch.includes("probe");
+    const looksLikeProbeBranch = looksLikeExploratoryBranch(branch);
 
     if (looksLikeTestFromMainBranch || (looksLikeProbeTitle && looksLikeProbeBody) || (looksLikeProbeBranch && (looksLikeProbeTitle || looksLikeProbeBody))) {
       return (
@@ -252,6 +288,71 @@ function createHandlers(server, appendSafeOutput, config = {}) {
         "create_pull_request is for a real intended PR only and successful calls can lead to an externally visible pull request. " +
         "Do not use placeholder values like 'test' or probe branches. " +
         "If you are not ready to open the real PR, use noop or report_incomplete instead."
+      );
+    }
+
+    return null;
+  };
+
+  /**
+   * Detects obviously exploratory issue payloads so the agent can fail fast
+   * instead of recording a stray real-world issue intent.
+   * @param {{title?: unknown, body?: unknown}} entry
+   * @returns {string|null}
+   */
+  const validateCreateIssueIntent = entry => {
+    const rawResolvedTitle = typeof entry.title === "string" && entry.title.trim() ? entry.title : typeof entry.body === "string" && entry.body.trim() ? entry.body : "Agent Output";
+    const body = normalizeProbeValue(entry.body);
+
+    if (isTrivialProbeValue(rawResolvedTitle) && (body === "" || isTrivialProbeValue(body))) {
+      return (
+        "Refusing to record an exploratory issue. " +
+        "create_issue is for a real intended issue only and successful calls can lead to an externally visible issue. " +
+        "Do not use placeholder titles or bodies like 'test'. " +
+        "If you are not ready to open the real issue, use noop or report_incomplete instead."
+      );
+    }
+
+    return null;
+  };
+
+  /**
+   * Detects obviously exploratory comment payloads so the agent can fail fast
+   * instead of recording a stray real-world comment intent.
+   * @param {{body?: unknown}} entry
+   * @returns {string|null}
+   */
+  const validateAddCommentIntent = entry => {
+    if (isTrivialProbeValue(entry.body)) {
+      return (
+        "Refusing to record an exploratory comment. " +
+        "add_comment is for a real intended comment only and successful calls can lead to an externally visible comment. " +
+        "Do not use placeholder bodies like 'test'. " +
+        "If you are not ready to post the real comment, use noop or report_incomplete instead."
+      );
+    }
+
+    return null;
+  };
+
+  /**
+   * Detects obviously exploratory PR-branch push payloads so the agent can fail fast
+   * instead of recording a stray real-world branch update intent.
+   * @param {{branch?: unknown, message?: unknown}} entry
+   * @returns {string|null}
+   */
+  const validatePushToPullRequestBranchIntent = entry => {
+    const branch = normalizeProbeValue(entry.branch);
+    const looksLikeTestFromMainBranch = branch.includes("test-from-main");
+    const looksLikeProbeBranch = looksLikeExploratoryBranch(branch);
+    const looksLikeProbeMessage = isTrivialProbeValue(entry.message);
+
+    if (looksLikeTestFromMainBranch || trivialProbeValues.has(branch) || (looksLikeProbeBranch && looksLikeProbeMessage)) {
+      return (
+        "Refusing to record an exploratory pull request branch update. " +
+        "push_to_pull_request_branch is for a real intended PR update only and successful calls can lead to externally visible branch changes. " +
+        "Do not use probe branches, '*-test-from-main-*' branches, or placeholder commit messages like 'test'. " +
+        "If you are not ready to push the real update, use noop or report_incomplete instead."
       );
     }
 
@@ -269,18 +370,7 @@ function createHandlers(server, appendSafeOutput, config = {}) {
     const entry = { ...args, type: "create_pull_request" };
     const intentValidationError = validateCreatePullRequestIntent(entry);
     if (intentValidationError) {
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify({
-              result: "error",
-              error: intentValidationError,
-            }),
-          },
-        ],
-        isError: true,
-      };
+      return buildIntentErrorResponse(intentValidationError);
     }
 
     // Resolve target repo configuration and validate the target repo early
@@ -650,6 +740,11 @@ function createHandlers(server, appendSafeOutput, config = {}) {
       }
 
       entry.branch = detectedBranch;
+    }
+
+    const intentValidationError = validatePushToPullRequestBranchIntent(entry);
+    if (intentValidationError) {
+      return buildIntentErrorResponse(intentValidationError);
     }
 
     // Determine transport format: "bundle" (default) uses git bundle (preserves merge topology),
@@ -1025,6 +1120,10 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    */
   const createIssueHandler = args => {
     const entry = { ...(args || {}), type: "create_issue" };
+    const intentValidationError = validateCreateIssueIntent(entry);
+    if (intentValidationError) {
+      return buildIntentErrorResponse(intentValidationError);
+    }
 
     const { defaultTargetRepo, allowedRepos } = resolveTargetRepoConfig(createIssueConfig);
     const repoResult = resolveAndValidateRepo(entry, defaultTargetRepo, allowedRepos, "issue");
@@ -1158,6 +1257,10 @@ function createHandlers(server, appendSafeOutput, config = {}) {
 
     // Build the entry with a temporary_id
     const entry = { ...(args || {}), type: "add_comment" };
+    const intentValidationError = validateAddCommentIntent(entry);
+    if (intentValidationError) {
+      return buildIntentErrorResponse(intentValidationError);
+    }
 
     // Use helper to validate or generate temporary_id
     const tempIdResult = getOrGenerateTemporaryId(entry, "add_comment");
@@ -1227,7 +1330,7 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    */
   const submitPullRequestReviewHandler = args => {
     const body = (args && typeof args.body === "string" ? args.body : "").trim();
-    const event = (args && args.event ? String(args.event).toUpperCase() : "COMMENT");
+    const event = args && args.event ? String(args.event).toUpperCase() : "COMMENT";
 
     const VALID_REVIEW_EVENTS = ["APPROVE", "REQUEST_CHANGES", "COMMENT"];
     if (!VALID_REVIEW_EVENTS.includes(event)) {
