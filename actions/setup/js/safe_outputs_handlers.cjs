@@ -253,9 +253,10 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    * Handler for create_pull_request tool
    * Spec cross-reference: Safe Output Outcome Evaluation §1 (`create_pull_request`).
    * Resolves the current branch if branch is not provided or is the base branch
+   * Validates exploratory probe payloads against the resolved effective branch
    * Generates git patch for the changes (unless allow-empty is true)
    * Supports multi-repo scenarios via the optional 'repo' parameter
-  */
+   */
   const createPullRequestHandler = async args => {
     const entry = { ...args, type: "create_pull_request" };
 
