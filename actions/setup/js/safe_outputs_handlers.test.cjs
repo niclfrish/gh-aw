@@ -2,7 +2,16 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
-import { createHandlers } from "./safe_outputs_handlers.cjs";
+import {
+  createHandlers,
+  looksLikeExploratoryBranch,
+  normalizeProbeValue,
+  resolveIssueTitleForValidation,
+  validateAddCommentIntent,
+  validateCreateIssueIntent,
+  validateCreatePullRequestIntent,
+  validatePushToPullRequestBranchIntent,
+} from "./safe_outputs_handlers.cjs";
 
 const LARGE_CONTENT_BODY = "A".repeat(70000);
 
@@ -78,6 +87,64 @@ describe("safe_outputs_handlers", () => {
     delete process.env.GH_AW_ASSETS_BRANCH;
     delete process.env.GH_AW_ASSETS_MAX_SIZE_KB;
     delete process.env.GH_AW_ASSETS_ALLOWED_EXTS;
+  });
+
+  describe("probe intent helpers", () => {
+    it("normalizes probe values consistently", () => {
+      expect(normalizeProbeValue("  Test   No   Base  ")).toBe("test no base");
+      expect(normalizeProbeValue(null)).toBe("");
+    });
+
+    it("detects exploratory branch markers", () => {
+      expect(looksLikeExploratoryBranch("docs/pr-17198-test-from-main-1853f10f924372d4")).toBe(true);
+      expect(looksLikeExploratoryBranch("feature/probe-auth")).toBe(true);
+      expect(looksLikeExploratoryBranch("feature/real-work")).toBe(false);
+    });
+
+    it("resolves issue title using the create_issue fallback order", () => {
+      expect(resolveIssueTitleForValidation({ title: "Real title", body: "Ignored body" })).toBe("Real title");
+      expect(resolveIssueTitleForValidation({ body: "Body title" })).toBe("Body title");
+      expect(resolveIssueTitleForValidation({})).toBe("Agent Output");
+    });
+
+    it("rejects exploratory pull request payloads and allows real ones", () => {
+      expect(
+        validateCreatePullRequestIntent({
+          branch: "docs/pr-17198-test-from-main-1853f10f924372d4",
+          title: "test",
+          body: "test",
+        }),
+      ).toContain("Refusing to record an exploratory pull request");
+      expect(
+        validateCreatePullRequestIntent({
+          branch: "feature/fix-real-bug",
+          title: "Fix retry loop",
+          body: "Describe the actual fix",
+        }),
+      ).toBeNull();
+    });
+
+    it("rejects exploratory issue and comment payloads", () => {
+      expect(validateCreateIssueIntent({ title: "test", body: "test" })).toContain("Refusing to record an exploratory issue");
+      expect(validateCreateIssueIntent({ title: "Investigate flaky setup", body: "Track the real issue" })).toBeNull();
+      expect(validateAddCommentIntent({ body: "test" })).toContain("Refusing to record an exploratory comment");
+      expect(validateAddCommentIntent({ body: "This is the real follow-up comment." })).toBeNull();
+    });
+
+    it("rejects exploratory pull request branch updates and allows real ones", () => {
+      expect(
+        validatePushToPullRequestBranchIntent({
+          branch: "feature/probe-auth",
+          message: "test",
+        }),
+      ).toContain("Refusing to record an exploratory pull request branch update");
+      expect(
+        validatePushToPullRequestBranchIntent({
+          branch: "feature/real-follow-up",
+          message: "Apply review fixes",
+        }),
+      ).toBeNull();
+    });
   });
 
   describe("defaultHandler", () => {
