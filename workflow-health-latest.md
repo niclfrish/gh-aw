@@ -1,40 +1,42 @@
-# Workflow Health — 2026-05-17T05:41Z
+# Workflow Health — 2026-05-18T05:52Z
 
-Score: 67/100 (↑ from 64). 229 workflows. Run: §25982599702
+Score: 63/100 (↓4 from 67). ~229 workflows. Run: §26016026133
 
 ## KEY FINDINGS
 
-### Today's New Issues (May 17)
-- **Sergo - Serena Go Expert failed** (#32755): open
-- **Step Name Alignment failed** (#32754): open
-- **Linter Miner failed** (#32748): open
-- **Daily Compiler Quality Check failed** (#32736): engine failure after completing work
-- **Outcome Collector failed** (#32728): open
-- **Daily Observability Report failed** (#32717): ET budget exhausted (80M limit)
+### New Issues (May 18)
+- **Agentic Maintenance compile failure** (NEW P1): `compile-workflows` step failing 2 consecutive runs. All downstream jobs skipped. Issue created this run.
+- **UK AI Operational Resilience** (NEW P2): OTLP header masking failing in activation job (run 26012832575)
+- **Step Name Alignment** (recurred): #32955 opened — #32754 was closed May 17 but already recurred
 
-### 🎉 Resolved Since May 16
-- **PR-review cluster #31724 CLOSED** ✅ — trigger gates fixed for 8 workflows (Q, Agentic Commands, CGO, CJS, Smoke CI, Doc Build-Deploy, AI Moderator, Content Moderation). Was ~272 wasted runs/day at 0% success.
+### Auto-created issues detected today
+- #32955: [aw] Step Name Alignment failed (auto-created 05:22Z)
+- #32946: [aw] Weekly Blog Post Writer failed
+
+### 🎉 Resolved Since May 17
+- #32755 Sergo ✅ CLOSED
+- #32754 Step Name Alignment ✅ CLOSED (but recurred same day)
 
 ### Persistent Issues (Unchanged)
-- **CGO/CJS regression** (#29669): still open, failing on every push (P1)
-- **Smoke CI** (#32690): still open (P1)
+- **CGO/CJS regression** (#29669): still open, 3/3 CGO runs failed this week
 - **Codex OPENAI_API_KEY sandbox exclusion** (#32446): P1
 - **MCP gateway session timeout** (#23153): P2
 - **Performance Regression** (#30180): P2
-- **[aw-compat] Cross-repo warnings** (#32528): P2
 
 ### Systemic Patterns
-- **ET budget exhaustion**: Multiple daily workflows hitting token limits (Daily Observability Report at 80M)
-- **Engine failure after completion**: Workflow completes but safe-output not sent (#32736)
+- **ET budget exhaustion**: Daily Observability Report + other token-heavy workflows at risk
+- **Agentic Maintenance is now DOWN**: compile step broken — orchestrator capacity impaired
+- **Step Name Alignment recurring**: same day close/reopen pattern — structural fix needed
 
 ### Open [aw] failures
-21 open (↑2 from 19 on May 16; PR cluster fix reduces future waste)
+~21 open (↑1 from 21 due to Agentic Maintenance P1 created + Step Name #32955)
 
 ### Actions Taken This Run
+- Created 1 new issue: Agentic Maintenance compile failure (P1)
 - Added comment to dashboard issue #29109
 - Updated shared memory
 
 ### Trends
-- Score: 67/100 (↑3 from PR-review cluster fix)
-- PR-review cluster: RESOLVED ✅ (~272 wasted runs/day eliminated)
-- Top performers stable: Issue Monster, PR Sous Chef, Daily Semgrep, CI
+- Score: 63/100 (↓4 — Agentic Maintenance new drag)
+- CGO/CJS: still at 0% success, no fix shipped
+- Step Name Alignment: recurring daily — needs root cause fix
