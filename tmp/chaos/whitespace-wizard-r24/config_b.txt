@@ -1,0 +1,3 @@
+# second config
+enabled=true
+timeout=30
