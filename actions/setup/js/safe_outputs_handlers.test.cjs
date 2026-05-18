@@ -495,6 +495,21 @@ describe("safe_outputs_handlers", () => {
       expect(handlers.createPullRequestHandler).toBeDefined();
     });
 
+    it("should reject obvious exploratory test payloads before recording a PR intent", async () => {
+      const result = await handlers.createPullRequestHandler({
+        branch: "docs/pr-17198-test-from-main-1853f10f924372d4",
+        title: "test",
+        body: "test",
+      });
+
+      expect(result.isError).toBe(true);
+      const responseData = JSON.parse(result.content[0].text);
+      expect(responseData.result).toBe("error");
+      expect(responseData.error).toContain("Refusing to record an exploratory pull request");
+      expect(responseData.error).toContain("noop or report_incomplete");
+      expect(mockAppendSafeOutput).not.toHaveBeenCalled();
+    });
+
     it("should return error response when patch generation fails (not throw)", async () => {
       // This test verifies the error is returned as content, not thrown
       // Patch generation will fail because we're not in a git repo

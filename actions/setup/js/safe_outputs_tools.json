@@ -289,7 +289,7 @@
   },
   {
     "name": "create_pull_request",
-    "description": "Create a new GitHub pull request to propose code changes. Use this after making file edits to submit them for review and merging. The PR will be created from the current branch with your committed changes. For code review comments on an existing PR, use create_pull_request_review_comment instead.",
+    "description": "Create a new GitHub pull request to propose code changes. Use this after making file edits to submit them for review and merging. The PR will be created from the current branch with your committed changes. This is a write-once declaration for a real intended PR, not a sandbox or probe: do not call it with placeholder content, test titles/bodies, or auth experiments. If you are not ready to open the real PR, use noop or report_incomplete instead. For code review comments on an existing PR, use create_pull_request_review_comment instead.",
     "inputSchema": {
       "type": "object",
       "required": ["title", "body"],

@@ -32,6 +32,7 @@ const { parseDeduplicateByTitle, normalizeTitleForDedup, findDuplicateByTitle } 
  */
 function createHandlers(server, appendSafeOutput, config = {}) {
   const TOKEN_THRESHOLD = 16000;
+  const trivialPRProbeValues = new Set(["test", "testing", "test no base", "probe", "placeholder"]);
 
   /**
    * Detect and offload large string fields to files.
@@ -225,6 +226,38 @@ function createHandlers(server, appendSafeOutput, config = {}) {
   };
 
   /**
+   * Detects obviously exploratory PR payloads so the agent can fail fast
+   * instead of recording a stray real-world PR intent.
+   * @param {{title?: unknown, body?: unknown, branch?: unknown}} entry
+   * @returns {string|null}
+   */
+  const validateCreatePullRequestIntent = entry => {
+    const normalize = value => {
+      if (typeof value !== "string") return "";
+      return value.trim().toLowerCase().replace(/\s+/g, " ");
+    };
+
+    const title = normalize(entry.title);
+    const body = normalize(entry.body);
+    const branch = normalize(entry.branch);
+
+    const looksLikeProbeTitle = trivialPRProbeValues.has(title);
+    const looksLikeProbeBody = trivialPRProbeValues.has(body);
+    const looksLikeProbeBranch = branch.includes("test-from-main") || branch.includes("probe");
+
+    if ((looksLikeProbeTitle && looksLikeProbeBody) || (looksLikeProbeBranch && (looksLikeProbeTitle || looksLikeProbeBody))) {
+      return (
+        "Refusing to record an exploratory pull request. " +
+        "create_pull_request is for a real intended PR only and successful calls can lead to an externally visible pull request. " +
+        "Do not use placeholder values like 'test' or probe branches. " +
+        "If you are not ready to open the real PR, use noop or report_incomplete instead."
+      );
+    }
+
+    return null;
+  };
+
+  /**
    * Handler for create_pull_request tool
    * Spec cross-reference: Safe Output Outcome Evaluation §1 (`create_pull_request`).
    * Resolves the current branch if branch is not provided or is the base branch
@@ -233,6 +266,21 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    */
   const createPullRequestHandler = async args => {
     const entry = { ...args, type: "create_pull_request" };
+    const intentValidationError = validateCreatePullRequestIntent(entry);
+    if (intentValidationError) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              result: "error",
+              error: intentValidationError,
+            }),
+          },
+        ],
+        isError: true,
+      };
+    }
 
     // Resolve target repo configuration and validate the target repo early
     // This is needed before getBaseBranch to ensure we resolve the base branch
