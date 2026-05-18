@@ -47,6 +47,8 @@ ARCH="$(uname -m)"
 echo "Installing awf with checksum verification (version: ${AWF_VERSION}, os: ${OS}, arch: ${ARCH})"
 
 set_release_urls() {
+  # Note: updates global AWF_VERSION/BASE_URL/CHECKSUMS_URL used by subsequent
+  # install and checksum verification steps.
   AWF_VERSION="$1"
   BASE_URL="https://github.com/${AWF_REPO}/releases/download/${AWF_VERSION}"
   CHECKSUMS_URL="${BASE_URL}/checksums.txt"
@@ -78,7 +80,7 @@ download_checksums_with_fallback() {
       echo "⚠ Pinned AWF release ${AWF_VERSION} checksums not found (HTTP 404)."
       latest_version=$(resolve_latest_version)
       if [ "$latest_version" = "$AWF_VERSION" ]; then
-        echo "ERROR: Resolved latest AWF release is still ${AWF_VERSION}, but checksums are missing" >&2
+        echo "ERROR: Pinned AWF release ${AWF_VERSION} is also the latest release, but checksums are missing" >&2
         return 1
       fi
 
