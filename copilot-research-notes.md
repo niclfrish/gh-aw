@@ -1,6 +1,29 @@
 # Copilot CLI Research Notes (Trimmed - last 5 runs)
 
-### 2026-05-17 (Run 25981819267) — This Run
+### 2026-05-18 (Run 26014468484) — This Run
+- 230 total MD workflows (+1); 126 Copilot (114 simple + 29 extended block = 55%)
+- **engine.agent**: 11 workflows (drop from 25 — volatility in count due to AWF vs engine field ambiguity)
+- **max-continuations**: 5 workflows (stable: contribution-check:20, test-quality-sentinel:15, mattpocock-skills-reviewer:10, smoke:2, smoke-otel-backends:1)
+- **bare mode**: 11 workflows (stable: ab-testing-advisor, constraint-solving-potd, daily-fact, daily-hippo-learn, daily-news, hippo-embed, outcome-collector, poem-bot, smoke-claude, smoke-copilot, smoke-otel-backends)
+- **cache-memory**: 73 workflows (32% — stable)
+- **repo-memory**: 23 workflows (10% — moderate usage)
+- **sandbox AWF**: 16 workflows (  agent: awf patterns)
+- **web-search/fetch**: 21 workflows (up significantly from 2!)
+- **model overrides**: 48 total (43 model:small, 3 model:large, rest specific — significant use of convenience aliases)
+- **engine.args**: 0 (PERSISTENT GAP, 10th+ consecutive run)
+- **engine.env**: 0 (persistent gap)
+- **engine.api-target**: 0 (PERSISTENT GAP, 11th consecutive run)
+- **engine.harness**: 0 (persistent gap)
+- **mcp-servers (frontmatter)**: 2 workflows (minimal use)
+- **mcp-scripts (frontmatter)**: 0 workflows (used in prompts but not as frontmatter config)
+- **BYOK**: 0 (persistent gap)
+- **experiments**: 16 workflows (A/B testing moderately used)
+- **Unused agent files**: grumpy-reviewer, interactive-agent-designer, w3c-specification-writer, create-safe-output-type, custom-engine-implementation (5 files still unused)
+- **max-runs**: 2 workflows only (daily-safe-output-optimizer:200, linter-miner:1000) — severely underused
+- **playwright**: 11 workflows (growing browser automation)
+- Discussion created: "Copilot CLI Deep Research - 2026-05-18"
+
+### 2026-05-17 (Run 25981819267)
 - 229 total MD workflows; 126 Copilot (99 simple + 27 object form = 55%)
 - **engine.agent**: 25 workflows (up from 14 last run — growing strongly again; AWF-only + 10 custom agents)
 - **max-continuations**: 5 workflows (down from 6; contribution-check:20, test-quality-sentinel:15, mattpocock-skills-reviewer:10, smoke:2, one other)
