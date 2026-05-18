@@ -1,58 +1,14 @@
-{
-  "daily_analysis": [
-    {
-      "date": "2026-05-06",
-      "pr_count": 50,
-      "avg_sentiment": -0.005,
-      "positive_count": 3,
-      "neutral_count": 43,
-      "negative_count": 4,
-      "top_keywords": [
-        "workflow",
-        "changes",
-        "updated",
-        "default",
-        "github"
-      ],
-      "top_topic": "branch, push, pr, state, target"
-    },
-    {
-      "date": "2026-05-12",
-      "pr_count": 43,
-      "avg_sentiment": 0.03,
-      "positive_count": 18,
-      "neutral_count": 7,
-      "negative_count": 18,
-      "top_topic": "Workflow Compilation",
-      "top_keywords": [
-        "fix",
-        "add",
-        "token",
-        "workflow"
-      ]
-    },
-    {
-      "date": "2026-05-15",
-      "pr_count": 50,
-      "avg_sentiment": 0.0245,
-      "positive_count": 21,
-      "neutral_count": 19,
-      "negative_count": 10,
-      "top_keywords": [
-        "command",
-        "block",
-        "workflow",
-        "triggering",
-        "http"
-      ],
-      "top_topic": "Fix/Bug Fixes",
-      "cluster_labels": [
-        "feature, manifest, reference, page, package",
-        "sous chef, sous, chef, pr sous, pr",
-        "fix, bug, workflow, job, formatting",
-        "token, budget, et, field, changes",
-        "mcp, sentry, shared, import, sentry mcp"
-      ]
-    }
-  ]
-}
+[
+  {
+    "date": "2026-05-18",
+    "pr_count": 41,
+    "avg_sentiment": 0.0005951980655813408,
+    "top_keywords": [
+      "block",
+      "command",
+      "triggering",
+      "http",
+      "workflow"
+    ]
+  }
+]

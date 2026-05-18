@@ -1,0 +1,79 @@
+{
+  "date": "2026-05-18",
+  "pr_count": 41,
+  "avg_sentiment": 0.0005951980655813408,
+  "positive_count": 10,
+  "negative_count": 6,
+  "neutral_count": 25,
+  "top_keywords": [
+    "block",
+    "command",
+    "triggering",
+    "http",
+    "workflow"
+  ],
+  "most_positive": 32868,
+  "most_negative": 32804,
+  "topic_data": [
+    {
+      "topic": "Cluster 1",
+      "label": "triggering command / triggering",
+      "count": 9,
+      "top_terms": [
+        "triggering command",
+        "triggering",
+        "block triggering",
+        "http",
+        "http block"
+      ]
+    },
+    {
+      "topic": "Cluster 2",
+      "label": "code / workflow",
+      "count": 11,
+      "top_terms": [
+        "code",
+        "workflow",
+        "agentdb",
+        "change",
+        "bash"
+      ]
+    },
+    {
+      "topic": "Cluster 3",
+      "label": "step / sous chef",
+      "count": 7,
+      "top_terms": [
+        "step",
+        "sous chef",
+        "sous",
+        "chef",
+        "review"
+      ]
+    },
+    {
+      "topic": "Cluster 4",
+      "label": "updated / default",
+      "count": 10,
+      "top_terms": [
+        "updated",
+        "default",
+        "handler",
+        "config",
+        "removed"
+      ]
+    },
+    {
+      "topic": "Cluster 5",
+      "label": "job / fix",
+      "count": 4,
+      "top_terms": [
+        "job",
+        "fix",
+        "failing github",
+        "fix failing",
+        "actions job"
+      ]
+    }
+  ]
+}
