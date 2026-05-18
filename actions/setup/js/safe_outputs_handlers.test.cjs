@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
+import { createHandlers } from "./safe_outputs_handlers.cjs";
 import {
-  createHandlers,
   looksLikeExploratoryBranch,
   normalizeProbeValue,
   resolveIssueTitleForValidation,
@@ -11,7 +11,7 @@ import {
   validateCreateIssueIntent,
   validateCreatePullRequestIntent,
   validatePushToPullRequestBranchIntent,
-} from "./safe_outputs_handlers.cjs";
+} from "./intent_probe.cjs";
 
 const LARGE_CONTENT_BODY = "A".repeat(70000);
 
@@ -713,6 +713,34 @@ describe("safe_outputs_handlers", () => {
         );
       } finally {
         delete process.env.GITHUB_BASE_REF;
+        delete process.env.GITHUB_HEAD_REF;
+        delete process.env.GITHUB_REF_NAME;
+      }
+    });
+
+    it("should validate the resolved current branch before recording a PR intent", async () => {
+      handlers = createHandlers(mockServer, mockAppendSafeOutput, {
+        create_pull_request: {
+          allow_empty: true,
+          base_branch: "main",
+        },
+      });
+
+      process.env.GITHUB_HEAD_REF = "docs/pr-17198-test-from-main-1853f10f924372d4";
+      process.env.GITHUB_REF_NAME = "docs/pr-17198-test-from-main-1853f10f924372d4";
+      try {
+        const result = await handlers.createPullRequestHandler({
+          branch: "main",
+          title: "Real looking title",
+          body: "Real looking body",
+        });
+
+        expect(result.isError).toBe(true);
+        const responseData = JSON.parse(result.content[0].text);
+        expect(responseData.result).toBe("error");
+        expect(responseData.error).toContain("Refusing to record an exploratory pull request");
+        expect(mockAppendSafeOutput).not.toHaveBeenCalled();
+      } finally {
         delete process.env.GITHUB_HEAD_REF;
         delete process.env.GITHUB_REF_NAME;
       }
