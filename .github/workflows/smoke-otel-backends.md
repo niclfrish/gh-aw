@@ -240,7 +240,7 @@ Create exactly one GitHub issue with:
   | Local OTLP | ✅ | ✅ | — | — | ✅ |
   | Sentry | ✅ | ✅ | ✅ | 🔶 | 🔶 |
   | Grafana | ✅ | ❌ | ✅ | ✅ | ❌ |
-  | Datadog | ✅ | ✅ | — | — | ✅ |
+  | Datadog | ✅ | ✅ | ✅ | ✅ | ✅ |
   ```
 
 - The exact evidence used for each backend
