@@ -32,7 +32,7 @@ const { parseDeduplicateByTitle, normalizeTitleForDedup, findDuplicateByTitle } 
  */
 function createHandlers(server, appendSafeOutput, config = {}) {
   const TOKEN_THRESHOLD = 16000;
-  const trivialPRProbeValues = new Set(["test", "testing", "test no base", "probe", "placeholder"]);
+  const trivialPRProbeValues = new Set(["test", "testing", "test no base", "probe", "placeholder", "dummy", "temp", "temporary", "todo", "tbd", "wip", "example"]);
 
   /**
    * Detect and offload large string fields to files.
@@ -243,9 +243,10 @@ function createHandlers(server, appendSafeOutput, config = {}) {
 
     const looksLikeProbeTitle = trivialPRProbeValues.has(title);
     const looksLikeProbeBody = trivialPRProbeValues.has(body);
-    const looksLikeProbeBranch = branch.includes("test-from-main") || branch.includes("probe");
+    const looksLikeTestFromMainBranch = branch.includes("test-from-main");
+    const looksLikeProbeBranch = looksLikeTestFromMainBranch || branch.includes("probe");
 
-    if ((looksLikeProbeTitle && looksLikeProbeBody) || (looksLikeProbeBranch && (looksLikeProbeTitle || looksLikeProbeBody))) {
+    if (looksLikeTestFromMainBranch || (looksLikeProbeTitle && looksLikeProbeBody) || (looksLikeProbeBranch && (looksLikeProbeTitle || looksLikeProbeBody))) {
       return (
         "Refusing to record an exploratory pull request. " +
         "create_pull_request is for a real intended PR only and successful calls can lead to an externally visible pull request. " +
