@@ -70,6 +70,8 @@ function createHandlers(server, appendSafeOutput, config = {}) {
     if (typeof entry.body === "string" && entry.body.trim()) {
       return entry.body;
     }
+    // Mirror create_issue's own fallback so probe validation sees the same
+    // effective title the handler would ultimately use when both fields are absent.
     return "Agent Output";
   };
 
