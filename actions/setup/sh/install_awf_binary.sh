@@ -21,6 +21,7 @@ set +o histexpand
 # Security features:
 #   - Downloads directly from GitHub releases
 #   - Verifies SHA256 checksum against official checksums.txt
+#   - Falls back to latest AWF release if pinned release checksums return 404
 #   - Fails fast if checksum verification fails
 #   - Eliminates trust dependency on installer scripts
 
@@ -45,9 +46,54 @@ ARCH="$(uname -m)"
 
 echo "Installing awf with checksum verification (version: ${AWF_VERSION}, os: ${OS}, arch: ${ARCH})"
 
-# Download URLs
-BASE_URL="https://github.com/${AWF_REPO}/releases/download/${AWF_VERSION}"
-CHECKSUMS_URL="${BASE_URL}/checksums.txt"
+set_release_urls() {
+  AWF_VERSION="$1"
+  BASE_URL="https://github.com/${AWF_REPO}/releases/download/${AWF_VERSION}"
+  CHECKSUMS_URL="${BASE_URL}/checksums.txt"
+}
+
+# Resolve latest release tag via redirects from /releases/latest.
+resolve_latest_version() {
+  local latest_url latest_version
+  latest_url=$(curl -fsSL --retry 5 --retry-delay 10 --retry-max-time 180 -o /dev/null -w '%{url_effective}' "https://github.com/${AWF_REPO}/releases/latest")
+  latest_version="${latest_url##*/}"
+  if [ -z "$latest_version" ] || [ "$latest_version" = "latest" ]; then
+    echo "ERROR: Failed to resolve latest AWF release version" >&2
+    return 1
+  fi
+  printf '%s' "$latest_version"
+}
+
+download_checksums_with_fallback() {
+  local status latest_version
+
+  echo "Downloading checksums from ${CHECKSUMS_URL@Q}..."
+  status=$(curl -sSL --retry 5 --retry-delay 10 --retry-max-time 180 -o /dev/null -w '%{http_code}' "${CHECKSUMS_URL}")
+
+  case "$status" in
+    200)
+      curl -fsSL --retry 5 --retry-delay 10 --retry-max-time 180 -o "${TEMP_DIR}/checksums.txt" "${CHECKSUMS_URL}"
+      ;;
+    404)
+      echo "⚠ Pinned AWF release ${AWF_VERSION} checksums not found (HTTP 404)."
+      latest_version=$(resolve_latest_version)
+      if [ "$latest_version" = "$AWF_VERSION" ]; then
+        echo "ERROR: Resolved latest AWF release is still ${AWF_VERSION}, but checksums are missing" >&2
+        return 1
+      fi
+
+      echo "⚠ Falling back to latest AWF release: ${latest_version}"
+      set_release_urls "$latest_version"
+      echo "Downloading checksums from ${CHECKSUMS_URL@Q}..."
+      curl -fsSL --retry 5 --retry-delay 10 --retry-max-time 180 -o "${TEMP_DIR}/checksums.txt" "${CHECKSUMS_URL}"
+      echo "✓ Using fallback AWF version: ${AWF_VERSION}"
+      ;;
+    *)
+      echo "ERROR: Failed to download checksums from ${CHECKSUMS_URL@Q} (HTTP ${status})" >&2
+      return 1
+      ;;
+  esac
+}
 
 # Platform-portable SHA256 function
 sha256_hash() {
@@ -66,9 +112,8 @@ sha256_hash() {
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
-# Download checksums
-echo "Downloading checksums from ${CHECKSUMS_URL@Q}..."
-curl -fsSL --retry 5 --retry-delay 10 --retry-max-time 180 -o "${TEMP_DIR}/checksums.txt" "${CHECKSUMS_URL}"
+set_release_urls "$AWF_VERSION"
+download_checksums_with_fallback
 
 verify_checksum() {
   local file="$1"
