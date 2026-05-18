@@ -32,7 +32,7 @@ const { parseDeduplicateByTitle, normalizeTitleForDedup, findDuplicateByTitle } 
  */
 function createHandlers(server, appendSafeOutput, config = {}) {
   const TOKEN_THRESHOLD = 16000;
-  const trivialProbeValues = new Set(["test", "testing", "test no base", "probe", "placeholder", "dummy", "temp", "temporary", "todo", "tbd", "wip", "example"]);
+  const TRIVIAL_PROBE_VALUES = new Set(["test", "testing", "test no base", "probe", "placeholder", "dummy", "temp", "temporary", "todo", "tbd", "wip", "example"]);
 
   /**
    * @param {unknown} value
@@ -47,7 +47,7 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    * @param {unknown} value
    * @returns {boolean}
    */
-  const isTrivialProbeValue = value => trivialProbeValues.has(normalizeProbeValue(value));
+  const isTrivialProbeValue = value => TRIVIAL_PROBE_VALUES.has(normalizeProbeValue(value));
 
   /**
    * @param {unknown} value
@@ -55,14 +55,15 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    */
   const looksLikeExploratoryBranch = value => {
     const branch = normalizeProbeValue(value);
-    return branch.includes("test-from-main") || trivialProbeValues.has(branch) || branch.includes("probe");
+    const hasProbeBranchMarker = /(^|[-/])probe([-/]|$)/.test(branch);
+    return branch.includes("test-from-main") || TRIVIAL_PROBE_VALUES.has(branch) || hasProbeBranchMarker;
   };
 
   /**
    * @param {{title?: unknown, body?: unknown}} entry
    * @returns {string}
    */
-  const resolveIssueProbeTitle = entry => {
+  const resolveIssueTitleForValidation = entry => {
     if (typeof entry.title === "string" && entry.title.trim()) {
       return entry.title;
     }
@@ -291,8 +292,8 @@ function createHandlers(server, appendSafeOutput, config = {}) {
     const body = normalizeProbeValue(entry.body);
     const branch = normalizeProbeValue(entry.branch);
 
-    const looksLikeProbeTitle = trivialProbeValues.has(title);
-    const looksLikeProbeBody = trivialProbeValues.has(body);
+    const looksLikeProbeTitle = TRIVIAL_PROBE_VALUES.has(title);
+    const looksLikeProbeBody = TRIVIAL_PROBE_VALUES.has(body);
     const looksLikeTestFromMainBranch = branch.includes("test-from-main");
     const looksLikeProbeBranch = looksLikeExploratoryBranch(branch);
 
@@ -315,7 +316,7 @@ function createHandlers(server, appendSafeOutput, config = {}) {
    * @returns {string|null}
    */
   const validateCreateIssueIntent = entry => {
-    const rawResolvedTitle = resolveIssueProbeTitle(entry);
+    const rawResolvedTitle = resolveIssueTitleForValidation(entry);
     const body = normalizeProbeValue(entry.body);
 
     if (isTrivialProbeValue(rawResolvedTitle) && (body === "" || isTrivialProbeValue(body))) {
@@ -361,7 +362,7 @@ function createHandlers(server, appendSafeOutput, config = {}) {
     const looksLikeProbeBranch = looksLikeExploratoryBranch(branch);
     const looksLikeProbeMessage = isTrivialProbeValue(entry.message);
 
-    if (looksLikeTestFromMainBranch || trivialProbeValues.has(branch) || (looksLikeProbeBranch && looksLikeProbeMessage)) {
+    if (looksLikeTestFromMainBranch || TRIVIAL_PROBE_VALUES.has(branch) || (looksLikeProbeBranch && looksLikeProbeMessage)) {
       return (
         "Refusing to record an exploratory pull request branch update. " +
         "push_to_pull_request_branch is for a real intended PR update only and successful calls can lead to externally visible branch changes. " +
