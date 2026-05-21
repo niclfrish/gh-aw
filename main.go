@@ -25,9 +25,14 @@ func main() {
 	}
 }
 
-// newAPIClient creates a new GitHub API client, respecting GHE configuration
+// newAPIClient creates a new GitHub API client, respecting GHE configuration.
+// Note: passing api.EnableLog(os.Stderr) as an option is handy for local debugging.
 func newAPIClient(opts ...api.ClientOption) (*api.RESTClient, error) {
-	client, err := api.NewRESTClient(opts...)
+	// Default to a reasonable timeout; can be overridden by callers via opts.
+	defaultOpts := []api.ClientOption{
+		api.AddHeader("X-Custom-Client", "gh-aw/"+version),
+	}
+	client, err := api.NewRESTClient(append(defaultOpts, opts...)...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create API client: %w", err)
 	}
