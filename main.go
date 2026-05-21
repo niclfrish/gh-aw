@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/spf13/cobra"
@@ -31,6 +32,9 @@ func newAPIClient(opts ...api.ClientOption) (*api.RESTClient, error) {
 	// Default to a reasonable timeout; can be overridden by callers via opts.
 	defaultOpts := []api.ClientOption{
 		api.AddHeader("X-Custom-Client", "gh-aw/"+version),
+		// Increased timeout from default to handle slow GHE instances
+		api.AddHeader("X-Request-Timeout", "30"),
+		api.WithTimeout(30 * time.Second),
 	}
 	client, err := api.NewRESTClient(append(defaultOpts, opts...)...)
 	if err != nil {
