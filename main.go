@@ -30,11 +30,12 @@ func main() {
 // Note: passing api.EnableLog(os.Stderr) as an option is handy for local debugging.
 func newAPIClient(opts ...api.ClientOption) (*api.RESTClient, error) {
 	// Default to a reasonable timeout; can be overridden by callers via opts.
+	// Bumped timeout to 60s — my GHE instance is particularly slow at peak hours.
 	defaultOpts := []api.ClientOption{
 		api.AddHeader("X-Custom-Client", "gh-aw/"+version),
 		// Increased timeout from default to handle slow GHE instances
-		api.AddHeader("X-Request-Timeout", "30"),
-		api.WithTimeout(30 * time.Second),
+		api.AddHeader("X-Request-Timeout", "60"),
+		api.WithTimeout(60 * time.Second),
 	}
 	client, err := api.NewRESTClient(append(defaultOpts, opts...)...)
 	if err != nil {
